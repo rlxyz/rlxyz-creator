@@ -1,0 +1,87 @@
+{
+  "name": "@rhapsodylabs/project-tiger-eth",
+  "common": {
+    "ethereum": "tiger.rhapsodylabs.eth"
+  },
+  "description": "Repository that maintains all smart contract for TIGER by  Pestle and Mortar Clothing x Tiger Beer",
+  "author": "Rhapsody Labs & Pestle and Mortar Clothing",
+  "contributors": [
+    {
+      "name": "Jeevan Pillay <jeevan.rhapsodylabs.eth>",
+      "email": "jeevan@rhapsodylabs.xyz",
+      "url": "https://twitter.com/jeevanpillay"
+    }
+  ],
+  "license": "GPL-3.0",
+  "version": "1.0.0",
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rhapsodylabs/project-TIGER.git"
+  },
+  "scripts": {
+    "reinstall": "rm -rf node_modules/ && rm -f yarn.lock && yarn",
+    "verify": "yarn hint && yarn test",
+    "hint": "solhint \"contracts/**/*.sol\"",
+    "test": "HIDE_DEPLOY_LOG=true OPTIMIZER_DISABLED=true hardhat test",
+    "test:gas": "REPORT_GAS=true yarn test",
+    "compile": "hardhat --show-stack-traces --max-memory 8192 compile",
+    "start": "echo 'Starting node for local testing....\n'; rm -rf deployments/localhost_31337; DISABLE_HARNESS=true hardhat node",
+    "deploy": "hardhat run \"scripts/0_deploy.js\" --network",
+    "deploy:post": "hardhat run \"scripts/1_postDeploy.js\" --network",
+    "deploy:start": "hardhat run \"scripts/2_start.js\" --network",
+    "deploy:verify": "hardhat run \"scripts/3_verify.js\" --network",
+    "clean": "rm -rf abis artifacts build .build-openzeppelin cache coverage coverage.json test-results.xml .cache-openzeppelin deployments/localhost deployments/localhost_*; mkdir abis",
+    "prepack": "yarn clean && yarn compile",
+    "postpublish": "PACKAGE_VERSION=$(./scripts/package-version.sh) && git tag -ae v$PACKAGE_VERSION && git push --tags",
+    "format": "prettier --write 'contracts/**/*.sol'"
+  },
+  "dependencies": {
+    "@openzeppelin/contracts": "^4.1.0",
+    "deploy-eip-1820": "1.0.0"
+  },
+  "devDependencies": {
+    "@nomiclabs/hardhat-ethers": "^2.0.2",
+    "@nomiclabs/hardhat-etherscan": "^3.0.0",
+    "@nomiclabs/hardhat-waffle": "^2.0.1",
+    "@rhapsodylabs/whitelist-merkler": "^0.0.5",
+    "@typechain/ethers-v5": "^7.0.0",
+    "@typechain/hardhat": "^2.0.1",
+    "@types/chai": "^4.2.18",
+    "@types/mocha": "^8.2.2",
+    "chai": "^4.3.4",
+    "ethereum-waffle": "^3.3.0",
+    "ethers": "^5.2.0",
+    "hardhat": "^2.2.1",
+    "hardhat-abi-exporter": "^2.7.2",
+    "hardhat-deploy": "^0.9.24",
+    "hardhat-deploy-ethers": "^0.3.0-beta.13",
+    "hardhat-gas-reporter": "^1.0.7",
+    "install": "^0.13.0",
+    "keccak256": "^1.0.6",
+    "merkletreejs": "^0.2.27",
+    "mocha": "^8.4.0",
+    "mocha-chai-jest-snapshot": "^1.1.2",
+    "npm": "^8.3.1",
+    "prettier": "^2.4.1",
+    "prettier-plugin-solidity": "^1.0.0-beta.18",
+    "solhint": "^3.3.6",
+    "solhint-plugin-prettier": "^0.0.5",
+    "solidity-coverage": "^0.7.17",
+    "ts-generator": "^0.1.1",
+    "ts-node": "^10.0.0",
+    "typechain": "^5.0.0",
+    "typescript": "^4.3.2"
+  },
+  "files": [
+    "LICENSE",
+    "abis/**",
+    "build/**",
+    ".build-openzeppelin/**",
+    "contracts/**/*.sol",
+    "deployments/**",
+    "scripts/**"
+  ]
+}
