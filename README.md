@@ -26,7 +26,7 @@ const customTestnetAccounts = {
 
 Please use in testnet environment only.
 
-1. The `RhapsodyCreator` contract hasn't been fully stress/fuzz tested echidna. 
+1. The `RhapsodyCreator` contract hasn't been fully stress/fuzz tested with echidna. 
 2. There is an issue with the `presaleMint` for addresses that generate fake proofs and still able to mint.
 
 Contact [jeevanpillay](https://twitter.com/jeevanpillay) for more information.
