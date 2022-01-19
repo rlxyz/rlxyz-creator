@@ -24,9 +24,9 @@ const customTestnetAccounts = {
 
 ## DISCLAIMER: Existing Bugs
 
-Please use in testnet environment only.
+The `RhapsodyCreator` contract hasn't been fully stress/fuzz tested with echidna. Please use in testnet environment only.
 
-1. The `RhapsodyCreator` contract hasn't been fully stress/fuzz tested with echidna. 
-2. There is an issue with the `presaleMint` for addresses that generate fake proofs and still able to mint.
+1. There is an issue with the `presaleMint` for addresses that generate fake proofs and still able to mint.
+2. Publish ABI to npm hasn't been tested
 
-Contact [jeevanpillay](https://twitter.com/jeevanpillay) for more information.
+Contact [Jeevan Pillay](https://twitter.com/jeevanpillay) for more information.
