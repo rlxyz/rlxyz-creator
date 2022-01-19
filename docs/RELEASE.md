@@ -4,6 +4,8 @@ Once the smart contracts have been updated, follow the steps below.
 
 The testnet networks Rinkeby are supported.
 
+The `production/testnet.json` file is used here.
+
 ## 1. Deploy Top-level Contracts
 
 For each network run the command:
@@ -35,7 +37,7 @@ $ yarn deploy:start
 $ yarn deploy:verify rinkeby
 ```
 
-## 3. Publish Tiger-contracts npm package
+## 3. Publish contracts npm package
 
 Increment the version in `package.json` then publish the package:
 

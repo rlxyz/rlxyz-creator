@@ -1,10 +1,10 @@
 {
-  "name": "@rhapsodylabs/project-tiger-eth",
+  "name": "@rhapsodylabs/rhapsody-creator",
   "common": {
-    "ethereum": "tiger.rhapsodylabs.eth"
+    "ethereum": "donations.rhapsodylabs.eth"
   },
-  "description": "Repository that maintains all smart contract for TIGER by  Pestle and Mortar Clothing x Tiger Beer",
-  "author": "Rhapsody Labs & Pestle and Mortar Clothing",
+  "description": "Repository that maintains core smart contracts for ERC721 contracts",
+  "author": "Rhapsody Labs",
   "contributors": [
     {
       "name": "Jeevan Pillay <jeevan.rhapsodylabs.eth>",
@@ -19,7 +19,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/rhapsodylabs/project-TIGER.git"
+    "url": "git+https://github.com/rhapsodylabs/rhapsody-creator.git"
   },
   "scripts": {
     "reinstall": "rm -rf node_modules/ && rm -f yarn.lock && yarn",
