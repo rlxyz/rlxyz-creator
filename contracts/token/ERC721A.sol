@@ -1,4 +1,5 @@
 // SPDX-License-Identifier: MIT
+
 pragma solidity ^0.8.0;
 
 import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
@@ -134,11 +135,6 @@ contract ERC721A is Context, ERC165, IERC721, IERC721Metadata, IERC721Enumerable
     function balanceOf(address owner) public view override returns (uint256) {
         require(owner != address(0), "ERC721A: balance query for the zero address");
         return uint256(_addressData[owner].balance);
-    }
-
-    function _numberMinted(address owner) internal view returns (uint256) {
-        require(owner != address(0), "ERC721A: number minted query for the zero address");
-        return uint256(_addressData[owner].numberMinted);
     }
 
     function ownershipOf(uint256 tokenId) internal view returns (TokenOwnership memory) {
@@ -494,4 +490,13 @@ contract ERC721A is Context, ERC165, IERC721, IERC721Metadata, IERC721Enumerable
         uint256 startTokenId,
         uint256 quantity
     ) internal virtual {}
+
+    function _mintOf(address owner) internal view returns (uint256) {
+        require(owner != address(0), "ERC721A: number minted query for the zero address");
+        return uint256(_addressData[owner].numberMinted);
+    }
+
+    function mintOf(address owner) public view returns (uint256) {
+        return _mintOf(owner);
+    }
 }

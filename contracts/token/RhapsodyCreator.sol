@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-3.0
+// SPDX-License-Identifier: CC-BY-NC-SA-4.0
 pragma solidity ^0.8.0;
 
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
@@ -123,7 +123,7 @@ contract RhapsodyCreator is ERC721A, Ownable, ReentrancyGuard {
         require(msg.value == mintPrice * invocations, "RhapsodyCreator/invalid-mint-value");
         require(msg.value > 0, "RhapsodyCreator/invalid-invocation-lower-boundary");
         require(
-            _numberMinted(msg.sender) + invocations <= maxInvocation,
+            _mintOf(msg.sender) + invocations <= maxInvocation,
             "RhapsodyCreator/invalid-invocation-upper-boundary"
         );
         _;

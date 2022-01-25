@@ -6,7 +6,7 @@ import "../token/RhapsodyCreator.sol";
 // @notice this RhapsodyCreatorRinkeby is used in testnets such as rinkeby
 contract RhapsodyCreatorRinkeby is RhapsodyCreator {
     /// @notice Semver Version
-    string public constant VERSION = "0.0.1";
+    string public constant VERSION = "0.0.6";
 
     constructor(
         bytes32 _presaleMerkleRoot,
