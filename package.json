@@ -1,9 +1,9 @@
 {
   "name": "@rhapsodylabs/rhapsody-creator",
   "common": {
-    "ethereum": "donations.rhapsodylabs.eth"
+    "ethereum": "rhapsodylabs.eth"
   },
-  "description": "Repository that maintains core smart contracts for ERC721 contracts",
+  "description": "Repository that maintains core smart contracts for ERC721 creators",
   "author": "Rhapsody Labs",
   "contributors": [
     {

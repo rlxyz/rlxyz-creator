@@ -9,11 +9,11 @@ require('hardhat-abi-exporter')
 require("hardhat-gas-reporter");
 
 const customTestnetAccounts = {
-  deployer: "0xe78AB0C30856b4F82d73Fc3411a9860A8ff5c57B", // Account 0
-  admin: '0xe693cb9ca5ec4b2f6a4111ae53308bef811e9e3e', // Account 1,
-  testnetUserA: '0x2976134d99b6C9AC1bC8D6407F07B31c9247c230', // Account 3
-  testnetUserB: '0x1e33eDFd7BB11eA57Cc8E2Bd7547cCFEf8F21e6F', // Account 4
-  testnetUserC: '0x36e1d0A149b5aB87C74E91CBd4903Fef709421c6', // Account 3
+  deployer: "<add-deployer-address>", // Account 0
+  admin: '<add-admin-address>', // Account 1,
+  testnetUserA: '<add-testnetUserA-address>', // Account 3
+  testnetUserB: '<add-testnetUserB-address>', // Account 4
+  testnetUserC: '<add-testnetUserC-address>', // Account 3
 }
 
 const optimizerEnabled = !process.env.OPTIMIZER_DISABLED
