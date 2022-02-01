@@ -1,19 +1,14 @@
 const debug = require ('debug') ('ptv3:RhapsodyCreator');
 const {expect} = require ('chai');
 const hre = require ('hardhat');
-const {
-  AddressZero,
-  overrides,
-  parseEther,
-  now,
-} = require ('./helpers/constant');
+const {overrides, parseEther} = require ('./helpers/constant');
 const {buildWhitelist, generateLeaf} = require ('../scripts/helpers/whitelist');
 
 const currentBlockTime = 123456789;
 const name = 'Rhapsody Creator Test';
 const symbol = 'RCT';
 
-const creatorMainnetParams = {
+const creatorTestParams = {
   collectionSize: 6688,
   maxPresaleBatchPerAddress: 5,
   maxPublicBatchPerAddress: 20,
@@ -22,8 +17,7 @@ const creatorMainnetParams = {
 };
 
 describe ('RhapsodyCreator', () => {
-  let deployer, admin, wallet, minterA, minterB, minterC;
-  let whitelist;
+  let deployer, admin, minterA, minterB, minterC;
 
   let creator;
   let merklized;
@@ -32,7 +26,6 @@ describe ('RhapsodyCreator', () => {
     [
       deployer,
       admin,
-      wallet,
       minterA,
       minterB,
       minterC,
@@ -53,10 +46,10 @@ describe ('RhapsodyCreator', () => {
 
     creator = await RhapsodyCreator.deploy (
       merklized.root,
-      creatorMainnetParams.collectionSize,
-      creatorMainnetParams.maxPublicBatchPerAddress,
-      creatorMainnetParams.amountForPromotion,
-      creatorMainnetParams.mintPrice
+      creatorTestParams.collectionSize,
+      creatorTestParams.maxPublicBatchPerAddress,
+      creatorTestParams.amountForPromotion,
+      creatorTestParams.mintPrice
     );
 
     creator.transferOwnership (admin.address);
@@ -84,19 +77,19 @@ describe ('RhapsodyCreator', () => {
 
     it ('should have an allocation promotion amount', async () => {
       expect (await creator.amountForPromotion ()).to.equal (
-        creatorMainnetParams.amountForPromotion
+        creatorTestParams.amountForPromotion
       );
     });
 
     it ('should have set the correct max public mint per address', async () => {
       expect (await creator.maxPublicBatchPerAddress ()).to.equal (
-        creatorMainnetParams.maxPublicBatchPerAddress
+        creatorTestParams.maxPublicBatchPerAddress
       );
     });
 
     it ('should have a valid mint price', async () => {
       expect (await creator.mintPrice ()).to.equal (
-        creatorMainnetParams.mintPrice
+        creatorTestParams.mintPrice
       );
     });
   });
@@ -184,10 +177,10 @@ describe ('RhapsodyCreator', () => {
         );
         creatorA = await RhapsodyCreator.deploy (
           merklized.root,
-          creatorMainnetParams.collectionSize,
-          creatorMainnetParams.maxPublicBatchPerAddress,
-          creatorMainnetParams.amountForPromotion,
-          creatorMainnetParams.mintPrice
+          creatorTestParams.collectionSize,
+          creatorTestParams.maxPublicBatchPerAddress,
+          creatorTestParams.amountForPromotion,
+          creatorTestParams.mintPrice
         );
 
         await creatorA.setMintTime (
@@ -251,7 +244,35 @@ describe ('RhapsodyCreator', () => {
         );
       });
 
-      it ('should allow multiple mints as long below total allocated amount', async () => {
+      it ('should fail address proof if passed in invalid maxInvocations', async () => {
+        let leaf = generateLeaf (minterA.address, 5);
+        let proof = merklized.tree.getHexProof (leaf);
+        await expect (
+          presaleMinter (minterA, 1, 10, proof, 0.08)
+        ).to.be.revertedWith ('RhapsodyCreator/invalid-address-proof');
+
+        leaf = generateLeaf (minterB.address, 5);
+        proof = merklized.tree.getHexProof (leaf);
+        await expect (
+          presaleMinter (minterB, 5, 10, proof, 0.08 * 5)
+        ).to.be.revertedWith ('RhapsodyCreator/invalid-address-proof');
+      });
+
+      it ('should fail if too much or too little eth supplied', async () => {
+        let leaf = generateLeaf (minterA.address, 5);
+        let proof = merklized.tree.getHexProof (leaf);
+        await expect (
+          presaleMinter (minterA, 1, 5, proof, 1.5)
+        ).to.be.revertedWith ('RhapsodyCreator/invalid-mint-value');
+
+        leaf = generateLeaf (minterB.address, 5);
+        proof = merklized.tree.getHexProof (leaf);
+        await expect (
+          presaleMinter (minterB, 5, 10, proof, 0)
+        ).to.be.revertedWith ('RhapsodyCreator/invalid-mint-value');
+      });
+
+      it ('should only be able to mint once', async () => {
         let leaf = generateLeaf (minterA.address, 5);
         let proof = merklized.tree.getHexProof (leaf);
 
@@ -259,9 +280,9 @@ describe ('RhapsodyCreator', () => {
           .emit (creatorA, 'Created')
           .withArgs (minterA.address, 4);
 
-        await expect (presaleMinter (minterA, 1, 5, proof, 0.08)).to
-          .emit (creatorA, 'Created')
-          .withArgs (minterA.address, 1);
+        await expect (
+          presaleMinter (minterA, 1, 5, proof, 0.08)
+        ).to.to.be.revertedWith ('RhapsodyCreator/invalid-double-mint');
 
         leaf = generateLeaf (minterB.address, 5);
         proof = merklized.tree.getHexProof (leaf);
@@ -290,7 +311,7 @@ describe ('RhapsodyCreator', () => {
         );
       });
 
-      it ('should allow multiple mints many times; 3 times here', async () => {
+      it ('should not be able to transfer NFTs out and mint again', async () => {
         let leaf = generateLeaf (minterA.address, 5);
         let proof = merklized.tree.getHexProof (leaf);
 
@@ -298,13 +319,17 @@ describe ('RhapsodyCreator', () => {
           .emit (creatorA, 'Created')
           .withArgs (minterA.address, 2);
 
-        await expect (presaleMinter (minterA, 2, 5, proof, 2 * 0.08)).to
-          .emit (creatorA, 'Created')
-          .withArgs (minterA.address, 2);
+        await creatorA
+          .connect (minterA)
+          .transferFrom (minterA.address, minterB.address, 0);
 
-        await expect (presaleMinter (minterA, 1, 5, proof, 1 * 0.08)).to
-          .emit (creatorA, 'Created')
-          .withArgs (minterA.address, 1);
+        await creatorA
+          .connect (minterA)
+          .transferFrom (minterA.address, minterB.address, 1);
+
+        await expect (
+          presaleMinter (minterA, 1, 5, proof, 0.08)
+        ).to.to.be.revertedWith ('RhapsodyCreator/invalid-double-mint');
       });
 
       it ('should not be able to mint if not whitelisted', async () => {
@@ -312,8 +337,12 @@ describe ('RhapsodyCreator', () => {
           '0x1428975b69ccaa80e5613347ec07d7a0696894fc28b3655983d43f9eb00032a1',
           '0xf55f0dad9adfe0f2aa1946779b3ca83c165360edef49c6b72ddc0e2f070f7ff6',
         ];
+
+        let leaf = generateLeaf (minterB.address, 5);
+        let proof = merklized.tree.getHexProof (leaf);
+
         await expect (
-          presaleMinter (minterA, 1, 5, wrongProof, 1 * 0.08)
+          presaleMinter (minterB, 1, 5, wrongProof, 1 * 0.08)
         ).to.be.revertedWith ('RhapsodyCreator/invalid-address-proof');
       });
 
@@ -403,7 +432,7 @@ describe ('RhapsodyCreator', () => {
             12,
             4,
             0,
-            creatorMainnetParams.mintPrice
+            creatorTestParams.mintPrice
           );
 
           await creatorB.setMintTime (
@@ -637,7 +666,7 @@ describe ('RhapsodyCreator', () => {
             collectionSize,
             maxPublicBatchPerAddress,
             amountForPromotion,
-            creatorMainnetParams.mintPrice
+            creatorTestParams.mintPrice
           );
         });
 
@@ -757,10 +786,10 @@ describe ('RhapsodyCreator', () => {
   //     let creatorB = await RhapsodyCreator.deploy (
   //       merklized.root,
   //       2,
-  //       creatorMainnetParams.maxPublicBatchPerTx,
-  //       creatorMainnetParams.maxPresaleBatchPerTx,
+  //       creatorTestParams.maxPublicBatchPerTx,
+  //       creatorTestParams.maxPresaleBatchPerTx,
   //       0,
-  //       creatorMainnetParams.mintPrice
+  //       creatorTestParams.mintPrice
   //     );
 
   //     await creatorB.connect (minterA).publicMint (1, {

@@ -499,4 +499,8 @@ contract ERC721A is Context, ERC165, IERC721, IERC721Metadata, IERC721Enumerable
     function mintOf(address owner) public view returns (uint256) {
         return _mintOf(owner);
     }
+
+    function getOwnershipData(uint256 tokenId) external view returns (TokenOwnership memory) {
+        return ownershipOf(tokenId);
+    }
 }

@@ -1,0 +1,14 @@
+{
+  "name": "Example",
+  "deploy": {
+    "presaleMerkleRoot": "0xe1f5bc3d371a8e75fe9b12ac27269f83ad8156a135a22d1cbce1517ee797e89b"
+  },
+  "postDeploy": {
+    "baseTokenURI": "https://ipfs.rhapsodylabs.xyz/ipfs/QmVReWkT3EuZFfxEBtGYbDAALP1UC6jwBPhRoK3ZkfFzdG/",
+    "presaleTime": 1643511900,
+    "publicTime": 1643512200
+  },
+  "start": {
+    "amountForPromotion": 50
+  }
+}

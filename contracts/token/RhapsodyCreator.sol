@@ -1,14 +1,21 @@
-// SPDX-License-Identifier: CC-BY-NC-SA-4.0
+// SPDX-License-Identifier: MIT
+
 pragma solidity ^0.8.0;
 
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/utils/cryptography/MerkleProof.sol";
 import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
+import "@openzeppelin/contracts/utils/math/SafeMath.sol";
 
 import "./ERC721A.sol";
 
 contract RhapsodyCreator is ERC721A, Ownable, ReentrancyGuard {
+    /// ============ Libraries ============
+
+    /// @notice safe math for arithmetic operations
+    using SafeMath for uint256;
+
     /// ============ Immutable storage ============
 
     /// @notice promotional nfts count
@@ -76,6 +83,7 @@ contract RhapsodyCreator is ERC721A, Ownable, ReentrancyGuard {
         uint256 maxInvocation,
         bytes32[] calldata proof
     ) external payable isMintValid(invocations, maxInvocation) isMintLive(presaleTime) {
+        require(_mintOf(msg.sender) == 0, "RhapsodyCreator/invalid-double-mint");
         require(
             MerkleProof.verify(proof, presaleMerkleRoot, keccak256(abi.encodePacked(msg.sender, maxInvocation))),
             "RhapsodyCreator/invalid-address-proof"
@@ -119,11 +127,11 @@ contract RhapsodyCreator is ERC721A, Ownable, ReentrancyGuard {
     /// @notice ensures that minters need valid invocations + value to mint
     modifier isMintValid(uint256 invocations, uint256 maxInvocation) {
         require(tx.origin == msg.sender, "RhapsodyCreator/invalid-mint-caller");
-        require(totalSupply() + invocations <= collectionSize, "RhapsodyCreator/invalid-total-supply");
-        require(msg.value == mintPrice * invocations, "RhapsodyCreator/invalid-mint-value");
-        require(msg.value > 0, "RhapsodyCreator/invalid-invocation-lower-boundary");
+        require(totalSupply().add(invocations) <= collectionSize, "RhapsodyCreator/invalid-total-supply");
+        require(msg.value == mintPrice.mul(invocations), "RhapsodyCreator/invalid-mint-value");
+        require(msg.value > 0 && invocations > 0, "RhapsodyCreator/invalid-invocation-lower-boundary");
         require(
-            _mintOf(msg.sender) + invocations <= maxInvocation,
+            _mintOf(msg.sender).add(invocations) <= maxInvocation,
             "RhapsodyCreator/invalid-invocation-upper-boundary"
         );
         _;
@@ -159,9 +167,9 @@ contract RhapsodyCreator is ERC721A, Ownable, ReentrancyGuard {
     /// @notice used by owner to mint promotional nfts
     /// @param invocations the number of invocations to batch mint
     function promotionMint(uint256 invocations) external onlyOwner {
-        require(totalSupply() + invocations <= amountForPromotion, "RhapsodyCreator/invalid-promotion-supply");
-        require(invocations % maxBatchSize == 0, "RhapsodyCreator/invalid-batch-multiple");
-        uint256 blocks = invocations / maxBatchSize;
+        require(totalSupply().add(invocations) <= amountForPromotion, "RhapsodyCreator/invalid-promotion-supply");
+        require(invocations.mod(maxBatchSize) == 0, "RhapsodyCreator/invalid-batch-multiple");
+        uint256 blocks = invocations.div(maxBatchSize);
         for (uint256 i = 0; i < blocks; i++) {
             _safeMint(msg.sender, maxBatchSize);
         }
@@ -178,5 +186,11 @@ contract RhapsodyCreator is ERC721A, Ownable, ReentrancyGuard {
     /// @dev this function is overriden in testing for time-dependent testing
     function _currentTime() internal virtual returns (uint256) {
         return block.timestamp;
+    }
+
+    /// @notice sets the owners quantity explicity
+    /// @dev eliminate loops in future calls of ownerOf()
+    function setOwnersExplicit(uint256 quantity) external onlyOwner nonReentrant {
+        _setOwnersExplicit(quantity);
     }
 }
