@@ -301,22 +301,26 @@ contract ERC721A is Context, ERC165, IERC721, IERC721Metadata, IERC721Enumerable
         bytes memory _data
     ) internal {
         require(to != address(0), "ERC721A: mint to the zero address");
-        // require(quantity <= maxBatchSize, "ERC721A: quantity to mint too high");
+        require(quantity <= maxBatchSize, "ERC721A: quantity to mint too high");
 
         Collector storage c = _collector[to];
         c.balance = c.balance + uint16(quantity);
         c.invocation = c.invocation + uint16(quantity);
 
-        _ownership[invocation] = to;
+        uint256 currentInvocation = invocation;
+
+        _ownership[currentInvocation] = to;
 
         for (uint256 i = 0; i < quantity; i++) {
-            emit Transfer(address(0), to, invocation);
+            emit Transfer(address(0), to, currentInvocation);
             require(
-                _checkOnERC721Received(address(0), to, invocation, _data),
+                _checkOnERC721Received(address(0), to, currentInvocation, _data),
                 "ERC721A: transfer to non ERC721Receiver implementer"
             );
-            invocation++;
+            currentInvocation++;
         }
+
+        invocation = currentInvocation;
     }
 
     /**
