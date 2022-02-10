@@ -1,4 +1,4 @@
-name: rlxyz-creator-public
+name: rlxyz-creator-publish
 on:
   release:
     types: [published]
