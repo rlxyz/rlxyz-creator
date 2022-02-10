@@ -39,7 +39,7 @@
     "format": "prettier --write 'contracts/**/*.sol'"
   },
   "dependencies": {
-    "@openzeppelin/contracts": "^4.1.0",
+    "@openzeppelin/contracts": "^4.4.2",
     "deploy-eip-1820": "1.0.0"
   },
   "devDependencies": {
