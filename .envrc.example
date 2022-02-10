@@ -15,3 +15,6 @@ COINMARKETCAP_TOKEN=
 
 # Enable the contract optimzer: recommended for mainnet
 OPTIMIZER_DISABLED=
+
+# MythX cmart contract tester
+MYTHX_KEY=

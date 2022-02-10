@@ -1,20 +1,24 @@
 // SPDX-License-Identifier: MIT
 
-pragma solidity ^0.8.0;
+pragma solidity 0.8.9;
 
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/utils/cryptography/MerkleProof.sol";
 import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 import "@openzeppelin/contracts/utils/math/SafeMath.sol";
+import "erc721a/contracts/ERC721A.sol";
+import "erc721a/contracts/extensions/ERC721AOwnersExplicit.sol";
 
-import "./ERC721A.sol";
-
-contract RhapsodyCreator is ERC721A, Ownable, ReentrancyGuard {
+contract RhapsodyCreator is ERC721A, ERC721AOwnersExplicit, Ownable, ReentrancyGuard {
     /// ============ Libraries ============
 
     /// @notice safe math for arithmetic operations
     using SafeMath for uint256;
+
+    /// ============ Events ============
+
+    event Created(address indexed to, uint256 amount);
 
     /// ============ Immutable storage ============
 
@@ -27,10 +31,10 @@ contract RhapsodyCreator is ERC721A, Ownable, ReentrancyGuard {
     /// @notice mint price of each nft; same for pre/public sale.
     uint256 public immutable mintPrice;
 
-    /// ============ Mutable storage ============
+    /// @notice total number of tokens in the collection
+    uint256 internal immutable collectionSize;
 
-    /// @notice metadata object used for tokenURI
-    string private _baseTokenURI;
+    // ============ Mutable storage ============
 
     /// @notice ERC721-presale inclusion root
     bytes32 public presaleMerkleRoot;
@@ -40,6 +44,10 @@ contract RhapsodyCreator is ERC721A, Ownable, ReentrancyGuard {
 
     /// @notice time the public starts;
     uint256 public publicTime;
+
+    // ============ Private storage ============
+
+    string private _baseTokenURI;
 
     /// ============ Constructor ============
 
@@ -57,20 +65,17 @@ contract RhapsodyCreator is ERC721A, Ownable, ReentrancyGuard {
         uint256 _maxPublicBatchPerAddress,
         uint256 _amountForPromotion,
         uint256 _mintPrice
-    ) ERC721A(_name, _symbol, _maxPublicBatchPerAddress, _collectionSize) {
+    ) ERC721A(_name, _symbol) {
         require(_amountForPromotion <= _collectionSize, "RhapsodyCreator/invalid-promotion-amount");
         require(_mintPrice > 0, "RhapsodyCreator/invalid-mint-price");
 
+        collectionSize = _collectionSize;
         maxPublicBatchPerAddress = _maxPublicBatchPerAddress;
         amountForPromotion = _amountForPromotion;
         mintPrice = _mintPrice;
 
         presaleMerkleRoot = _presaleMerkleRoot;
     }
-
-    /// ============ Events ============
-
-    event Created(address indexed to, uint256 amount);
 
     /// =========== Sale ===========
 
@@ -148,8 +153,8 @@ contract RhapsodyCreator is ERC721A, Ownable, ReentrancyGuard {
     /// =========== Metadata ===========
 
     /// @notice set the new baseURI to change the tokens metadata
-    function setBaseURI(string calldata baseURI) external onlyOwner {
-        _baseTokenURI = baseURI;
+    function setBaseURI(string calldata newBaseURI) external onlyOwner {
+        _baseTokenURI = newBaseURI;
     }
 
     /// @notice core metadata baseURI used for tokens metadata
@@ -168,10 +173,10 @@ contract RhapsodyCreator is ERC721A, Ownable, ReentrancyGuard {
     /// @param invocations the number of invocations to batch mint
     function promotionMint(uint256 invocations) external onlyOwner {
         require(totalSupply().add(invocations) <= amountForPromotion, "RhapsodyCreator/invalid-promotion-supply");
-        require(invocations.mod(maxBatchSize) == 0, "RhapsodyCreator/invalid-batch-multiple");
-        uint256 blocks = invocations.div(maxBatchSize);
-        for (uint256 i = 0; i < blocks; i++) {
-            _safeMint(msg.sender, maxBatchSize);
+        require(invocations.mod(maxPublicBatchPerAddress) == 0, "RhapsodyCreator/invalid-batch-multiple");
+        uint256 blocks = invocations.div(maxPublicBatchPerAddress);
+        for (uint256 i = 0; i < blocks; i.add(1)) {
+            _safeMint(msg.sender, maxPublicBatchPerAddress);
         }
         emit Created(msg.sender, invocations);
     }
@@ -184,7 +189,7 @@ contract RhapsodyCreator is ERC721A, Ownable, ReentrancyGuard {
 
     /// @notice returns the current block timestamp
     /// @dev this function is overriden in testing for time-dependent testing
-    function _currentTime() internal virtual returns (uint256) {
+    function _currentTime() internal virtual view returns (uint256) {
         return block.timestamp;
     }
 
@@ -192,5 +197,15 @@ contract RhapsodyCreator is ERC721A, Ownable, ReentrancyGuard {
     /// @dev eliminate loops in future calls of ownerOf()
     function setOwnersExplicit(uint256 quantity) external onlyOwner nonReentrant {
         _setOwnersExplicit(quantity);
+    }
+
+    /// @notice internally returns the number of mints of an address
+    function _mintOf(address _owner) internal view returns (uint256) {
+        return _numberMinted(_owner);
+    }
+
+    /// @notice returns the number of mints of an address
+    function mintOf(address _owner) public view returns (uint256) {
+        return _mintOf(_owner);
     }
 }
