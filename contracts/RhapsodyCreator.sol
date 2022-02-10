@@ -173,10 +173,11 @@ contract RhapsodyCreator is ERC721A, ERC721AOwnersExplicit, Ownable, ReentrancyG
     /// @param invocations the number of invocations to batch mint
     function promotionMint(uint256 invocations) external onlyOwner {
         require(totalSupply().add(invocations) <= amountForPromotion, "RhapsodyCreator/invalid-promotion-supply");
-        require(invocations.mod(maxPublicBatchPerAddress) == 0, "RhapsodyCreator/invalid-batch-multiple");
-        uint256 blocks = invocations.div(maxPublicBatchPerAddress);
-        for (uint256 i = 0; i < blocks; i.add(1)) {
-            _safeMint(msg.sender, maxPublicBatchPerAddress);
+        uint256 maxBatchSize = maxPublicBatchPerAddress;
+        require(invocations.mod(maxBatchSize) == 0, "RhapsodyCreator/invalid-batch-multiple");
+        uint256 blocks = invocations.div(maxBatchSize);
+        for (uint256 i = 0; i < blocks; i++) {
+            _safeMint(msg.sender, maxBatchSize);
         }
         emit Created(msg.sender, invocations);
     }
@@ -189,7 +190,7 @@ contract RhapsodyCreator is ERC721A, ERC721AOwnersExplicit, Ownable, ReentrancyG
 
     /// @notice returns the current block timestamp
     /// @dev this function is overriden in testing for time-dependent testing
-    function _currentTime() internal virtual view returns (uint256) {
+    function _currentTime() internal view virtual returns (uint256) {
         return block.timestamp;
     }
 
