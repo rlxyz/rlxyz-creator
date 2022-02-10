@@ -66,6 +66,7 @@ contract RhapsodyCreator is ERC721A, ERC721AOwnersExplicit, Ownable, ReentrancyG
         uint256 _amountForPromotion,
         uint256 _mintPrice
     ) ERC721A(_name, _symbol) {
+        require(_collectionSize > 0, "RhapsodyCreator/invalid-collection-size");
         require(_amountForPromotion <= _collectionSize, "RhapsodyCreator/invalid-promotion-amount");
         require(_mintPrice > 0, "RhapsodyCreator/invalid-mint-price");
 

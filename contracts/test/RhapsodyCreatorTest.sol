@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-3.0
+// SPDX-License-Identifier: CC-BY-NC-SA-4.0
 pragma solidity ^0.8.0;
 
 import "../RhapsodyCreator.sol";
@@ -22,7 +22,7 @@ contract RhapsodyCreatorTest is RhapsodyCreator {
         )
     {}
 
-    function _currentTime() internal override view returns (uint256) {
+    function _currentTime() internal override returns (uint256) {
         return 123456789;
     }
 }
