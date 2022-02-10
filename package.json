@@ -4,7 +4,7 @@
     "ethereum": "rlxyz.eth"
   },
   "description": "Repository that maintains core creator smart contracts for rlxyz",
-  "author": "Rhapsody Labs",
+  "author": "Rhapsody Labs <gm@rhapsodylabs.xyz>",
   "contributors": [
     {
       "name": "Jeevan Pillay",
@@ -27,6 +27,7 @@
     "hint": "solhint \"contracts/**/*.sol\"",
     "test": "HIDE_DEPLOY_LOG=true OPTIMIZER_DISABLED=true hardhat test",
     "test:gas": "REPORT_GAS=true yarn test",
+    "test:mythx": "mythx --api-key $MYTHX_KEY analyze --mode standard --remap-import @openzeppelin/=$(pwd)/node_modules/@openzeppelin/ --solc-version 0.8.9 ./contracts/token/RhapsodyCreator.sol",
     "compile": "hardhat --show-stack-traces --max-memory 8192 compile",
     "start": "echo 'Starting node for local testing....\n'; rm -rf deployments/localhost_31337; DISABLE_HARNESS=true hardhat node",
     "deploy": "hardhat run \"scripts/0_deploy.js\" --network",
@@ -35,22 +36,22 @@
     "deploy:verify": "hardhat run \"scripts/3_verify.js\" --network",
     "clean": "rm -rf abis artifacts build .build-openzeppelin cache coverage coverage.json test-results.xml .cache-openzeppelin deployments/localhost deployments/localhost_*; mkdir abis",
     "prepack": "yarn clean && yarn compile",
-    "postpublish": "PACKAGE_VERSION=$(./scripts/package-version.sh) && git tag -ae v$PACKAGE_VERSION && git push --tags",
-    "format": "prettier --write 'contracts/**/*.sol'",
-    "test:mythx": "mythx --api-key $MYTHX_KEY analyze --mode standard --remap-import @openzeppelin/=$(pwd)/node_modules/@openzeppelin/ --solc-version 0.8.9 ./contracts/token/RhapsodyCreator.sol"
+    "format": "prettier --write 'contracts/**/*.sol'"
+  },
+  "dependencies": {
+    "@openzeppelin/contracts": "^4.5.0",
+    "erc721a": "^2.1.0"
   },
   "devDependencies": {
     "@nomiclabs/hardhat-ethers": "^2.0.2",
     "@nomiclabs/hardhat-etherscan": "^3.0.0",
     "@nomiclabs/hardhat-waffle": "^2.0.1",
-    "@openzeppelin/contracts": "^4.5.0",
     "@rhapsodylabs/whitelist-merkler": "^0.0.5",
     "@typechain/ethers-v5": "^7.0.0",
     "@typechain/hardhat": "^2.0.1",
     "@types/chai": "^4.2.18",
     "@types/mocha": "^8.2.2",
     "chai": "^4.3.4",
-    "erc721a": "^2.1.0",
     "ethereum-waffle": "^3.3.0",
     "ethers": "^5.2.0",
     "hardhat": "^2.2.1",
@@ -71,12 +72,11 @@
     "ts-generator": "^0.1.1",
     "ts-node": "^10.0.0",
     "typechain": "^5.0.0",
-    "typescript": "^4.3.2"
+    "typescript": "^4.3.2",
+    "hardhat-gas-reporter": "^1.0.7"
   },
   "files": [
-    "contracts/**/*.sol"
-  ],
-  "dependencies": {
-    "hardhat-gas-reporter": "^1.0.7"
-  }
+    "**/*.sol",
+    "/build/contracts/*.json"
+  ]
 }
