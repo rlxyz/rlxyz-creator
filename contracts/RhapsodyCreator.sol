@@ -174,7 +174,7 @@ contract RhapsodyCreator is ERC721A, ERC721AOwnersExplicit, Ownable, ReentrancyG
     function promotionMint(uint256 invocations) external onlyOwner {
         require(totalSupply().add(invocations) <= amountForPromotion, "RhapsodyCreator/invalid-promotion-supply");
         uint256 maxBatchSize = maxPublicBatchPerAddress;
-        require(invocations.mod(maxBatchSize) == 0, "RhapsodyCreator/invalid-batch-multiple");
+        require(invocations.mod() == 0, "RhapsodyCreator/invalid-batch-multiple");
         uint256 blocks = invocations.div(maxBatchSize);
         for (uint256 i = 0; i < blocks; i++) {
             _safeMint(msg.sender, maxBatchSize);
