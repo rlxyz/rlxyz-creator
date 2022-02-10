@@ -1,5 +1,5 @@
 {
-  "name": "@rlxyz/contracts",
+  "name": "@rlxyz/rlxyz-creator",
   "common": {
     "ethereum": "rlxyz.eth"
   },
