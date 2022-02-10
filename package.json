@@ -50,6 +50,7 @@
     "@types/chai": "^4.2.18",
     "@types/mocha": "^8.2.2",
     "chai": "^4.3.4",
+    "erc721a": "^2.1.0",
     "ethereum-waffle": "^3.3.0",
     "ethers": "^5.2.0",
     "hardhat": "^2.2.1",
@@ -70,8 +71,7 @@
     "ts-generator": "^0.1.1",
     "ts-node": "^10.0.0",
     "typechain": "^5.0.0",
-    "typescript": "^4.3.2",
-    "erc721a": "^2.1.0"
+    "typescript": "^4.3.2"
   },
   "files": [
     "LICENSE",
@@ -81,5 +81,8 @@
     "contracts/**/*.sol",
     "deployments/**",
     "scripts/**"
-  ]
+  ],
+  "dependencies": {
+    "hardhat-gas-reporter": "^1.0.7"
+  }
 }
