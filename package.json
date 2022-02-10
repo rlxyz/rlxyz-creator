@@ -1,18 +1,18 @@
 {
-  "name": "@rhapsodylabs/rhapsody-creator",
+  "name": "@rlxyz/contracts",
   "common": {
-    "ethereum": "rhapsodylabs.eth"
+    "ethereum": "rlxyz.eth"
   },
-  "description": "Repository that maintains core smart contracts for ERC721 creators",
+  "description": "Repository that maintains core creator smart contracts for rlxyz",
   "author": "Rhapsody Labs",
   "contributors": [
     {
-      "name": "Jeevan Pillay <jeevan.rhapsodylabs.eth>",
+      "name": "Jeevan Pillay",
       "email": "jeevan@rhapsodylabs.xyz",
       "url": "https://twitter.com/jeevanpillay"
     }
   ],
-  "license": "GPL-3.0",
+  "license": "MIT",
   "version": "1.0.0",
   "publishConfig": {
     "access": "public"
