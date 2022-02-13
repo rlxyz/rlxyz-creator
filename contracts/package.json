@@ -11,9 +11,6 @@
     "/build/contracts/*.json",
     "!/test/**/*"
   ],
-  "scripts": {
-    "prepare": "../scripts/prepare-contracts-package.sh && yarn publish"
-  },
   "repository": {
     "type": "git",
     "url": "https://github.com/rlxyz/rlxyz-creator.git"
