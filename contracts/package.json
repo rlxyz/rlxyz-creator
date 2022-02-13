@@ -5,7 +5,7 @@
   },
   "description": "Repository that maintains core creator smart contracts for rlxyz",
   "author": "Rhapsody Labs <gm@rhapsodylabs.xyz>",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "files": [
     "**/*.sol",
     "/build/contracts/*.json",
@@ -24,6 +24,10 @@
     "erc721",
     "rlxyz"
   ],
+  "dependencies": {
+    "@openzeppelin/contracts": "^4.5.0",
+    "erc721a": "^2.1.0"
+  },
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/rlxyz/rlxyz-creator/issues"
