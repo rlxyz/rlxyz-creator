@@ -8,12 +8,35 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - uses: borales/actions-yarn@v2.3.0
+        name: Install Packages
         with:
           cmd: install
       - uses: borales/actions-yarn@v2.3.0
+        name: Format Solidity code.
         with:
           cmd: format
       - uses: borales/actions-yarn@v2.3.0
+        name: Remove any existing compilation files
         with:
-          cmd: publish:pkg
+          cmd: clean
+      - uses: borales/actions-yarn@v2.3.0
+        name: Compile Solidity code
+        with:
+          cmd: compile
+      - uses: actions/checkout@v2
+        name: Run Prepare Script
+        run: |
+          chmod +x ./scripts/prepack.sh
+          ./scripts/prepack.sh
+        shell: bash
+      - uses: actions/checkout@v2
+        name: Run Prepare Script
+        run: |
+          chmod +x ./scripts/prepare-contracts-package.sh
+          ./scripts/prepare-contracts-package.sh
+        shell: bash
+      - uses: borales/actions-yarn@v2.3.0
+        name: Publish to NPM
+        with:
+          cmd: publish
           auth-token: ${{ secrets.NPM_REGISTRY_TOKEN }}
