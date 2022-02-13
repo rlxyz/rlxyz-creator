@@ -1,5 +1,5 @@
 {
-  "name": "@rlxyz/contracts",
+  "name": "@rlxyz/rlxyz-creator",
   "common": {
     "ethereum": "rlxyz.eth"
   },
@@ -30,12 +30,12 @@
     "test:mythx": "mythx --api-key $MYTHX_KEY analyze --mode standard --remap-import @openzeppelin/=$(pwd)/node_modules/@openzeppelin/ --solc-version 0.8.9 ./contracts/token/RhapsodyCreator.sol",
     "compile": "hardhat --show-stack-traces --max-memory 8192 compile",
     "start": "echo 'Starting node for local testing....\n'; rm -rf deployments/localhost_31337; DISABLE_HARNESS=true hardhat node",
+    "publish:pkg": "yarn clean && env COMPILE_MODE=production yarn compile && scripts/prepack.sh && cd contracts/ && yarn prepare",
     "deploy": "hardhat run \"scripts/0_deploy.js\" --network",
     "deploy:post": "hardhat run \"scripts/1_postDeploy.js\" --network",
     "deploy:start": "hardhat run \"scripts/2_start.js\" --network",
     "deploy:verify": "hardhat run \"scripts/3_verify.js\" --network",
     "clean": "rm -rf abis artifacts build .build-openzeppelin cache coverage coverage.json test-results.xml .cache-openzeppelin deployments/localhost deployments/localhost_*; mkdir abis",
-    "prepack": "yarn clean && yarn compile",
     "format": "prettier --write 'contracts/**/*.sol'"
   },
   "dependencies": {

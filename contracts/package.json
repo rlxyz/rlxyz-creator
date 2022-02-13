@@ -1,0 +1,35 @@
+{
+  "name": "@rlxyz/contracts",
+  "common": {
+    "ethereum": "rlxyz.eth"
+  },
+  "description": "Repository that maintains core creator smart contracts for rlxyz",
+  "author": "Rhapsody Labs <gm@rhapsodylabs.xyz>",
+  "version": "1.0.1",
+  "files": [
+    "**/*.sol",
+    "/build/contracts/*.json",
+    "!/test/**/*"
+  ],
+  "scripts": {
+    "prepare": "bash ../scripts/prepare-contracts-package.sh && yarn publish"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/rlxyz/rlxyz-creator.git"
+  },
+  "keywords": [
+    "solidity",
+    "ethereum",
+    "smart",
+    "contracts",
+    "security",
+    "erc721",
+    "rlxyz"
+  ],
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/rlxyz/rlxyz-creator/issues"
+  },
+  "homepage": "https://github.com/rlxyz/rlxyz-creator"
+}

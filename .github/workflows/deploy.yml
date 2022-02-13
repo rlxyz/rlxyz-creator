@@ -15,5 +15,5 @@ jobs:
           cmd: format
       - uses: borales/actions-yarn@v2.3.0
         with:
-          cmd: publish
+          cmd: publish:pkg
           auth-token: ${{ secrets.NPM_REGISTRY_TOKEN }}

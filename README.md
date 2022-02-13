@@ -4,9 +4,9 @@
 $ yarn & yarn test
 ```
 
-## How to use
+## Localhost: How to Use!
 
-1. See `contracts/Example.sol` and change accordingly.
+1. See `contracts/test/helpers/RhapsodyCreatorRinkeby.sol` and change accordingly.
 2. Create the `.envrc` file and change ENVIRONMENT variables based on `.envrc.example` (you don't need this for `yarn test` but would need it for testnet)
 3. For localhost/testnet, use the `production/testnet.json` to set values for the mint. You will need to change these values (expect `"name": "RhapsodyCreatorRinkeby"`)
 ```json

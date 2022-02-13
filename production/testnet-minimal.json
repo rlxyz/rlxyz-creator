@@ -1,5 +1,5 @@
 {
-  "name": "Example",
+  "name": "RhapsodyCreatorRinkebyMinimal",
   "deploy": {
     "presaleMerkleRoot": "0xe1f5bc3d371a8e75fe9b12ac27269f83ad8156a135a22d1cbce1517ee797e89b"
   },

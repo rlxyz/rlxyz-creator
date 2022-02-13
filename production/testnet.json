@@ -9,10 +9,10 @@
   },
   "postDeploy": {
     "baseTokenURI": "https://ipfs.rhapsodylabs.xyz/ipfs/QmVReWkT3EuZFfxEBtGYbDAALP1UC6jwBPhRoK3ZkfFzdG/",
-    "presaleTime": 1642719600,
+    "presaleTime": 1644548400,
     "publicTime": 1642914000
   },
   "start": {
-    "amountForPromotion": 10
+    "amountForPromotion": 0
   }
 }
