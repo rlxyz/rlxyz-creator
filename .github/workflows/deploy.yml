@@ -23,14 +23,12 @@ jobs:
         name: Compile Solidity code
         with:
           cmd: compile
-      - uses: actions/checkout@v2
-        name: Run Prepare Script
+      - name: Run Prepare Script
         run: |
           chmod +x ./scripts/prepack.sh
           ./scripts/prepack.sh
         shell: bash
-      - uses: actions/checkout@v2
-        name: Run Prepare Script
+      - name: Run Prepare Script
         run: |
           chmod +x ./scripts/prepare-contracts-package.sh
           ./scripts/prepare-contracts-package.sh
