@@ -35,6 +35,7 @@ jobs:
         shell: bash
       - uses: borales/actions-yarn@v2.3.0
         name: Publish to NPM
+        working-directory: ./contracts
         with:
           cmd: publish
           auth-token: ${{ secrets.NPM_REGISTRY_TOKEN }}
