@@ -6,6 +6,8 @@ set -euo pipefail
 # cross platform `mkdir -p`
 node -e 'fs.mkdirSync("build/contracts", { recursive: true })'
 
+echo 'Copying over to build/contracts'
+
 cp artifacts/contracts/**/*.json build/contracts
 rm build/contracts/*.dbg.json
 

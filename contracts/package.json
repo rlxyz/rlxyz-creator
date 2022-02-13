@@ -12,7 +12,7 @@
     "!/test/**/*"
   ],
   "scripts": {
-    "prepare": "bash ../scripts/prepare-contracts-package.sh && yarn publish"
+    "prepare": "../scripts/prepare-contracts-package.sh && yarn publish"
   },
   "repository": {
     "type": "git",
