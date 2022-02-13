@@ -5,7 +5,7 @@
   },
   "description": "Repository that maintains core creator smart contracts for rlxyz",
   "author": "Rhapsody Labs <gm@rhapsodylabs.xyz>",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "files": [
     "**/*.sol",
     "/build/contracts/*.json",
