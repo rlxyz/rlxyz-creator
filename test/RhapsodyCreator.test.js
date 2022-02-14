@@ -2,7 +2,7 @@ const debug = require ('debug') ('ptv3:RhapsodyCreator');
 const {expect} = require ('chai');
 const hre = require ('hardhat');
 const {overrides, parseEther} = require ('./helpers/constant');
-const {buildWhitelist, generateLeaf} = require ('../scripts/helpers/whitelist');
+const {buildWhitelist, generateLeaf} = require ('../js/helpers/whitelist');
 
 const currentBlockTime = 123456789;
 const name = 'Rhapsody Creator Test';
@@ -45,7 +45,7 @@ describe ('RhapsodyCreator', () => {
     );
 
     creator = await RhapsodyCreator.deploy (
-      merklized.root,
+      // merklized.root,
       creatorTestParams.collectionSize,
       creatorTestParams.maxPublicBatchPerAddress,
       creatorTestParams.amountForPromotion,

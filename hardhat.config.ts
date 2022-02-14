@@ -7,6 +7,7 @@ require('solidity-coverage')
 require("@nomiclabs/hardhat-etherscan")
 require('hardhat-abi-exporter')
 require("hardhat-gas-reporter");
+require("@nomiclabs/hardhat-web3");
 
 const customTestnetAccounts = {
   deployer: "<add-deployer-address>", // Account 0

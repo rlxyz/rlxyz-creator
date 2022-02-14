@@ -45,7 +45,4 @@ const runner = async () => {
   dim ('~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n');
 };
 
-runner ().then (() => process.exit (0)).catch (error => {
-  console.error (error);
-  process.exit (1);
-});
+module.exports = runner;

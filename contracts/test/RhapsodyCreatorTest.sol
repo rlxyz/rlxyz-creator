@@ -5,7 +5,6 @@ import "../RhapsodyCreator.sol";
 
 contract RhapsodyCreatorTest is RhapsodyCreator {
     constructor(
-        bytes32 _presaleMerkleRoot,
         uint256 _collectionSize,
         uint256 _maxPublicBatchPerAddress,
         uint256 _amountForPromotion,
@@ -14,7 +13,6 @@ contract RhapsodyCreatorTest is RhapsodyCreator {
         RhapsodyCreator(
             "Rhapsody Creator Test",
             "RCT",
-            _presaleMerkleRoot,
             _collectionSize,
             _maxPublicBatchPerAddress,
             _amountForPromotion,
@@ -22,7 +20,7 @@ contract RhapsodyCreatorTest is RhapsodyCreator {
         )
     {}
 
-    function _currentTime() internal override view returns (uint256) {
+    function _currentTime() internal view override returns (uint256) {
         return 123456789;
     }
 }

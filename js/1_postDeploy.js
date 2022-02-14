@@ -4,25 +4,11 @@ const {transferOwnership} = require ('./contracts/Ownable');
 const {setBaseURI, setMintTime} = require ('./contracts/RhapsodyCreator');
 const {chainName} = require ('./helpers/chain');
 const {yellow, green, dim, cyan} = require ('./helpers/logs');
-const {
-  name: deployContractName,
-  postDeploy: postDeployParameters,
-} = require ('../production/testnet.json');
 
-const prepare = async () => {
+const runner = async (deployContractName, postDeployParameters) => {
+  const {getChainId} = hardhat;
   const {deployments, getNamedAccounts} = hardhat;
   const creator = await deployments.get (deployContractName);
-  return {
-    creator: creator.address,
-    presaleTime: postDeployParameters.presaleTime,
-    publicTime: postDeployParameters.publicTime,
-    baseTokenURI: postDeployParameters.baseTokenURI,
-  };
-};
-
-const runner = async () => {
-  const {getChainId} = hardhat;
-  const {creator, presaleTime, publicTime, baseTokenURI} = await prepare ();
   const chainId = parseInt (await getChainId (), 10);
   const isTestEnvironment = chainId === 31337 || chainId === 1337;
   const {admin} = await getNamedAccounts ();
@@ -53,8 +39,12 @@ const runner = async () => {
 
   // // run commands
   creatorResult = creatorResult.connect (await setAdminAsSigner ());
-  await setBaseURI (creatorResult, baseTokenURI);
-  await setMintTime (creatorResult, presaleTime, publicTime);
+  await setBaseURI (creatorResult, postDeployParameters.baseTokenURI);
+  await setMintTime (
+    creatorResult,
+    postDeployParameters.presaleTime,
+    postDeployParameters.publicTime
+  );
 
   dim (
     `Presale: ${new Date ((await creatorResult.presaleTime ()).toNumber ()).toString ()}`
@@ -71,7 +61,4 @@ const runner = async () => {
   dim ('~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n');
 };
 
-runner ().then (() => process.exit (0)).catch (error => {
-  console.error (error);
-  process.exit (1);
-});
+module.exports = runner;

@@ -1,11 +1,6 @@
-const {deploy1820} = require ('deploy-eip-1820');
 const {chainName} = require ('./helpers/chain');
 const {yellow, green, dim, cyan} = require ('./helpers/logs');
 const hardhat = require ('hardhat');
-const {
-  name: deployContractName,
-  deploy: deployParameters,
-} = require ('../production/testnet.json');
 
 const runner = async () => {
   const {getNamedAccounts, deployments, getChainId, ethers} = hardhat;
@@ -32,7 +27,6 @@ const runner = async () => {
   cyan ('\nDeploying NFT...');
   const creatorResult = await deploy (deployContractName, {
     args: [
-      deployParameters.presaleMerkleRoot,
       deployParameters.collectionSize,
       deployParameters.maxPublicBatchPerAddress,
       deployParameters.amountForPromotion,
@@ -51,7 +45,4 @@ const runner = async () => {
   dim ('~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n');
 };
 
-runner ().then (() => process.exit (0)).catch (error => {
-  console.error (error);
-  process.exit (1);
-});
+module.exports = runner;

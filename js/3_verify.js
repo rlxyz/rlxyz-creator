@@ -116,4 +116,4 @@ async function run () {
   success ('Done!');
 }
 
-run ();
+module.exports = run;

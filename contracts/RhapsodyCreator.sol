@@ -52,7 +52,6 @@ contract RhapsodyCreator is ERC721A, ERC721AOwnersExplicit, Ownable, ReentrancyG
     /// ============ Constructor ============
 
     /// @notice Creates a new Creator contract
-    /// @param _presaleMerkleRoot root of the merklelized whitelist
     /// @param _collectionSize the total size of the collection
     /// @param _maxPublicBatchPerAddress max mintable tokens in public sale
     /// @param _amountForPromotion promotional nfts count
@@ -60,7 +59,6 @@ contract RhapsodyCreator is ERC721A, ERC721AOwnersExplicit, Ownable, ReentrancyG
     constructor(
         string memory _name,
         string memory _symbol,
-        bytes32 _presaleMerkleRoot,
         uint256 _collectionSize,
         uint256 _maxPublicBatchPerAddress,
         uint256 _amountForPromotion,
@@ -74,8 +72,6 @@ contract RhapsodyCreator is ERC721A, ERC721AOwnersExplicit, Ownable, ReentrancyG
         maxPublicBatchPerAddress = _maxPublicBatchPerAddress;
         amountForPromotion = _amountForPromotion;
         mintPrice = _mintPrice;
-
-        presaleMerkleRoot = _presaleMerkleRoot;
     }
 
     /// =========== Sale ===========

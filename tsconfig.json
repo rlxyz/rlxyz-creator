@@ -8,7 +8,7 @@
     "resolveJsonModule": true,
     "inlineSourceMap": true
   },
-  "include": ["./scripts", "./test"],
+  "include": ["./scripts", "./js", "./test"],
   "files": [
     "./hardhat.config.ts",
     "./node_modules/hardhat-ethers/src/type-extensions.d.ts",
