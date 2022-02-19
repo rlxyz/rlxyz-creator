@@ -9,8 +9,9 @@ import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 import "@openzeppelin/contracts/utils/math/SafeMath.sol";
 import "erc721a/contracts/ERC721A.sol";
 import "erc721a/contracts/extensions/ERC721AOwnersExplicit.sol";
+import "./utils/interfaces/IRandomizer.sol";
 
-contract RhapsodyCreator is ERC721A, ERC721AOwnersExplicit, Ownable, ReentrancyGuard {
+contract RhapsodyCreatorGenerative is ERC721A, ERC721AOwnersExplicit, Ownable, ReentrancyGuard {
     /// ============ Libraries ============
 
     /// @notice safe math for arithmetic operations
@@ -39,17 +40,25 @@ contract RhapsodyCreator is ERC721A, ERC721AOwnersExplicit, Ownable, ReentrancyG
     /// @notice ERC721-presale inclusion root
     bytes32 public presaleMerkleRoot;
 
-    /// @notice time the presale starts;
+    /// @notice time the presale starts
     uint256 public presaleTime;
 
-    /// @notice time the public starts;
+    /// @notice time the public starts
     uint256 public publicTime;
+
+    /// @notice the hash of each token
+    mapping(uint256 => bytes32) private _tokenHash;
 
     // ============ Private storage ============
 
     string private _baseTokenURI;
 
-    /// ============ Constructor ============
+    // ============= Dependencies ==============
+
+    /// @notice the randomizer contract
+    IRandomizer public mintRandomizerContract;
+
+    /// ============= Constructor =============
 
     /// @notice Creates a new Creator contract
     /// @param _collectionSize the total size of the collection
@@ -91,6 +100,7 @@ contract RhapsodyCreator is ERC721A, ERC721AOwnersExplicit, Ownable, ReentrancyG
             "RhapsodyCreator/invalid-address-proof"
         );
         _safeMint(msg.sender, invocations);
+        _postMint(invocations);
         emit Created(msg.sender, invocations);
     }
 
@@ -104,7 +114,22 @@ contract RhapsodyCreator is ERC721A, ERC721AOwnersExplicit, Ownable, ReentrancyG
         isMintLive(publicTime)
     {
         _safeMint(msg.sender, invocations);
+        _postMint(invocations);
         emit Created(msg.sender, invocations);
+    }
+
+    function _postMint(uint256 invocations) private {
+        uint256 currentInvocations = totalSupply().sub(invocations);
+        for (uint256 i = 0; i < invocations; i++) {
+            _tokenHash[currentInvocations.add(i)] = keccak256(
+                abi.encodePacked(
+                    i,
+                    block.number,
+                    blockhash(block.number.sub(1)),
+                    mintRandomizerContract.getRandomValue()
+                )
+            );
+        }
     }
 
     /// @notice Set the time for the mint
@@ -145,6 +170,11 @@ contract RhapsodyCreator is ERC721A, ERC721AOwnersExplicit, Ownable, ReentrancyG
     modifier isMintLive(uint256 time) {
         require(time > 0 && block.timestamp > time, "RhapsodyCreator/invalid-mint-time");
         _;
+    }
+
+    /// @notice used the set the mint randomizer for on-chain generative projects
+    function setMintRandomizer(address _mintRandomizerContract) external onlyOwner {
+        mintRandomizerContract = IRandomizer(_mintRandomizerContract);
     }
 
     /// =========== Metadata ===========
@@ -205,5 +235,10 @@ contract RhapsodyCreator is ERC721A, ERC721AOwnersExplicit, Ownable, ReentrancyG
     /// @notice returns the number of mints of an address
     function mintOf(address _owner) public view returns (uint256) {
         return _mintOf(_owner);
+    }
+
+    // @notice returns the hash of a token
+    function hashOf(uint256 _tokenId) public view returns (bytes32) {
+        return _tokenHash[_tokenId];
     }
 }

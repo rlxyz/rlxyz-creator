@@ -45,14 +45,15 @@ describe ('RhapsodyCreator', () => {
     );
 
     creator = await RhapsodyCreator.deploy (
-      merklized.root,
       creatorTestParams.collectionSize,
       creatorTestParams.maxPublicBatchPerAddress,
       creatorTestParams.amountForPromotion,
       creatorTestParams.mintPrice
     );
 
-    creator.transferOwnership (admin.address);
+    await creator.setMintMerkleRoot(merklized.root)
+
+    await creator.transferOwnership (admin.address);
 
     creator = creator.connect (admin);
 
@@ -146,7 +147,7 @@ describe ('RhapsodyCreator', () => {
       expect (await creator.tokenURI (3)).to.equal (baseURI + '3');
 
       await expect (creator.tokenURI (4)).to.be.revertedWith (
-        'ERC721Metadata: URI query for nonexistent token'
+        'URIQueryForNonexistentToken'
       );
     });
 
@@ -160,7 +161,7 @@ describe ('RhapsodyCreator', () => {
       expect (await creator.tokenURI (3)).to.equal (baseURI + '3');
       expect (await creator.tokenURI (4)).to.equal (baseURI + '4');
       await expect (creator.tokenURI (5)).to.be.revertedWith (
-        'ERC721Metadata: URI query for nonexistent token'
+        'URIQueryForNonexistentToken'
       );
     });
   });
@@ -176,12 +177,13 @@ describe ('RhapsodyCreator', () => {
           overrides
         );
         creatorA = await RhapsodyCreator.deploy (
-          merklized.root,
           creatorTestParams.collectionSize,
           creatorTestParams.maxPublicBatchPerAddress,
           creatorTestParams.amountForPromotion,
           creatorTestParams.mintPrice
         );
+
+        await creatorA.setMintMerkleRoot(merklized.root)
 
         await creatorA.setMintTime (
           currentBlockTime + 105,
@@ -428,13 +430,12 @@ describe ('RhapsodyCreator', () => {
           await creatorA.setMintMerkleRoot (merklizedA.root);
 
           creatorB = await RhapsodyCreator.deploy (
-            merklized.root,
             12,
             4,
             0,
             creatorTestParams.mintPrice
           );
-
+          await creatorB.setMintMerkleRoot(merklized.root)
           await creatorB.setMintTime (
             currentBlockTime + 105,
             currentBlockTime + 110
@@ -662,12 +663,13 @@ describe ('RhapsodyCreator', () => {
             overrides
           );
           creatorA = await RhapsodyCreator.deploy (
-            merklized.root,
             collectionSize,
             maxPublicBatchPerAddress,
             amountForPromotion,
             creatorTestParams.mintPrice
           );
+          await creatorA.setMintMerkleRoot(merklized.root)
+
         });
 
         it ('should not allow to mint more than promotionMint if some nfts already minted', async () => {

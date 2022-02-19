@@ -9,7 +9,6 @@ contract RhapsodyCreatorRinkeby is RhapsodyCreator {
     string public constant VERSION = "0.0.6";
 
     constructor(
-        bytes32 _presaleMerkleRoot,
         uint256 _collectionSize,
         uint256 _maxPublicBatchPerAddress,
         uint256 _amountForPromotion,
@@ -18,7 +17,6 @@ contract RhapsodyCreatorRinkeby is RhapsodyCreator {
         RhapsodyCreator(
             "Rhapsody Creator Rinkeby",
             "RCT",
-            _presaleMerkleRoot,
             _collectionSize,
             _maxPublicBatchPerAddress,
             _amountForPromotion,
