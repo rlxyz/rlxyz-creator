@@ -11,6 +11,8 @@ import "erc721a/contracts/ERC721A.sol";
 import "erc721a/contracts/extensions/ERC721AOwnersExplicit.sol";
 import "./utils/interfaces/IRandomizer.sol";
 
+error HashQueryForNonexistentToken();
+
 contract RhapsodyCreatorGenerative is ERC721A, ERC721AOwnersExplicit, Ownable, ReentrancyGuard {
     /// ============ Libraries ============
 
@@ -97,7 +99,7 @@ contract RhapsodyCreatorGenerative is ERC721A, ERC721AOwnersExplicit, Ownable, R
     function claimMint(uint256 invocations, bytes32[] calldata proof)
         public
         isMintLive(claimTime)
-        isMintValid(invocations, invocations)
+        isMintValid(invocations, maxPublicBatchPerAddress)
         isMintProofValid(invocations, msg.sender, proof, claimMerkleRoot)
     {
         require(_mintOf(msg.sender) == 0, "RhapsodyCreator/invalid-double-mint");
@@ -115,9 +117,9 @@ contract RhapsodyCreatorGenerative is ERC721A, ERC721AOwnersExplicit, Ownable, R
     )
         external
         payable
+        isMintLive(presaleTime)
         isMintValid(invocations, maxInvocation)
         isMintPricingValid(invocations)
-        isMintLive(presaleTime)
         isMintProofValid(maxInvocation, msg.sender, proof, presaleMerkleRoot)
     {
         require(_mintOf(msg.sender) == 0, "RhapsodyCreator/invalid-double-mint");
@@ -131,30 +133,29 @@ contract RhapsodyCreatorGenerative is ERC721A, ERC721AOwnersExplicit, Ownable, R
         external
         payable
         isMintLive(publicTime)
-        isMintPricingValid(invocations)
         isMintValid(invocations, maxPublicBatchPerAddress)
+        isMintPricingValid(invocations)
     {
         _mintMany(msg.sender, invocations);
     }
 
+    /// @notice mint tokens in batches
+    /// @param to address to mint to
+    /// @param invocations number of tokens to mint
     function _mintMany(address to, uint256 invocations) internal {
         _safeMint(to, invocations);
-        _postMint(invocations);
+
+        uint256 currentInvocations = totalSupply().sub(invocations);
+        for (uint256 i = 0; i < invocations; i++) {
+            uint256 currentIndex = currentInvocations.add(i);
+            _tokenHash[currentIndex] = _generateUniqueIdentifier(currentIndex, mintRandomizerContract.getRandomValue());
+        }
+
         emit Created(to, invocations);
     }
 
-    function _postMint(uint256 invocations) internal {
-        uint256 currentInvocations = totalSupply().sub(invocations);
-        for (uint256 i = 0; i < invocations; i++) {
-            _tokenHash[currentInvocations.add(i)] = keccak256(
-                abi.encodePacked(
-                    i,
-                    block.number,
-                    blockhash(block.number.sub(1)),
-                    mintRandomizerContract.getRandomValue()
-                )
-            );
-        }
+    function _generateUniqueIdentifier(uint256 seed, bytes32 randomValue) internal view virtual returns (bytes32) {
+        return keccak256(abi.encodePacked(seed, block.number, blockhash(block.number.sub(1)), randomValue));
     }
 
     /// @notice Set the time for the mint
@@ -176,17 +177,6 @@ contract RhapsodyCreatorGenerative is ERC721A, ERC721AOwnersExplicit, Ownable, R
         publicTime = _publicTime;
     }
 
-    /// @notice force override the merkle root used in presale mint
-    /// @param _presaleMerkleRoot root of the merklelized whitelist
-    function setMintMerkleRoot(bytes32 _presaleMerkleRoot) public onlyOwner {
-        presaleMerkleRoot = _presaleMerkleRoot;
-    }
-
-    /// @notice used the set the mint randomizer for on-chain generative projects
-    function setMintRandomizer(address _mintRandomizerContract) external onlyOwner {
-        mintRandomizerContract = IRandomizer(_mintRandomizerContract);
-    }
-
     /// @notice ensures that minters need valid invocations + value to mint
     modifier isMintValid(uint256 invocations, uint256 maxInvocation) {
         require(tx.origin == msg.sender, "RhapsodyCreator/invalid-mint-caller");
@@ -195,12 +185,13 @@ contract RhapsodyCreatorGenerative is ERC721A, ERC721AOwnersExplicit, Ownable, R
             _mintOf(msg.sender).add(invocations) <= maxInvocation,
             "RhapsodyCreator/invalid-invocation-upper-boundary"
         );
+        require(invocations > 0, "RhapsodyCreator/invalid-invocation-lower-boundary");
         _;
     }
 
     modifier isMintPricingValid(uint256 invocations) {
         require(msg.value == mintPrice.mul(invocations), "RhapsodyCreator/invalid-mint-value");
-        require(msg.value > 0 && invocations > 0, "RhapsodyCreator/invalid-invocation-lower-boundary");
+        require(msg.value > 0, "RhapsodyCreator/invalid-invocation-lower-boundary");
         _;
     }
 
@@ -223,6 +214,25 @@ contract RhapsodyCreatorGenerative is ERC721A, ERC721AOwnersExplicit, Ownable, R
             "RhapsodyCreator/invalid-address-proof"
         );
         _;
+    }
+
+    /// @notice used the set the mint randomizer for on-chain generative projects
+    function setMintRandomizerContract(address _mintRandomizerContract) external onlyOwner {
+        mintRandomizerContract = IRandomizer(_mintRandomizerContract);
+    }
+
+    /// =========== Merkle Roots ===========
+
+    /// @notice force override the merkle root used in presale mint
+    /// @param _presaleMerkleRoot root of the merklelized whitelist
+    function setMintMerkleRoot(bytes32 _presaleMerkleRoot) public onlyOwner {
+        presaleMerkleRoot = _presaleMerkleRoot;
+    }
+
+    /// @notice force override the merkle root used in presale mint
+    /// @param _claimMerkleRoot root of the merklelized claimlist
+    function setClaimMerkleRoot(bytes32 _claimMerkleRoot) public onlyOwner {
+        claimMerkleRoot = _claimMerkleRoot;
     }
 
     /// =========== Metadata ===========
@@ -286,7 +296,8 @@ contract RhapsodyCreatorGenerative is ERC721A, ERC721AOwnersExplicit, Ownable, R
     }
 
     // @notice returns the hash of a token
-    function hashOf(uint256 _tokenId) public view returns (bytes32) {
+    function tokenHash(uint256 _tokenId) public view returns (bytes32) {
+        if (!_exists(_tokenId)) revert HashQueryForNonexistentToken();
         return _tokenHash[_tokenId];
     }
 }
