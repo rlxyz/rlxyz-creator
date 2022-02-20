@@ -270,45 +270,44 @@ describe ('RhapsodyCreator', () => {
         ).to.be.revertedWith ('RhapsodyCreator/invalid-mint-value');
       });
 
-      // todo: fix
-      // it ('should only be able to mint once', async () => {
-      //   let leaf = generateLeaf (minterA.address, 5);
-      //   let proof = merklized.tree.getHexProof (leaf);
+      it ('should only be able to mint once', async () => {
+        let leaf = generateLeaf (minterA.address, 5);
+        let proof = merklized.tree.getHexProof (leaf);
 
-      //   await expect (presaleMinter (minterA, 4, 5, proof, 4 * 0.08)).to
-      //     .emit (creatorA, 'Created')
-      //     .withArgs (minterA.address, 4);
+        await expect (presaleMinter (minterA, 4, 5, proof, 4 * 0.08)).to
+          .emit (creatorA, 'Created')
+          .withArgs (minterA.address, 4);
 
-      //   await expect (
-      //     presaleMinter (minterA, 1, 5, proof, 0.08)
-      //   ).to.to.be.revertedWith ('RhapsodyCreator/invalid-double-mint');
+        await expect (
+          presaleMinter (minterA, 1, 5, proof, 0.08)
+        ).to.to.be.revertedWith ('RhapsodyCreator/invalid-double-mint');
 
-      //   leaf = generateLeaf (minterB.address, 5);
-      //   proof = merklized.tree.getHexProof (leaf);
+        leaf = generateLeaf (minterB.address, 5);
+        proof = merklized.tree.getHexProof (leaf);
 
-      //   await expect (presaleMinter (minterB, 4, 5, proof, 4 * 0.08)).to
-      //     .emit (creatorA, 'Created')
-      //     .withArgs (minterB.address, 4);
+        await expect (presaleMinter (minterB, 4, 5, proof, 4 * 0.08)).to
+          .emit (creatorA, 'Created')
+          .withArgs (minterB.address, 4);
 
-      //   await expect (
-      //     presaleMinter (minterB, 2, 5, proof, 2 * 0.08)
-      //   ).to.be.revertedWith (
-      //     'RhapsodyCreator/invalid-invocation-upper-boundary'
-      //   );
+        await expect (
+          presaleMinter (minterB, 2, 5, proof, 2 * 0.08)
+        ).to.be.revertedWith (
+          'RhapsodyCreator/invalid-invocation-upper-boundary'
+        );
 
-      //   leaf = generateLeaf (minterC.address, 5);
-      //   proof = merklized.tree.getHexProof (leaf);
+        leaf = generateLeaf (minterC.address, 5);
+        proof = merklized.tree.getHexProof (leaf);
 
-      //   await expect (presaleMinter (minterC, 5, 5, proof, 5 * 0.08)).to
-      //     .emit (creatorA, 'Created')
-      //     .withArgs (minterC.address, 5);
+        await expect (presaleMinter (minterC, 5, 5, proof, 5 * 0.08)).to
+          .emit (creatorA, 'Created')
+          .withArgs (minterC.address, 5);
 
-      //   await expect (
-      //     presaleMinter (minterC, 1, 5, proof, 1 * 0.08)
-      //   ).to.be.revertedWith (
-      //     'RhapsodyCreator/invalid-invocation-upper-boundary'
-      //   );
-      // });
+        await expect (
+          presaleMinter (minterC, 1, 5, proof, 1 * 0.08)
+        ).to.be.revertedWith (
+          'RhapsodyCreator/invalid-invocation-upper-boundary'
+        );
+      });
 
       it ('should not be able to transfer NFTs out and mint again', async () => {
         let leaf = generateLeaf (minterA.address, 5);
