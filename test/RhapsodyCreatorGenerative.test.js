@@ -232,11 +232,21 @@ describe ('RhapsodyCreatorGenerative', () => {
       await creator
         .connect (minterA)
         .publicMint (5, {value: parseEther (0.08 * 5)});
-      expect (await creator.tokenHash (0)).to.equal ("0x290decd9548b62a8d60345a988386fc84ba6bc95484008f6362f93160ef3e563");
-      expect (await creator.tokenHash (1)).to.equal ("0xb10e2d527612073b26eecdfd717e6a320cf44b4afac2b0732d9fcbe2b7fa0cf6");
-      expect (await creator.tokenHash (2)).to.equal ("0x405787fa12a823e0f2b7631cc41b3ba8828b3321ca811111fa75cd3aa3bb5ace");
-      expect (await creator.tokenHash (3)).to.equal ("0xc2575a0e9e593c00f959f8c92f12db2869c3395a3b0502d05e2516446f71f85b");
-      expect (await creator.tokenHash (4)).to.equal ("0x405787fa12a823e0f2b7631cc41b3ba8828b3321ca811111fa75cd3aa3bb5ace");
+      expect (await creator.tokenHash (0)).to.equal (
+        '0x290decd9548b62a8d60345a988386fc84ba6bc95484008f6362f93160ef3e563'
+      );
+      expect (await creator.tokenHash (1)).to.equal (
+        '0xb10e2d527612073b26eecdfd717e6a320cf44b4afac2b0732d9fcbe2b7fa0cf6'
+      );
+      expect (await creator.tokenHash (2)).to.equal (
+        '0x405787fa12a823e0f2b7631cc41b3ba8828b3321ca811111fa75cd3aa3bb5ace'
+      );
+      expect (await creator.tokenHash (3)).to.equal (
+        '0xc2575a0e9e593c00f959f8c92f12db2869c3395a3b0502d05e2516446f71f85b'
+      );
+      expect (await creator.tokenHash (4)).to.equal (
+        '0x8a35acfbc15ff81a39ae7d344fd709f28e8600b4aa8c65c6b64bfe7fe36bd19b'
+      );
       await expect (creator.tokenHash (5)).to.be.revertedWith (
         'HashQueryForNonexistentToken'
       );
@@ -244,6 +254,196 @@ describe ('RhapsodyCreatorGenerative', () => {
   });
 
   describe ('sale', () => {
+    describe ('claimMint', () => {
+      let creatorA;
+      let minter;
+      beforeEach (async () => {
+        const RhapsodyCreator = await hre.ethers.getContractFactory (
+          'RhapsodyCreatorGenerativeTest',
+          deployer,
+          overrides
+        );
+        creatorA = await RhapsodyCreator.deploy (
+          creatorTestParams.collectionSize,
+          creatorTestParams.maxPublicBatchPerAddress,
+          creatorTestParams.amountForPromotion,
+          creatorTestParams.mintPrice
+        );
+
+        await creatorA.setClaimMerkleRoot (claimMerklized.root);
+
+        await creatorA.setMintTime (
+          currentBlockTime + 100,
+          currentBlockTime + 105,
+          currentBlockTime + 110
+        );
+        await creatorA.setMintRandomizerContract (randomizer.address);
+        randomizer.addDependency (creatorA.address);
+
+        minter = async (minter, invocations, proof) =>
+          creatorA.connect (minter).claimMint (invocations, proof);
+      });
+
+      it ('should be able to mint if address whitelisted', async () => {
+        let leaf = generateLeaf (minterA.address, 5);
+        let proof = claimMerklized.tree.getHexProof (leaf);
+        await expect (minter (minterA, 5, proof)).to
+          .emit (creatorA, 'Created')
+          .withArgs (minterA.address, 5);
+      });
+
+      it ('should fail if minting invocation is 0', async () => {
+        let leaf = generateLeaf (minterA.address, 5);
+        let proof = claimMerklized.tree.getHexProof (leaf);
+        await expect (minter (minterA, 0, proof)).to.be.revertedWith (
+          'RhapsodyCreator/invalid-invocation-lower-boundary'
+        );
+      });
+
+      it ('should fail if trying to minting more than maxPresaleBatchPerAddress', async () => {
+        let leaf = generateLeaf (minterA.address, 5);
+        let proof = claimMerklized.tree.getHexProof (leaf);
+        await expect (
+          minter (
+            minterA,
+            creatorTestParams.maxPublicBatchPerAddress + 1,
+            proof
+          )
+        ).to.be.revertedWith (
+          'RhapsodyCreator/invalid-invocation-upper-boundary'
+        );
+      });
+
+      it ('should fail address proof if passed in invalid maxInvocations', async () => {
+        let leaf = generateLeaf (minterA.address, 5);
+        let proof = claimMerklized.tree.getHexProof (leaf);
+        await expect (minter (minterA, 10, proof)).to.be.revertedWith (
+          'RhapsodyCreator/invalid-address-proof'
+        );
+
+        leaf = generateLeaf (minterB.address, 5);
+        proof = claimMerklized.tree.getHexProof (leaf);
+        await expect (minter (minterB, 10, proof)).to.be.revertedWith (
+          'RhapsodyCreator/invalid-address-proof'
+        );
+      });
+
+      it ('should only be able to mint once', async () => {
+        let leaf = generateLeaf (minterA.address, 5);
+        let proof = claimMerklized.tree.getHexProof (leaf);
+
+        await expect (minter (minterA, 5, proof)).to
+          .emit (creatorA, 'Created')
+          .withArgs (minterA.address, 5);
+
+        await expect (minter (minterA, 5, proof)).to.to.be.revertedWith (
+          'RhapsodyCreator/invalid-double-mint'
+        );
+
+        leaf = generateLeaf (minterB.address, 5);
+        proof = claimMerklized.tree.getHexProof (leaf);
+
+        await expect (minter (minterB, 5, proof)).to
+          .emit (creatorA, 'Created')
+          .withArgs (minterB.address, 5);
+
+        await expect (minter (minterB, 5, proof)).to.be.revertedWith (
+          'RhapsodyCreator/invalid-invocation-upper-boundary'
+        );
+
+        leaf = generateLeaf (minterC.address, 5);
+        proof = claimMerklized.tree.getHexProof (leaf);
+
+        await expect (minter (minterC, 5, 5, proof, 5 * 0.08)).to
+          .emit (creatorA, 'Created')
+          .withArgs (minterC.address, 5);
+
+        await expect (
+          minter (minterC, 1, 5, proof, 1 * 0.08)
+        ).to.be.revertedWith (
+          'RhapsodyCreator/invalid-invocation-upper-boundary'
+        );
+      });
+
+      it ('should not be able to transfer NFTs out and mint again', async () => {
+        let leaf = generateLeaf (minterA.address, 5);
+        let proof = claimMerklized.tree.getHexProof (leaf);
+
+        await expect (minter (minterA, 5, proof)).to
+          .emit (creatorA, 'Created')
+          .withArgs (minterA.address, 5);
+
+        await creatorA
+          .connect (minterA)
+          .transferFrom (minterA.address, minterB.address, 0);
+
+        await creatorA
+          .connect (minterA)
+          .transferFrom (minterA.address, minterB.address, 1);
+
+        await expect (minter (minterA, 5, proof)).to.to.be.revertedWith (
+          'RhapsodyCreator/invalid-double-mint'
+        );
+      });
+
+      it ('should not be able to mint if not whitelisted', async () => {
+        const wrongProof = [
+          '0x1428975b69ccaa80e5613347ec07d7a0696894fc28b3655983d43f9eb00032a1',
+          '0xf55f0dad9adfe0f2aa1946779b3ca83c165360edef49c6b72ddc0e2f070f7ff6',
+        ];
+
+        await expect (minter (minterB, 5, wrongProof)).to.be.revertedWith (
+          'RhapsodyCreator/invalid-address-proof'
+        );
+      });
+
+      describe ('variable whitelist', () => {
+        let claimMerklizedA;
+        beforeEach (async () => {
+          claimMerklizedA = await buildWhitelist ([
+            [minterB.address, 5],
+            [minterA.address, 4],
+            [minterC.address, 3],
+          ]);
+          await creatorA.setClaimMerkleRoot (claimMerklizedA.root);
+        });
+
+        it ('should be able to variable mint', async () => {
+          let leaf = generateLeaf (minterA.address, 4);
+          let proof = claimMerklizedA.tree.getHexProof (leaf);
+          await expect (minter (minterA, 4, proof)).to
+            .emit (creatorA, 'Created')
+            .withArgs (minterA.address, 4);
+
+          leaf = generateLeaf (minterB.address, 5);
+          proof = claimMerklizedA.tree.getHexProof (leaf);
+          await expect (minter (minterB, 5, proof)).to
+            .emit (creatorA, 'Created')
+            .withArgs (minterB.address, 5);
+
+          leaf = generateLeaf (minterC.address, 3);
+          proof = claimMerklizedA.tree.getHexProof (leaf);
+          await expect (minter (minterC, 3, proof)).to
+            .emit (creatorA, 'Created')
+            .withArgs (minterC.address, 3);
+        });
+
+        it ('should fail if trying to mint more than max limit of an allocated address limit', async () => {
+          let leaf = generateLeaf (minterA.address, 4);
+          let proof = claimMerklizedA.tree.getHexProof (leaf);
+          await expect (
+            minter (
+              minterA,
+              creatorTestParams.maxPublicBatchPerAddress + 1,
+              proof
+            )
+          ).to.be.revertedWith (
+            'RhapsodyCreator/invalid-invocation-upper-boundary'
+          );
+        });
+      });
+    });
+
     describe ('presaleMint', () => {
       let creatorA;
       let presaleMinter;
@@ -583,7 +783,7 @@ describe ('RhapsodyCreatorGenerative', () => {
 
       it ('should fail if minting invocation is 0', async () => {
         await expect (publicMinter (minterA, 0, 0.08)).to.be.revertedWith (
-          'RhapsodyCreator/invalid-mint-value'
+          'RhapsodyCreator/invalid-invocation-lower-boundary'
         );
       });
     });

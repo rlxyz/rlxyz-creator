@@ -99,7 +99,7 @@ contract RhapsodyCreatorGenerative is ERC721A, ERC721AOwnersExplicit, Ownable, R
     function claimMint(uint256 invocations, bytes32[] calldata proof)
         public
         isMintLive(claimTime)
-        isMintValid(invocations, invocations)
+        isMintValid(invocations, maxPublicBatchPerAddress)
         isMintProofValid(invocations, msg.sender, proof, claimMerkleRoot)
     {
         require(_mintOf(msg.sender) == 0, "RhapsodyCreator/invalid-double-mint");
@@ -147,11 +147,8 @@ contract RhapsodyCreatorGenerative is ERC721A, ERC721AOwnersExplicit, Ownable, R
 
         uint256 currentInvocations = totalSupply().sub(invocations);
         for (uint256 i = 0; i < invocations; i++) {
-            currentInvocations = currentInvocations.add(i);
-            _tokenHash[currentInvocations] = _getRandomHash(
-                currentInvocations,
-                mintRandomizerContract.getRandomValue()
-            );
+            uint256 currentIndex = currentInvocations.add(i);
+            _tokenHash[currentIndex] = _generateUniqueIdentifier(currentIndex, mintRandomizerContract.getRandomValue());
         }
 
         emit Created(to, invocations);
@@ -188,12 +185,13 @@ contract RhapsodyCreatorGenerative is ERC721A, ERC721AOwnersExplicit, Ownable, R
             _mintOf(msg.sender).add(invocations) <= maxInvocation,
             "RhapsodyCreator/invalid-invocation-upper-boundary"
         );
+        require(invocations > 0, "RhapsodyCreator/invalid-invocation-lower-boundary");
         _;
     }
 
     modifier isMintPricingValid(uint256 invocations) {
         require(msg.value == mintPrice.mul(invocations), "RhapsodyCreator/invalid-mint-value");
-        require(msg.value > 0 && invocations > 0, "RhapsodyCreator/invalid-invocation-lower-boundary");
+        require(msg.value > 0, "RhapsodyCreator/invalid-invocation-lower-boundary");
         _;
     }
 

@@ -24,7 +24,7 @@ contract RhapsodyCreatorGenerativeTest is RhapsodyCreatorGenerative {
         return 123456789;
     }
 
-    function _getRandomHash(uint256 seed, bytes32 randomValue) internal view override returns (bytes32) {
+    function _generateUniqueIdentifier(uint256 seed, bytes32 randomValue) internal view override returns (bytes32) {
         return keccak256(abi.encodePacked(seed));
     }
 }
