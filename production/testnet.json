@@ -8,6 +8,8 @@
   },
   "postDeploy": {
     "baseTokenURI": "http://localhost:3000/reflection/",
+    "claimMerkleRoot": "",
+    "presaleMerkleRoot": "",
     "claimTime": 1646217000,
     "presaleTime": 1646217001,
     "publicTime": 1646217002

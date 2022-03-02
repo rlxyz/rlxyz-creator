@@ -1,7 +1,12 @@
 const hardhat = require ('hardhat');
 const {setDeployerAsSigner, setAdminAsSigner} = require ('./helpers/signer');
 const {transferOwnership} = require ('./contracts/Ownable');
-const {setBaseURI, setMintTime} = require ('./contracts/RhapsodyCreator');
+const {
+  setBaseURI,
+  setMintTime,
+  setClaimMerkleRoot,
+  setPresaleMerkleRoot,
+} = require ('./contracts/RhapsodyCreator');
 const {chainName} = require ('./helpers/chain');
 const {yellow, green, dim, cyan} = require ('./helpers/logs');
 const {
@@ -14,6 +19,8 @@ const prepare = async () => {
   const creator = await deployments.get (deployContractName);
   return {
     creator: creator.address,
+    presaleMerkleRoot: postDeployParameters.presaleMerkleRoot,
+    claimMerkleRoot: postDeployParameters.claimMerkleRoot,
     claimTime: postDeployParameters.claimTime,
     presaleTime: postDeployParameters.presaleTime,
     publicTime: postDeployParameters.publicTime,
@@ -26,6 +33,8 @@ const runner = async () => {
   const {
     creator,
     claimTime,
+    claimMerkleRoot,
+    presaleMerkleRoot,
     presaleTime,
     publicTime,
     baseTokenURI,
@@ -63,6 +72,12 @@ const runner = async () => {
   // run commands
   await setBaseURI (creatorResult, baseTokenURI);
   await setMintTime (creatorResult, claimTime, presaleTime, publicTime);
+  claimMerkleRoot
+    ? await setClaimMerkleRoot (creatorResult, claimMerkleRoot)
+    : null;
+  presaleMerkleRoot
+    ? await setPresaleMerkleRoot (creatorResult, presaleMerkleRoot)
+    : null;
 
   dim (
     `Presale: ${new Date ((await creatorResult.presaleTime ()).toNumber ()).toString ()}`

@@ -13,6 +13,18 @@ const setPromotionMint = async (contract, amount) => {
   tx.wait (1);
 };
 
+const setClaimMerkleRoot = async (contract, claimMerkleRoot) => {
+  let tx = await contract.setClaimMerkleRoot (claimMerkleRoot);
+  tx.wait (1);
+};
+
+const setPresaleMerkleRoot = async (contract, presaleMerkleRoot) => {
+  let tx = await contract.setPresaleMerkleRoot (presaleMerkleRoot);
+  tx.wait (1);
+};
+
+exports.setPresaleMerkleRoot = setPresaleMerkleRoot;
+exports.setClaimMerkleRoot = setClaimMerkleRoot;
 exports.setBaseURI = setBaseURI;
 exports.setPromotionMint = setPromotionMint;
 exports.setMintTime = setMintTime;

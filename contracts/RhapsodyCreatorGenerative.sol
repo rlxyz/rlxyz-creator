@@ -233,7 +233,7 @@ contract RhapsodyCreatorGenerative is ERC721A, ERC721AOwnersExplicit, Ownable, R
 
     /// @notice force override the merkle root used in presale mint
     /// @param _presaleMerkleRoot root of the merklelized whitelist
-    function setMintMerkleRoot(bytes32 _presaleMerkleRoot) public onlyOwner {
+    function setPresaleMerkleRoot(bytes32 _presaleMerkleRoot) public onlyOwner {
         presaleMerkleRoot = _presaleMerkleRoot;
     }
 
