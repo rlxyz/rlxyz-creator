@@ -8,9 +8,9 @@
   },
   "postDeploy": {
     "baseTokenURI": "http://localhost:3000/reflection/",
-    "claimTime": 1646214000,
-    "presaleTime": 1646214300,
-    "publicTime": 1646214600
+    "claimTime": 1646217000,
+    "presaleTime": 1646217001,
+    "publicTime": 1646217002
   },
   "start": {
     "amountForPromotion": 10

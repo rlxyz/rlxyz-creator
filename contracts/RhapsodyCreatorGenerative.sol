@@ -150,7 +150,7 @@ contract RhapsodyCreatorGenerative is ERC721A, ERC721AOwnersExplicit, Ownable, R
         bytes32[] memory uniqueIdentifiers = new bytes32[](invocations);
         for (uint256 i = 0; i < invocations; i++) {
             uint256 currentIndex = currentInvocations.add(i);
-            bytes32 identifier = _generateUniqueIdentifier(currentIndex, mintRandomizerContract.getRandomValue());
+            bytes32 identifier = _generateUniqueIdentifier(currentIndex);
             uniqueIdentifiers[i] = identifier;
             _tokenHash[currentIndex] = identifier;
         }
@@ -158,8 +158,12 @@ contract RhapsodyCreatorGenerative is ERC721A, ERC721AOwnersExplicit, Ownable, R
         emit Created(to, currentTotalSupply, invocations, uniqueIdentifiers);
     }
 
-    function _generateUniqueIdentifier(uint256 seed, bytes32 randomValue) internal view virtual returns (bytes32) {
-        return keccak256(abi.encodePacked(seed, block.number, blockhash(block.number.sub(1)), randomValue));
+    function _generateRandomValue() internal view virtual returns (bytes32) {
+        return mintRandomizerContract.getRandomValue();
+    }
+
+    function _generateUniqueIdentifier(uint256 seed) internal view virtual returns (bytes32) {
+        return keccak256(abi.encodePacked(seed, block.number, blockhash(block.number.sub(1)), _generateRandomValue()));
     }
 
     /// @notice Set the time for the mint

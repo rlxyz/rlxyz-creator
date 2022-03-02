@@ -23,4 +23,8 @@ contract RhapsodyCreatorGenerativeRinkeby is RhapsodyCreatorGenerative {
             _mintPrice
         )
     {}
+
+    function _generateRandomValue() internal view override returns (bytes32) {
+        return keccak256(abi.encodePacked((block.number)));
+    }
 }
