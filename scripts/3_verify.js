@@ -5,7 +5,7 @@ const exec = util.promisify (require ('child_process').exec);
 const hardhat = require ('hardhat');
 const {deployments} = require ('hardhat');
 const {
-  deployContractName,
+  name: deployContractName,
   deploy: deployParameters,
 } = require ('../production/testnet.json');
 
@@ -82,25 +82,13 @@ async function run () {
 
   info (`Verifying top-level contracts on network: ${network}`);
 
-  if (isBinance () || isPolygon ()) {
-    info (`verifying using hack`);
-    const contracts = await deployments.all ();
-    const contractNames = Object.keys (contracts);
-    for (var i = 0; i < contractNames.length; i++) {
-      const contractName = contractNames[i];
-      const contract = contracts[contractName];
-      const args = contract.args.map (arg => arg.toString ()).join (' ');
-      await verifyAddressManually (contract.address, contractName, args);
-    }
-  } else {
-    info (`verifying using Hardhat verify`);
-    // using hardhat native etherscan verify -- this supports mainnet, rinkeby, kovan etc.
-    const cmd = `hardhat --network ${network} etherscan-verify --solc-input --api-key ${hardhat.config.etherscan.apiKey}`;
-    info (cmd);
-    const {stdout, stderr} = await exec (cmd);
-    console.log (chalk.yellow (stdout));
-    console.log (chalk.red (stderr));
-  }
+  info (`verifying using Hardhat verify`);
+  // using hardhat native etherscan verify -- this supports mainnet, rinkeby, kovan etc.
+  const cmd = `hardhat --network ${network} etherscan-verify --solc-input --api-key ${hardhat.config.etherscan.apiKey}`;
+  info (cmd);
+  const {stdout, stderr} = await exec (cmd);
+  console.log (chalk.yellow (stdout));
+  console.log (chalk.red (stderr));
 
   info (`Done top-level contracts`);
 
@@ -110,7 +98,7 @@ async function run () {
     await contractAddress (deployContractName),
     deployContractName,
     // todo: fix; r.e right now its manually inserting the deploy constructors of \"production/testnet.json\"
-    '0xc65b72b028415a7b64ca3da340d1f0540f146cc996de566d9c0c5a28db654745 120 5 10 50000000000000000'
+    '1111 2 50 50000000000000000'
   );
 
   success ('Done!');

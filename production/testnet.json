@@ -7,7 +7,7 @@
     "mintPrice": "50000000000000000"
   },
   "postDeploy": {
-    "baseTokenURI": "http://localhost:3000/reflection/",
+    "baseTokenURI": "http://7818-2001-8003-5da8-5000-4c39-b96-5330-1ed.ngrok.io/reflection/",
     "claimMerkleRoot": "",
     "presaleMerkleRoot": "",
     "claimTime": 1646217000,
