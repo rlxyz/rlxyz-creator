@@ -1,18 +1,18 @@
 {
-  "name": "RhapsodyCreatorRinkeby",
+  "name": "RhapsodyCreatorGenerativeRinkeby",
   "deploy": {
-    "presaleMerkleRoot": "0xc65b72b028415a7b64ca3da340d1f0540f146cc996de566d9c0c5a28db654745",
-    "collectionSize": 120,
-    "maxPublicBatchPerAddress": 5,
-    "amountForPromotion": 10,
+    "collectionSize": 1111,
+    "maxPublicBatchPerAddress": 2,
+    "amountForPromotion": 50,
     "mintPrice": "50000000000000000"
   },
   "postDeploy": {
-    "baseTokenURI": "https://ipfs.rhapsodylabs.xyz/ipfs/QmVReWkT3EuZFfxEBtGYbDAALP1UC6jwBPhRoK3ZkfFzdG/",
-    "presaleTime": 1644548400,
-    "publicTime": 1642914000
+    "baseTokenURI": "http://localhost:3000/reflection/",
+    "claimTime": 1646214000,
+    "presaleTime": 1646214300,
+    "publicTime": 1646214600
   },
   "start": {
-    "amountForPromotion": 0
+    "amountForPromotion": 10
   }
 }

@@ -21,7 +21,7 @@ contract RhapsodyCreatorGenerative is ERC721A, ERC721AOwnersExplicit, Ownable, R
 
     /// ============ Events ============
 
-    event Created(address indexed to, uint256 amount);
+    event Created(address indexed to, uint256 currentTotalSupply, uint256 invocations, bytes32[] identifiers);
 
     /// ============ Immutable storage ============
 
@@ -145,13 +145,17 @@ contract RhapsodyCreatorGenerative is ERC721A, ERC721AOwnersExplicit, Ownable, R
     function _mintMany(address to, uint256 invocations) internal {
         _safeMint(to, invocations);
 
-        uint256 currentInvocations = totalSupply().sub(invocations);
+        uint256 currentTotalSupply = totalSupply();
+        uint256 currentInvocations = currentTotalSupply.sub(invocations);
+        bytes32[] memory uniqueIdentifiers = new bytes32[](invocations);
         for (uint256 i = 0; i < invocations; i++) {
             uint256 currentIndex = currentInvocations.add(i);
-            _tokenHash[currentIndex] = _generateUniqueIdentifier(currentIndex, mintRandomizerContract.getRandomValue());
+            bytes32 identifier = _generateUniqueIdentifier(currentIndex, mintRandomizerContract.getRandomValue());
+            uniqueIdentifiers[i] = identifier;
+            _tokenHash[currentIndex] = identifier;
         }
 
-        emit Created(to, invocations);
+        emit Created(to, currentTotalSupply, invocations, uniqueIdentifiers);
     }
 
     function _generateUniqueIdentifier(uint256 seed, bytes32 randomValue) internal view virtual returns (bytes32) {
@@ -262,9 +266,8 @@ contract RhapsodyCreatorGenerative is ERC721A, ERC721AOwnersExplicit, Ownable, R
         require(invocations.mod(maxBatchSize) == 0, "RhapsodyCreator/invalid-batch-multiple");
         uint256 blocks = invocations.div(maxBatchSize);
         for (uint256 i = 0; i < blocks; i++) {
-            _safeMint(msg.sender, maxBatchSize);
+            _mintMany(msg.sender, maxBatchSize);
         }
-        emit Created(msg.sender, invocations);
     }
 
     /// @notice withdraws the ether in the contract to owner

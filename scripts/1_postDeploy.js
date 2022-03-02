@@ -14,6 +14,7 @@ const prepare = async () => {
   const creator = await deployments.get (deployContractName);
   return {
     creator: creator.address,
+    claimTime: postDeployParameters.claimTime,
     presaleTime: postDeployParameters.presaleTime,
     publicTime: postDeployParameters.publicTime,
     baseTokenURI: postDeployParameters.baseTokenURI,
@@ -22,7 +23,13 @@ const prepare = async () => {
 
 const runner = async () => {
   const {getChainId} = hardhat;
-  const {creator, presaleTime, publicTime, baseTokenURI} = await prepare ();
+  const {
+    creator,
+    claimTime,
+    presaleTime,
+    publicTime,
+    baseTokenURI,
+  } = await prepare ();
   const chainId = parseInt (await getChainId (), 10);
   const isTestEnvironment = chainId === 31337 || chainId === 1337;
   const {admin} = await getNamedAccounts ();
@@ -48,13 +55,14 @@ const runner = async () => {
 
   dim (`creator: ${creatorResult.address}`);
 
-  // // move ownership to admin
-  await transferOwnership (creatorResult, admin);
+  // move ownership to admin
+  // const tx = await transferOwnership (creatorResult, admin);
+  // tx.wait (1);
+  // creatorResult = creatorResult.connect (await setAdminAsSigner ());
 
-  // // run commands
-  creatorResult = creatorResult.connect (await setAdminAsSigner ());
+  // run commands
   await setBaseURI (creatorResult, baseTokenURI);
-  await setMintTime (creatorResult, presaleTime, publicTime);
+  await setMintTime (creatorResult, claimTime, presaleTime, publicTime);
 
   dim (
     `Presale: ${new Date ((await creatorResult.presaleTime ()).toNumber ()).toString ()}`

@@ -23,6 +23,12 @@ NOTE: `transferOwnership` is called and moved to `admin`
 $ yarn deploy:post
 ```
 
+It does the follow
+
+- Transfer Ownership
+- Set Base URI
+- Set Mint Time
+
 ## 3. Run the start functions
 
 Includes minting of promotional NFTs

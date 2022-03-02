@@ -11,10 +11,10 @@ export ETHERSCAN_API_KEY=''
 export ALCHEMY_URL=''
 
 # Required for gas snapshot price calculations
-COINMARKETCAP_TOKEN=
+export COINMARKETCAP_TOKEN=
 
 # Enable the contract optimzer: recommended for mainnet
-OPTIMIZER_DISABLED=
+export OPTIMIZER_DISABLED=
 
 # MythX cmart contract tester
-MYTHX_KEY=
+expport MYTHX_KEY=

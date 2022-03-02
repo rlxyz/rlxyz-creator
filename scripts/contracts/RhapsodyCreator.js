@@ -3,8 +3,8 @@ const setBaseURI = async (contract, baseURI) => {
   tx.wait (1);
 };
 
-const setMintTime = async (contract, presaleTime, publicTime) => {
-  let tx = await contract.setMintTime (presaleTime, publicTime);
+const setMintTime = async (contract, claimTime, presaleTime, publicTime) => {
+  let tx = await contract.setMintTime (claimTime, presaleTime, publicTime);
   tx.wait (1);
 };
 

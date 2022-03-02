@@ -1,4 +1,3 @@
-const {deploy1820} = require ('deploy-eip-1820');
 const {chainName} = require ('./helpers/chain');
 const {yellow, green, dim, cyan} = require ('./helpers/logs');
 const hardhat = require ('hardhat');
@@ -27,12 +26,9 @@ const runner = async () => {
   );
   dim (`deployer: ${deployer}`);
 
-  await deploy1820 (signer);
-
   cyan ('\nDeploying NFT...');
   const creatorResult = await deploy (deployContractName, {
     args: [
-      deployParameters.presaleMerkleRoot,
       deployParameters.collectionSize,
       deployParameters.maxPublicBatchPerAddress,
       deployParameters.amountForPromotion,
