@@ -6,7 +6,7 @@ import "../../RhapsodyCreatorGenerative.sol";
 // @notice this RhapsodyCreatorRinkeby is used in testnets such as rinkeby
 contract RhapsodyCreatorGenerativeRinkeby is RhapsodyCreatorGenerative {
     /// @notice Semver Version
-    string public constant VERSION = "0.0.1";
+    string public constant VERSION = "0.0.4";
 
     constructor(
         uint256 _collectionSize,
