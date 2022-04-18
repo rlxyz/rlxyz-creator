@@ -1,9 +1,9 @@
 {
   "name": "RhapsodyCreatorGenerativeRinkeby",
   "deploy": {
-    "collectionSize": 1111,
+    "collectionSize": 10000,
     "maxPublicBatchPerAddress": 2,
-    "amountForPromotion": 50,
+    "amountForPromotion": 10000,
     "mintPrice": "50000000000000000"
   },
   "postDeploy": {
@@ -15,6 +15,6 @@
     "publicTime": 1649323148
   },
   "start": {
-    "amountForPromotion": 10
+    "amountForPromotion": 310
   }
 }

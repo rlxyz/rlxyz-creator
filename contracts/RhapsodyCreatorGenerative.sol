@@ -21,7 +21,7 @@ contract RhapsodyCreatorGenerative is ERC721A, ERC721AOwnersExplicit, Ownable, R
 
     /// ============ Events ============
 
-    event Created(address indexed to, uint256 currentTotalSupply, uint256 invocations, bytes32[] identifiers);
+    event Created(address indexed to, uint256 currentTotalSupply, uint256 invocations);
 
     /// ============ Immutable storage ============
 
@@ -96,13 +96,13 @@ contract RhapsodyCreatorGenerative is ERC721A, ERC721AOwnersExplicit, Ownable, R
     /// @notice Allows claim of tokens if address is part of merkle tree
     /// @param invocations number of tokens to mint
     /// @param proof merkle proof to prove address and token mint count are in tree
+    /// @dev user must mint max invocations
     function claimMint(uint256 invocations, bytes32[] calldata proof)
         public
         isMintLive(claimTime)
-        isMintValid(invocations, maxPublicBatchPerAddress)
+        isMintValid(invocations, invocations)
         isMintProofValid(invocations, msg.sender, proof, claimMerkleRoot)
     {
-        require(_mintOf(msg.sender) == 0, "RhapsodyCreator/invalid-double-mint");
         _mintMany(msg.sender, invocations);
     }
 
@@ -145,17 +145,13 @@ contract RhapsodyCreatorGenerative is ERC721A, ERC721AOwnersExplicit, Ownable, R
     function _mintMany(address to, uint256 invocations) internal {
         _safeMint(to, invocations);
 
-        uint256 currentTotalSupply = totalSupply();
-        uint256 currentInvocations = currentTotalSupply.sub(invocations);
-        bytes32[] memory uniqueIdentifiers = new bytes32[](invocations);
+        uint256 currentInvocations = (totalSupply()).sub(invocations);
         for (uint256 i = 0; i < invocations; i++) {
             uint256 currentIndex = currentInvocations.add(i);
-            bytes32 identifier = _generateUniqueIdentifier(currentIndex);
-            uniqueIdentifiers[i] = identifier;
-            _tokenHash[currentIndex] = identifier;
+            _tokenHash[currentIndex] = _generateUniqueIdentifier(currentIndex);
         }
 
-        emit Created(to, currentTotalSupply, invocations, uniqueIdentifiers);
+        emit Created(to, currentInvocations, invocations);
     }
 
     function _generateRandomValue() internal view virtual returns (bytes32) {
