@@ -261,6 +261,45 @@ describe ('RhapsodyCreatorGenerative', () => {
         'HashQueryForNonexistentToken'
       );
     });
+
+    // describe ('maxCollection', () => {
+    //   it ('should all be unique token hashes', async () => {
+    //     const RhapsodyCreator = await hre.ethers.getContractFactory (
+    //       'RhapsodyCreatorGenerativeTest',
+    //       deployer,
+    //       overrides
+    //     );
+    //     creatorA = await RhapsodyCreator.deploy (
+    //       1200,
+    //       1200,
+    //       0,
+    //       parseEther (0.01)
+    //     );
+    //     await creatorA.setMintTime (
+    //       currentBlockTime + 100,
+    //       currentBlockTime + 105,
+    //       currentBlockTime + 110
+    //     );
+    //     await creatorA.setMintRandomizerContract (randomizer.address);
+    //     randomizer.addDependency (creatorA.address);
+
+    //     let hashes = [];
+    //     for (let i = 0; i < 12; i++) {
+    //       await expect (
+    //         creatorA.connect (minterA).publicMint (100, {
+    //           value: parseEther (0.01 * 100),
+    //         })
+    //       )
+    //         .emit (creatorA, 'Created')
+    //         .withArgs (minterA.address, i * 100, 100);
+
+    //       for (let id = 0; id < 100; id++) {
+    //         hashes.push (await creatorA.tokenHash (id * i));
+    //       }
+    //     }
+    //     console.log (hashes);
+    //   });
+    // });
   });
 
   describe ('sale', () => {
@@ -323,7 +362,9 @@ describe ('RhapsodyCreatorGenerative', () => {
         let proof = claimMerklized.tree.getHexProof (leaf);
         await expect (
           minter (minterA, params.maxPublicBatchPerAddress + 1, proof)
-        ).to.be.revertedWith ('RhapsodyCreatorGenerative/invalid-address-proof');
+        ).to.be.revertedWith (
+          'RhapsodyCreatorGenerative/invalid-address-proof'
+        );
       });
 
       it ('should fail address proof if passed in invalid maxInvocations', async () => {
@@ -475,13 +516,17 @@ describe ('RhapsodyCreatorGenerative', () => {
         let proof = presaleMerklized.tree.getHexProof (leaf);
         await expect (
           presaleMinter (minterA, 1, 10, proof, 0.333)
-        ).to.be.revertedWith ('RhapsodyCreatorGenerative/invalid-address-proof');
+        ).to.be.revertedWith (
+          'RhapsodyCreatorGenerative/invalid-address-proof'
+        );
 
         leaf = generateLeaf (minterB.address, 5);
         proof = presaleMerklized.tree.getHexProof (leaf);
         await expect (
           presaleMinter (minterB, 5, 10, proof, 0.333 * 5)
-        ).to.be.revertedWith ('RhapsodyCreatorGenerative/invalid-address-proof');
+        ).to.be.revertedWith (
+          'RhapsodyCreatorGenerative/invalid-address-proof'
+        );
       });
 
       it ('should fail if too much or too little eth supplied', async () => {
@@ -508,7 +553,9 @@ describe ('RhapsodyCreatorGenerative', () => {
 
         await expect (
           presaleMinter (minterA, 1, 2, proof, 0.333)
-        ).to.to.be.revertedWith ('RhapsodyCreatorGenerative/invalid-double-mint');
+        ).to.to.be.revertedWith (
+          'RhapsodyCreatorGenerative/invalid-double-mint'
+        );
 
         leaf = generateLeaf (minterB.address, 2);
         proof = presaleMerklized.tree.getHexProof (leaf);
@@ -538,7 +585,9 @@ describe ('RhapsodyCreatorGenerative', () => {
 
         await expect (
           presaleMinter (minterA, 1, 2, proof, 0.333)
-        ).to.to.be.revertedWith ('RhapsodyCreatorGenerative/invalid-double-mint');
+        ).to.to.be.revertedWith (
+          'RhapsodyCreatorGenerative/invalid-double-mint'
+        );
       });
 
       it ('should not be able to mint if not whitelisted', async () => {
@@ -552,7 +601,9 @@ describe ('RhapsodyCreatorGenerative', () => {
 
         await expect (
           presaleMinter (minterB, 1, 5, wrongProof, 1 * 0.333)
-        ).to.be.revertedWith ('RhapsodyCreatorGenerative/invalid-address-proof');
+        ).to.be.revertedWith (
+          'RhapsodyCreatorGenerative/invalid-address-proof'
+        );
       });
 
       describe ('variable whitelist', () => {
