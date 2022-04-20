@@ -8,12 +8,12 @@ const currentBlockTime = 123456789;
 const name = 'Rhapsody Creator Test';
 const symbol = 'RCT';
 
-const creatorTestParams = {
-  collectionSize: 6688,
-  maxPresaleBatchPerAddress: 5,
-  maxPublicBatchPerAddress: 20,
-  amountForPromotion: 100,
-  mintPrice: parseEther (0.08),
+const params = {
+  collectionSize: 1111,
+  maxPresaleBatchPerAddress: 2,
+  maxPublicBatchPerAddress: 2,
+  amountForPromotion: 20,
+  mintPrice: parseEther (0.333),
 };
 
 describe ('RhapsodyCreatorGenerative', () => {
@@ -51,25 +51,25 @@ describe ('RhapsodyCreatorGenerative', () => {
     randomizer = await Randomizer.deploy ();
 
     creator = await RhapsodyCreator.deploy (
-      creatorTestParams.collectionSize,
-      creatorTestParams.maxPublicBatchPerAddress,
-      creatorTestParams.amountForPromotion,
-      creatorTestParams.mintPrice
+      params.collectionSize,
+      params.maxPublicBatchPerAddress,
+      params.amountForPromotion,
+      params.mintPrice
     );
 
     presaleMerklized = await buildWhitelist ([
-      [minterA.address, 5],
-      [minterB.address, 5],
-      [minterC.address, 5],
+      [minterA.address, 2],
+      [minterB.address, 2],
+      [minterC.address, 2],
     ]);
 
     claimMerklized = await buildWhitelist ([
-      [minterA.address, 5],
-      [minterB.address, 5],
-      [minterC.address, 5],
+      [minterA.address, 2],
+      [minterB.address, 2],
+      [minterC.address, 1],
     ]);
 
-    await creator.setMintMerkleRoot (presaleMerklized.root);
+    await creator.setPresaleMerkleRoot (presaleMerklized.root);
     await creator.setClaimMerkleRoot (claimMerklized.root);
     await creator.setMintRandomizerContract (randomizer.address);
     await creator.transferOwnership (admin.address);
@@ -90,20 +90,18 @@ describe ('RhapsodyCreatorGenerative', () => {
   describe ('deployment', () => {
     it ('should have an allocation promotion amount', async () => {
       expect (await creator.amountForPromotion ()).to.equal (
-        creatorTestParams.amountForPromotion
+        params.amountForPromotion
       );
     });
 
     it ('should have set the correct max public mint per address', async () => {
       expect (await creator.maxPublicBatchPerAddress ()).to.equal (
-        creatorTestParams.maxPublicBatchPerAddress
+        params.maxPublicBatchPerAddress
       );
     });
 
     it ('should have a valid mint price', async () => {
-      expect (await creator.mintPrice ()).to.equal (
-        creatorTestParams.mintPrice
-      );
+      expect (await creator.mintPrice ()).to.equal (params.mintPrice);
     });
   });
 
@@ -141,25 +139,25 @@ describe ('RhapsodyCreatorGenerative', () => {
       );
     });
 
-    it ('should return valid token uri', async () => {
+    it ('should return valid token uri if minting singles', async () => {
       await creator
         .connect (minterA)
-        .publicMint (1, {value: parseEther (0.08)});
+        .publicMint (1, {value: parseEther (0.333)});
       expect (await creator.tokenURI (0)).to.equal (baseURI + '0');
 
       await creator
         .connect (minterA)
-        .publicMint (1, {value: parseEther (0.08)});
+        .publicMint (1, {value: parseEther (0.333)});
       expect (await creator.tokenURI (1)).to.equal (baseURI + '1');
 
       await creator
-        .connect (minterA)
-        .publicMint (1, {value: parseEther (0.08)});
+        .connect (minterB)
+        .publicMint (1, {value: parseEther (0.333)});
       expect (await creator.tokenURI (2)).to.equal (baseURI + '2');
 
       await creator
-        .connect (minterA)
-        .publicMint (1, {value: parseEther (0.08)});
+        .connect (minterC)
+        .publicMint (1, {value: parseEther (0.333)});
       expect (await creator.tokenURI (3)).to.equal (baseURI + '3');
 
       await expect (creator.tokenURI (4)).to.be.revertedWith (
@@ -167,10 +165,16 @@ describe ('RhapsodyCreatorGenerative', () => {
       );
     });
 
-    it ('should return valid token uri', async () => {
+    it ('should return valid token uri if minting many at once', async () => {
       await creator
         .connect (minterA)
-        .publicMint (5, {value: parseEther (0.08 * 5)});
+        .publicMint (2, {value: parseEther (0.333 * 2)});
+      await creator
+        .connect (minterB)
+        .publicMint (2, {value: parseEther (0.333 * 2)});
+      await creator
+        .connect (minterC)
+        .publicMint (1, {value: parseEther (0.333)});
       expect (await creator.tokenURI (0)).to.equal (baseURI + '0');
       expect (await creator.tokenURI (1)).to.equal (baseURI + '1');
       expect (await creator.tokenURI (2)).to.equal (baseURI + '2');
@@ -197,28 +201,28 @@ describe ('RhapsodyCreatorGenerative', () => {
     it ('should return valid token hash', async () => {
       await creator
         .connect (minterA)
-        .publicMint (1, {value: parseEther (0.08)});
+        .publicMint (1, {value: parseEther (0.333)});
       expect (await creator.tokenHash (0)).to.equal (
         '0x290decd9548b62a8d60345a988386fc84ba6bc95484008f6362f93160ef3e563'
       );
 
       await creator
         .connect (minterA)
-        .publicMint (1, {value: parseEther (0.08)});
+        .publicMint (1, {value: parseEther (0.333)});
       expect (await creator.tokenHash (1)).to.equal (
         '0xb10e2d527612073b26eecdfd717e6a320cf44b4afac2b0732d9fcbe2b7fa0cf6'
       );
 
       await creator
-        .connect (minterA)
-        .publicMint (1, {value: parseEther (0.08)});
+        .connect (minterB)
+        .publicMint (1, {value: parseEther (0.333)});
       expect (await creator.tokenHash (2)).to.equal (
         '0x405787fa12a823e0f2b7631cc41b3ba8828b3321ca811111fa75cd3aa3bb5ace'
       );
 
       await creator
-        .connect (minterA)
-        .publicMint (1, {value: parseEther (0.08)});
+        .connect (minterC)
+        .publicMint (1, {value: parseEther (0.333)});
       expect (await creator.tokenHash (3)).to.equal (
         '0xc2575a0e9e593c00f959f8c92f12db2869c3395a3b0502d05e2516446f71f85b'
       );
@@ -231,19 +235,25 @@ describe ('RhapsodyCreatorGenerative', () => {
     it ('should return valid token hash if multiple mints', async () => {
       await creator
         .connect (minterA)
-        .publicMint (5, {value: parseEther (0.08 * 5)});
+        .publicMint (2, {value: parseEther (0.333 * 2)});
       expect (await creator.tokenHash (0)).to.equal (
         '0x290decd9548b62a8d60345a988386fc84ba6bc95484008f6362f93160ef3e563'
       );
       expect (await creator.tokenHash (1)).to.equal (
         '0xb10e2d527612073b26eecdfd717e6a320cf44b4afac2b0732d9fcbe2b7fa0cf6'
       );
+      await creator
+        .connect (minterB)
+        .publicMint (2, {value: parseEther (0.333 * 2)});
       expect (await creator.tokenHash (2)).to.equal (
         '0x405787fa12a823e0f2b7631cc41b3ba8828b3321ca811111fa75cd3aa3bb5ace'
       );
       expect (await creator.tokenHash (3)).to.equal (
         '0xc2575a0e9e593c00f959f8c92f12db2869c3395a3b0502d05e2516446f71f85b'
       );
+      await creator
+        .connect (minterC)
+        .publicMint (1, {value: parseEther (0.333 * 1)});
       expect (await creator.tokenHash (4)).to.equal (
         '0x8a35acfbc15ff81a39ae7d344fd709f28e8600b4aa8c65c6b64bfe7fe36bd19b'
       );
@@ -251,6 +261,45 @@ describe ('RhapsodyCreatorGenerative', () => {
         'HashQueryForNonexistentToken'
       );
     });
+
+    // describe ('maxCollection', () => {
+    //   it ('should all be unique token hashes', async () => {
+    //     const RhapsodyCreator = await hre.ethers.getContractFactory (
+    //       'RhapsodyCreatorGenerativeTest',
+    //       deployer,
+    //       overrides
+    //     );
+    //     creatorA = await RhapsodyCreator.deploy (
+    //       1200,
+    //       1200,
+    //       0,
+    //       parseEther (0.01)
+    //     );
+    //     await creatorA.setMintTime (
+    //       currentBlockTime + 100,
+    //       currentBlockTime + 105,
+    //       currentBlockTime + 110
+    //     );
+    //     await creatorA.setMintRandomizerContract (randomizer.address);
+    //     randomizer.addDependency (creatorA.address);
+
+    //     let hashes = [];
+    //     for (let i = 0; i < 12; i++) {
+    //       await expect (
+    //         creatorA.connect (minterA).publicMint (100, {
+    //           value: parseEther (0.01 * 100),
+    //         })
+    //       )
+    //         .emit (creatorA, 'Created')
+    //         .withArgs (minterA.address, i * 100, 100);
+
+    //       for (let id = 0; id < 100; id++) {
+    //         hashes.push (await creatorA.tokenHash (id * i));
+    //       }
+    //     }
+    //     console.log (hashes);
+    //   });
+    // });
   });
 
   describe ('sale', () => {
@@ -264,10 +313,10 @@ describe ('RhapsodyCreatorGenerative', () => {
           overrides
         );
         creatorA = await RhapsodyCreator.deploy (
-          creatorTestParams.collectionSize,
-          creatorTestParams.maxPublicBatchPerAddress,
-          creatorTestParams.amountForPromotion,
-          creatorTestParams.mintPrice
+          params.collectionSize,
+          params.maxPublicBatchPerAddress,
+          params.amountForPromotion,
+          params.mintPrice
         );
 
         await creatorA.setClaimMerkleRoot (claimMerklized.root);
@@ -285,105 +334,91 @@ describe ('RhapsodyCreatorGenerative', () => {
       });
 
       it ('should be able to mint if address whitelisted', async () => {
-        let leaf = generateLeaf (minterA.address, 5);
+        let leaf = generateLeaf (minterA.address, 2);
         let proof = claimMerklized.tree.getHexProof (leaf);
-        await expect (minter (minterA, 5, proof)).to
+        await expect (minter (minterA, 2, proof)).to
           .emit (creatorA, 'Created')
-          .withArgs (minterA.address, 5);
+          .withArgs (minterA.address, 0, 2);
+      });
+
+      it ('should not be able to mint if less than allocated invocation', async () => {
+        let leaf = generateLeaf (minterA.address, 2);
+        let proof = presaleMerklized.tree.getHexProof (leaf);
+        await expect (minter (minterA, 1, proof)).to.be.revertedWith (
+          'RhapsodyCreatorGenerative/invalid-address-proof'
+        );
       });
 
       it ('should fail if minting invocation is 0', async () => {
-        let leaf = generateLeaf (minterA.address, 5);
+        let leaf = generateLeaf (minterA.address, 2);
         let proof = claimMerklized.tree.getHexProof (leaf);
         await expect (minter (minterA, 0, proof)).to.be.revertedWith (
-          'RhapsodyCreator/invalid-invocation-lower-boundary'
+          'RhapsodyCreatorGenerative/invalid-invocation-lower-boundary'
         );
       });
 
       it ('should fail if trying to minting more than maxPresaleBatchPerAddress', async () => {
-        let leaf = generateLeaf (minterA.address, 5);
+        let leaf = generateLeaf (minterA.address, 2);
         let proof = claimMerklized.tree.getHexProof (leaf);
         await expect (
-          minter (
-            minterA,
-            creatorTestParams.maxPublicBatchPerAddress + 1,
-            proof
-          )
+          minter (minterA, params.maxPublicBatchPerAddress + 1, proof)
         ).to.be.revertedWith (
-          'RhapsodyCreator/invalid-invocation-upper-boundary'
+          'RhapsodyCreatorGenerative/invalid-address-proof'
         );
       });
 
       it ('should fail address proof if passed in invalid maxInvocations', async () => {
-        let leaf = generateLeaf (minterA.address, 5);
+        let leaf = generateLeaf (minterA.address, 3);
         let proof = claimMerklized.tree.getHexProof (leaf);
-        await expect (minter (minterA, 10, proof)).to.be.revertedWith (
-          'RhapsodyCreator/invalid-address-proof'
+        await expect (minter (minterA, 2, proof)).to.be.revertedWith (
+          'RhapsodyCreatorGenerative/invalid-address-proof'
         );
 
-        leaf = generateLeaf (minterB.address, 5);
+        leaf = generateLeaf (minterC.address, 5);
         proof = claimMerklized.tree.getHexProof (leaf);
-        await expect (minter (minterB, 10, proof)).to.be.revertedWith (
-          'RhapsodyCreator/invalid-address-proof'
+        await expect (minter (minterC, 1, proof)).to.be.revertedWith (
+          'RhapsodyCreatorGenerative/invalid-address-proof'
         );
       });
 
-      // todo
-      // it ('should only be able to mint once', async () => {
-      //   let leaf = generateLeaf (minterA.address, 5);
-      //   let proof = claimMerklized.tree.getHexProof (leaf);
-
-      //   await expect (minter (minterA, 5, proof)).to
-      //     .emit (creatorA, 'Created')
-      //     .withArgs (minterA.address, 5);
-
-      //   await expect (minter (minterA, 5, proof)).to.to.be.revertedWith (
-      //     'RhapsodyCreator/invalid-double-mint'
-      //   );
-
-      //   leaf = generateLeaf (minterB.address, 5);
-      //   proof = claimMerklized.tree.getHexProof (leaf);
-
-      //   await expect (minter (minterB, 5, proof)).to
-      //     .emit (creatorA, 'Created')
-      //     .withArgs (minterB.address, 5);
-
-      //   await expect (minter (minterB, 5, proof)).to.be.revertedWith (
-      //     'RhapsodyCreator/invalid-invocation-upper-boundary'
-      //   );
-
-      //   leaf = generateLeaf (minterC.address, 5);
-      //   proof = claimMerklized.tree.getHexProof (leaf);
-
-      //   await expect (minter (minterC, 5, 5, proof, 5 * 0.08)).to
-      //     .emit (creatorA, 'Created')
-      //     .withArgs (minterC.address, 5);
-
-      //   await expect (
-      //     minter (minterC, 1, 5, proof, 1 * 0.08)
-      //   ).to.be.revertedWith (
-      //     'RhapsodyCreator/invalid-invocation-upper-boundary'
-      //   );
-      // });
-
-      it ('should not be able to transfer NFTs out and mint again', async () => {
-        let leaf = generateLeaf (minterA.address, 5);
+      it ('should only be able to mint once', async () => {
+        let leaf = generateLeaf (minterC.address, 1);
         let proof = claimMerklized.tree.getHexProof (leaf);
 
-        await expect (minter (minterA, 5, proof)).to
+        await expect (minter (minterC, 1, proof)).to
           .emit (creatorA, 'Created')
-          .withArgs (minterA.address, 5);
+          .withArgs (minterC.address, 0, 1);
+
+        await expect (minter (minterC, 1, proof)).to.to.be.revertedWith (
+          'RhapsodyCreatorGenerative/invalid-invocation-upper-boundary'
+        );
+
+        leaf = generateLeaf (minterA.address, 2);
+        proof = claimMerklized.tree.getHexProof (leaf);
+
+        await expect (minter (minterA, 2, proof)).to
+          .emit (creatorA, 'Created')
+          .withArgs (minterA.address, 1, 2);
+
+        await expect (minter (minterA, 1, proof)).to.to.be.revertedWith (
+          'RhapsodyCreatorGenerative/invalid-invocation-upper-boundary'
+        );
+      });
+
+      it ('should not be able to transfer NFTs out and mint again', async () => {
+        let leaf = generateLeaf (minterC.address, 1);
+        let proof = claimMerklized.tree.getHexProof (leaf);
+
+        await expect (minter (minterC, 1, proof)).to
+          .emit (creatorA, 'Created')
+          .withArgs (minterC.address, 0, 1);
 
         await creatorA
-          .connect (minterA)
-          .transferFrom (minterA.address, minterB.address, 0);
+          .connect (minterC)
+          .transferFrom (minterC.address, minterB.address, 0);
 
-        await creatorA
-          .connect (minterA)
-          .transferFrom (minterA.address, minterB.address, 1);
-
-        await expect (minter (minterA, 5, proof)).to.to.be.revertedWith (
-          'RhapsodyCreator/invalid-double-mint'
+        await expect (minter (minterC, 1, proof)).to.to.be.revertedWith (
+          'RhapsodyCreatorGenerative/invalid-invocation-upper-boundary'
         );
       });
 
@@ -393,55 +428,9 @@ describe ('RhapsodyCreatorGenerative', () => {
           '0xf55f0dad9adfe0f2aa1946779b3ca83c165360edef49c6b72ddc0e2f070f7ff6',
         ];
 
-        await expect (minter (minterB, 5, wrongProof)).to.be.revertedWith (
-          'RhapsodyCreator/invalid-address-proof'
+        await expect (minter (minterB, 2, wrongProof)).to.be.revertedWith (
+          'RhapsodyCreatorGenerative/invalid-address-proof'
         );
-      });
-
-      describe ('variable whitelist', () => {
-        let claimMerklizedA;
-        beforeEach (async () => {
-          claimMerklizedA = await buildWhitelist ([
-            [minterB.address, 5],
-            [minterA.address, 4],
-            [minterC.address, 3],
-          ]);
-          await creatorA.setClaimMerkleRoot (claimMerklizedA.root);
-        });
-
-        it ('should be able to variable mint', async () => {
-          let leaf = generateLeaf (minterA.address, 4);
-          let proof = claimMerklizedA.tree.getHexProof (leaf);
-          await expect (minter (minterA, 4, proof)).to
-            .emit (creatorA, 'Created')
-            .withArgs (minterA.address, 4);
-
-          leaf = generateLeaf (minterB.address, 5);
-          proof = claimMerklizedA.tree.getHexProof (leaf);
-          await expect (minter (minterB, 5, proof)).to
-            .emit (creatorA, 'Created')
-            .withArgs (minterB.address, 5);
-
-          leaf = generateLeaf (minterC.address, 3);
-          proof = claimMerklizedA.tree.getHexProof (leaf);
-          await expect (minter (minterC, 3, proof)).to
-            .emit (creatorA, 'Created')
-            .withArgs (minterC.address, 3);
-        });
-
-        it ('should fail if trying to mint more than max limit of an allocated address limit', async () => {
-          let leaf = generateLeaf (minterA.address, 4);
-          let proof = claimMerklizedA.tree.getHexProof (leaf);
-          await expect (
-            minter (
-              minterA,
-              creatorTestParams.maxPublicBatchPerAddress + 1,
-              proof
-            )
-          ).to.be.revertedWith (
-            'RhapsodyCreator/invalid-invocation-upper-boundary'
-          );
-        });
       });
     });
 
@@ -454,14 +443,15 @@ describe ('RhapsodyCreatorGenerative', () => {
           deployer,
           overrides
         );
+
         creatorA = await RhapsodyCreator.deploy (
-          creatorTestParams.collectionSize,
-          creatorTestParams.maxPublicBatchPerAddress,
-          creatorTestParams.amountForPromotion,
-          creatorTestParams.mintPrice
+          params.collectionSize,
+          params.maxPublicBatchPerAddress,
+          params.amountForPromotion,
+          params.mintPrice
         );
 
-        await creatorA.setMintMerkleRoot (presaleMerklized.root);
+        await creatorA.setPresaleMerkleRoot (presaleMerklized.root);
 
         await creatorA.setMintTime (
           currentBlockTime + 100,
@@ -486,44 +476,38 @@ describe ('RhapsodyCreatorGenerative', () => {
       });
 
       it ('should be able to mint if address whitelisted', async () => {
-        let leaf = generateLeaf (minterA.address, 5);
+        let leaf = generateLeaf (minterA.address, 2);
         let proof = presaleMerklized.tree.getHexProof (leaf);
-        await expect (presaleMinter (minterA, 5, 5, proof, 0.08 * 5)).to
+        await expect (presaleMinter (minterA, 2, 2, proof, 0.333 * 2)).to
           .emit (creatorA, 'Created')
-          .withArgs (minterA.address, 5);
+          .withArgs (minterA.address, 0, 2);
       });
 
       it ('should be able to mint if less than max invocation limit', async () => {
-        let leaf = generateLeaf (minterA.address, 5);
+        let leaf = generateLeaf (minterA.address, 2);
         let proof = presaleMerklized.tree.getHexProof (leaf);
-        await expect (presaleMinter (minterA, 4, 5, proof, 0.08 * 4)).to
+        await expect (presaleMinter (minterA, 1, 2, proof, 0.333)).to
           .emit (creatorA, 'Created')
-          .withArgs (minterA.address, 4);
-
-        leaf = generateLeaf (minterC.address, 5);
-        proof = presaleMerklized.tree.getHexProof (leaf);
-        await expect (presaleMinter (minterC, 1, 5, proof, 0.08)).to
-          .emit (creatorA, 'Created')
-          .withArgs (minterC.address, 1);
+          .withArgs (minterA.address, 0, 1);
       });
 
       it ('should fail if minting invocation is 0', async () => {
-        let leaf = generateLeaf (minterA.address, 5);
+        let leaf = generateLeaf (minterA.address, 2);
         let proof = presaleMerklized.tree.getHexProof (leaf);
         await expect (
-          presaleMinter (minterA, 0, 5, proof, 0)
+          presaleMinter (minterA, 0, 2, proof, 0)
         ).to.be.revertedWith (
-          'RhapsodyCreator/invalid-invocation-lower-boundary'
+          'RhapsodyCreatorGenerative/invalid-invocation-lower-boundary'
         );
       });
 
       it ('should fail if trying to minting more than maxPresaleBatchPerAddress', async () => {
-        let leaf = generateLeaf (minterA.address, 5);
+        let leaf = generateLeaf (minterA.address, 2);
         let proof = presaleMerklized.tree.getHexProof (leaf);
         await expect (
-          presaleMinter (minterA, 6, 5, proof, 6 * 0.08)
+          presaleMinter (minterA, 3, 2, proof, 3 * 0.333)
         ).to.be.revertedWith (
-          'RhapsodyCreator/invalid-invocation-upper-boundary'
+          'RhapsodyCreatorGenerative/invalid-invocation-upper-boundary'
         );
       });
 
@@ -531,14 +515,18 @@ describe ('RhapsodyCreatorGenerative', () => {
         let leaf = generateLeaf (minterA.address, 5);
         let proof = presaleMerklized.tree.getHexProof (leaf);
         await expect (
-          presaleMinter (minterA, 1, 10, proof, 0.08)
-        ).to.be.revertedWith ('RhapsodyCreator/invalid-address-proof');
+          presaleMinter (minterA, 1, 10, proof, 0.333)
+        ).to.be.revertedWith (
+          'RhapsodyCreatorGenerative/invalid-address-proof'
+        );
 
         leaf = generateLeaf (minterB.address, 5);
         proof = presaleMerklized.tree.getHexProof (leaf);
         await expect (
-          presaleMinter (minterB, 5, 10, proof, 0.08 * 5)
-        ).to.be.revertedWith ('RhapsodyCreator/invalid-address-proof');
+          presaleMinter (minterB, 5, 10, proof, 0.333 * 5)
+        ).to.be.revertedWith (
+          'RhapsodyCreatorGenerative/invalid-address-proof'
+        );
       });
 
       it ('should fail if too much or too little eth supplied', async () => {
@@ -546,73 +534,60 @@ describe ('RhapsodyCreatorGenerative', () => {
         let proof = presaleMerklized.tree.getHexProof (leaf);
         await expect (
           presaleMinter (minterA, 1, 5, proof, 1.5)
-        ).to.be.revertedWith ('RhapsodyCreator/invalid-mint-value');
+        ).to.be.revertedWith ('RhapsodyCreatorGenerative/invalid-mint-value');
 
         leaf = generateLeaf (minterB.address, 5);
         proof = presaleMerklized.tree.getHexProof (leaf);
         await expect (
           presaleMinter (minterB, 5, 10, proof, 0)
-        ).to.be.revertedWith ('RhapsodyCreator/invalid-mint-value');
+        ).to.be.revertedWith ('RhapsodyCreatorGenerative/invalid-mint-value');
       });
 
       it ('should only be able to mint once', async () => {
-        let leaf = generateLeaf (minterA.address, 5);
+        let leaf = generateLeaf (minterA.address, 2);
         let proof = presaleMerklized.tree.getHexProof (leaf);
 
-        await expect (presaleMinter (minterA, 4, 5, proof, 4 * 0.08)).to
+        await expect (presaleMinter (minterA, 1, 2, proof, 1 * 0.333)).to
           .emit (creatorA, 'Created')
-          .withArgs (minterA.address, 4);
+          .withArgs (minterA.address, 0, 1);
 
         await expect (
-          presaleMinter (minterA, 1, 5, proof, 0.08)
-        ).to.to.be.revertedWith ('RhapsodyCreator/invalid-double-mint');
-
-        leaf = generateLeaf (minterB.address, 5);
-        proof = presaleMerklized.tree.getHexProof (leaf);
-
-        await expect (presaleMinter (minterB, 4, 5, proof, 4 * 0.08)).to
-          .emit (creatorA, 'Created')
-          .withArgs (minterB.address, 4);
-
-        await expect (
-          presaleMinter (minterB, 2, 5, proof, 2 * 0.08)
-        ).to.be.revertedWith (
-          'RhapsodyCreator/invalid-invocation-upper-boundary'
+          presaleMinter (minterA, 1, 2, proof, 0.333)
+        ).to.to.be.revertedWith (
+          'RhapsodyCreatorGenerative/invalid-double-mint'
         );
 
-        leaf = generateLeaf (minterC.address, 5);
+        leaf = generateLeaf (minterB.address, 2);
         proof = presaleMerklized.tree.getHexProof (leaf);
 
-        await expect (presaleMinter (minterC, 5, 5, proof, 5 * 0.08)).to
+        await expect (presaleMinter (minterB, 1, 2, proof, 1 * 0.333)).to
           .emit (creatorA, 'Created')
-          .withArgs (minterC.address, 5);
+          .withArgs (minterB.address, 1, 1);
 
         await expect (
-          presaleMinter (minterC, 1, 5, proof, 1 * 0.08)
+          presaleMinter (minterB, 2, 2, proof, 2 * 0.333)
         ).to.be.revertedWith (
-          'RhapsodyCreator/invalid-invocation-upper-boundary'
+          'RhapsodyCreatorGenerative/invalid-invocation-upper-boundary'
         );
       });
 
       it ('should not be able to transfer NFTs out and mint again', async () => {
-        let leaf = generateLeaf (minterA.address, 5);
+        let leaf = generateLeaf (minterA.address, 2);
         let proof = presaleMerklized.tree.getHexProof (leaf);
 
-        await expect (presaleMinter (minterA, 2, 5, proof, 2 * 0.08)).to
+        await expect (presaleMinter (minterA, 1, 2, proof, 0.333)).to
           .emit (creatorA, 'Created')
-          .withArgs (minterA.address, 2);
+          .withArgs (minterA.address, 0, 1);
 
         await creatorA
           .connect (minterA)
           .transferFrom (minterA.address, minterB.address, 0);
 
-        await creatorA
-          .connect (minterA)
-          .transferFrom (minterA.address, minterB.address, 1);
-
         await expect (
-          presaleMinter (minterA, 1, 5, proof, 0.08)
-        ).to.to.be.revertedWith ('RhapsodyCreator/invalid-double-mint');
+          presaleMinter (minterA, 1, 2, proof, 0.333)
+        ).to.to.be.revertedWith (
+          'RhapsodyCreatorGenerative/invalid-double-mint'
+        );
       });
 
       it ('should not be able to mint if not whitelisted', async () => {
@@ -625,8 +600,10 @@ describe ('RhapsodyCreatorGenerative', () => {
         let proof = presaleMerklized.tree.getHexProof (leaf);
 
         await expect (
-          presaleMinter (minterB, 1, 5, wrongProof, 1 * 0.08)
-        ).to.be.revertedWith ('RhapsodyCreator/invalid-address-proof');
+          presaleMinter (minterB, 1, 5, wrongProof, 1 * 0.333)
+        ).to.be.revertedWith (
+          'RhapsodyCreatorGenerative/invalid-address-proof'
+        );
       });
 
       describe ('variable whitelist', () => {
@@ -637,58 +614,58 @@ describe ('RhapsodyCreatorGenerative', () => {
             [minterA.address, 4],
             [minterC.address, 3],
           ]);
-          await creatorA.setMintMerkleRoot (presaleMerklizedA.root);
+          await creatorA.setPresaleMerkleRoot (presaleMerklizedA.root);
         });
 
         it ('should be able to variable mint', async () => {
           let leaf = generateLeaf (minterA.address, 4);
           let proof = presaleMerklizedA.tree.getHexProof (leaf);
-          await expect (presaleMinter (minterA, 2, 4, proof, 2 * 0.08)).to
+          await expect (presaleMinter (minterA, 2, 4, proof, 2 * 0.333)).to
             .emit (creatorA, 'Created')
-            .withArgs (minterA.address, 2);
+            .withArgs (minterA.address, 0, 2);
 
           leaf = generateLeaf (minterB.address, 5);
           proof = presaleMerklizedA.tree.getHexProof (leaf);
-          await expect (presaleMinter (minterB, 4, 5, proof, 4 * 0.08)).to
+          await expect (presaleMinter (minterB, 4, 5, proof, 4 * 0.333)).to
             .emit (creatorA, 'Created')
-            .withArgs (minterB.address, 4);
+            .withArgs (minterB.address, 2, 4);
 
           leaf = generateLeaf (minterC.address, 3);
           proof = presaleMerklizedA.tree.getHexProof (leaf);
-          await expect (presaleMinter (minterC, 1, 3, proof, 1 * 0.08)).to
+          await expect (presaleMinter (minterC, 1, 3, proof, 1 * 0.333)).to
             .emit (creatorA, 'Created')
-            .withArgs (minterC.address, 1);
+            .withArgs (minterC.address, 6, 1);
         });
 
         it ('should only allow max allocated variable amount in merkle root', async () => {
           let leaf = generateLeaf (minterA.address, 4);
           let proof = presaleMerklizedA.tree.getHexProof (leaf);
-          await expect (presaleMinter (minterA, 4, 4, proof, 4 * 0.08)).to
+          await expect (presaleMinter (minterA, 4, 4, proof, 4 * 0.333)).to
             .emit (creatorA, 'Created')
-            .withArgs (minterA.address, 4);
+            .withArgs (minterA.address, 0, 4);
 
           leaf = generateLeaf (minterB.address, 5);
           proof = presaleMerklizedA.tree.getHexProof (leaf);
-          await expect (presaleMinter (minterB, 5, 5, proof, 5 * 0.08)).to
+          await expect (presaleMinter (minterB, 5, 5, proof, 5 * 0.333)).to
             .emit (creatorA, 'Created')
-            .withArgs (minterB.address, 5);
+            .withArgs (minterB.address, 4, 5);
         });
 
         it ('should fail if trying to mint more than max limit of an allocated address limit', async () => {
           let leaf = generateLeaf (minterA.address, 4);
           let proof = presaleMerklizedA.tree.getHexProof (leaf);
           await expect (
-            presaleMinter (minterA, 5, 4, proof, 5 * 0.08)
+            presaleMinter (minterA, 5, 4, proof, 5 * 0.333)
           ).to.be.revertedWith (
-            'RhapsodyCreator/invalid-invocation-upper-boundary'
+            'RhapsodyCreatorGenerative/invalid-invocation-upper-boundary'
           );
 
           leaf = generateLeaf (minterC.address, 3);
           proof = presaleMerklizedA.tree.getHexProof (leaf);
           await expect (
-            presaleMinter (minterC, 4, 3, proof, 4 * 0.08)
+            presaleMinter (minterC, 4, 3, proof, 4 * 0.333)
           ).to.be.revertedWith (
-            'RhapsodyCreator/invalid-invocation-upper-boundary'
+            'RhapsodyCreatorGenerative/invalid-invocation-upper-boundary'
           );
         });
       });
@@ -708,15 +685,10 @@ describe ('RhapsodyCreatorGenerative', () => {
             [minterA.address, 4],
             [minterC.address, 3],
           ]);
-          await creatorA.setMintMerkleRoot (presaleMerklizedA.root);
+          await creatorA.setPresaleMerkleRoot (presaleMerklizedA.root);
 
-          creatorB = await RhapsodyCreator.deploy (
-            12,
-            4,
-            0,
-            creatorTestParams.mintPrice
-          );
-          await creatorB.setMintMerkleRoot (presaleMerklized.root);
+          creatorB = await RhapsodyCreator.deploy (12, 4, 0, params.mintPrice);
+          await creatorB.setPresaleMerkleRoot (presaleMerklized.root);
           await creatorB.setMintTime (
             currentBlockTime + 100,
             currentBlockTime + 105,
@@ -741,50 +713,46 @@ describe ('RhapsodyCreatorGenerative', () => {
       });
 
       it ('should be able to mint nfts in public mint', async () => {
-        await expect (publicMinter (minterA, 1, 0.08)).to
+        await expect (publicMinter (minterA, 1, 0.333)).to
           .emit (creator, 'Created')
-          .withArgs (minterA.address, 1);
+          .withArgs (minterA.address, 0, 1);
 
-        await expect (publicMinter (minterA, 5, 5 * 0.08)).to
+        await expect (publicMinter (minterA, 1, 0.333)).to
           .emit (creator, 'Created')
-          .withArgs (minterA.address, 5);
+          .withArgs (minterA.address, 1, 1);
 
-        await expect (publicMinter (minterA, 14, 14 * 0.08)).to
+        await expect (publicMinter (minterB, 2, 2 * 0.333)).to
           .emit (creator, 'Created')
-          .withArgs (minterA.address, 14);
+          .withArgs (minterB.address, 2, 2);
 
-        await expect (publicMinter (minterB, 20, 0.08 * 20)).to
+        await expect (publicMinter (minterC, 2, 2 * 0.333)).to
           .emit (creator, 'Created')
-          .withArgs (minterB.address, 20);
+          .withArgs (minterC.address, 4, 2);
       });
 
       it ('should only be able to max batch amount of nfts', async () => {
-        await expect (publicMinter (minterA, 20, 0.08 * 20)).to
+        await expect (publicMinter (minterA, 2, 0.333 * 2)).to
           .emit (creator, 'Created')
-          .withArgs (minterA.address, 20);
+          .withArgs (minterA.address, 0, 2);
 
-        await expect (
-          publicMinter (minterB, 21, 0.08 * 21)
-        ).to.be.revertedWith (
-          'RhapsodyCreator/invalid-invocation-upper-boundary'
+        await expect (publicMinter (minterB, 3, 3 * 0.333)).to.be.revertedWith (
+          'RhapsodyCreatorGenerative/invalid-invocation-upper-boundary'
         );
       });
 
       it ('should only be able to mint max batch amount of nfts even in two or more txs', async () => {
-        await expect (publicMinter (minterA, 5, 0.08 * 5)).to
+        await expect (publicMinter (minterA, 1, 0.333)).to
           .emit (creator, 'Created')
-          .withArgs (minterA.address, 5);
+          .withArgs (minterA.address, 0, 1);
 
-        await expect (
-          publicMinter (minterA, 16, 0.08 * 16)
-        ).to.be.revertedWith (
-          'RhapsodyCreator/invalid-invocation-upper-boundary'
+        await expect (publicMinter (minterA, 2, 0.333 * 2)).to.be.revertedWith (
+          'RhapsodyCreatorGenerative/invalid-invocation-upper-boundary'
         );
       });
 
       it ('should fail if minting invocation is 0', async () => {
-        await expect (publicMinter (minterA, 0, 0.08)).to.be.revertedWith (
-          'RhapsodyCreator/invalid-invocation-lower-boundary'
+        await expect (publicMinter (minterA, 0, 0.333)).to.be.revertedWith (
+          'RhapsodyCreatorGenerative/invalid-invocation-lower-boundary'
         );
       });
     });
@@ -873,7 +841,7 @@ describe ('RhapsodyCreatorGenerative', () => {
             currentBlockTime + 110,
             currentBlockTime + 105
           )
-        ).to.be.revertedWith ('RhapsodyCreator/invalid-public-time');
+        ).to.be.revertedWith ('RhapsodyCreatorGenerative/invalid-public-time');
 
         // edge cases
         await expect (
@@ -882,7 +850,7 @@ describe ('RhapsodyCreatorGenerative', () => {
             currentBlockTime + 2,
             currentBlockTime + 1
           )
-        ).to.be.revertedWith ('RhapsodyCreator/invalid-public-time');
+        ).to.be.revertedWith ('RhapsodyCreatorGenerative/invalid-public-time');
 
         await expect (
           creator.setMintTime (
@@ -890,7 +858,7 @@ describe ('RhapsodyCreatorGenerative', () => {
             currentBlockTime + 2,
             currentBlockTime + 0
           )
-        ).to.be.revertedWith ('RhapsodyCreator/invalid-public-time');
+        ).to.be.revertedWith ('RhapsodyCreatorGenerative/invalid-public-time');
       });
 
       it ('presale time cannot be less than the current block timestamp', async () => {
@@ -900,7 +868,7 @@ describe ('RhapsodyCreatorGenerative', () => {
             currentBlockTime - 10,
             currentBlockTime + 10
           )
-        ).to.be.revertedWith ('RhapsodyCreator/invalid-presale-time');
+        ).to.be.revertedWith ('RhapsodyCreatorGenerative/invalid-presale-time');
 
         await expect (
           creator.setMintTime (
@@ -908,7 +876,7 @@ describe ('RhapsodyCreatorGenerative', () => {
             currentBlockTime - 1,
             currentBlockTime
           )
-        ).to.be.revertedWith ('RhapsodyCreator/invalid-presale-time');
+        ).to.be.revertedWith ('RhapsodyCreatorGenerative/invalid-presale-time');
 
         await expect (
           creator.setMintTime (
@@ -916,7 +884,7 @@ describe ('RhapsodyCreatorGenerative', () => {
             currentBlockTime - 2,
             currentBlockTime - 1
           )
-        ).to.be.revertedWith ('RhapsodyCreator/invalid-presale-time');
+        ).to.be.revertedWith ('RhapsodyCreatorGenerative/invalid-presale-time');
       });
     });
   });
@@ -932,36 +900,52 @@ describe ('RhapsodyCreatorGenerative', () => {
 
     describe ('promotionMint', () => {
       it ('should be able to batch mint according to maxBatchSize', async () => {
-        await expect (creator.promotionMint (100)).to
+        await expect (creator.promotionMint (params.amountForPromotion)).to
           .emit (creator, 'Created')
-          .withArgs (admin.address, 100);
+          .withArgs (admin.address, 0, 2)
+          .withArgs (admin.address, 2, 2)
+          .withArgs (admin.address, 4, 2)
+          .withArgs (admin.address, 6, 2)
+          .withArgs (admin.address, 8, 2)
+          .withArgs (admin.address, 10, 2)
+          .withArgs (admin.address, 12, 2)
+          .withArgs (admin.address, 14, 2)
+          .withArgs (admin.address, 16, 2)
+          .withArgs (admin.address, 18, 2);
       });
 
       it ('should be able to batch mint according to maxBatchSize multiple times', async () => {
-        await expect (creator.promotionMint (20)).to
+        await expect (creator.promotionMint (6)).to
           .emit (creator, 'Created')
-          .withArgs (admin.address, 20);
-        await expect (creator.promotionMint (40)).to
+          .withArgs (admin.address, 0, 2)
+          .withArgs (admin.address, 2, 2)
+          .withArgs (admin.address, 4, 2);
+
+        await expect (creator.promotionMint (6)).to
           .emit (creator, 'Created')
-          .withArgs (admin.address, 40);
-        await expect (creator.promotionMint (40)).to
+          .withArgs (admin.address, 6, 2)
+          .withArgs (admin.address, 8, 2)
+          .withArgs (admin.address, 10, 2);
+
+        await expect (creator.promotionMint (8)).to
           .emit (creator, 'Created')
-          .withArgs (admin.address, 40);
+          .withArgs (admin.address, 12, 2)
+          .withArgs (admin.address, 14, 2)
+          .withArgs (admin.address, 16, 2)
+          .withArgs (admin.address, 18, 2);
       });
 
       it ('should only be able to mint max promotional nfts', async () => {
-        await expect (creator.promotionMint (100)).to
-          .emit (creator, 'Created')
-          .withArgs (admin.address, 100);
+        creator.promotionMint (20);
 
         await expect (creator.promotionMint (1)).to.be.revertedWith (
-          'RhapsodyCreator/invalid-promotion-supply'
+          'RhapsodyCreatorGenerative/invalid-promotion-supply'
         );
       });
 
       it ('should fail if not minting according to maxBatchSize', async () => {
         await expect (creator.promotionMint (1)).to.be.revertedWith (
-          'RhapsodyCreator/invalid-batch-multiple'
+          'RhapsodyCreatorGenerative/invalid-batch-multiple'
         );
       });
 
@@ -986,17 +970,18 @@ describe ('RhapsodyCreatorGenerative', () => {
             collectionSize,
             maxPublicBatchPerAddress,
             amountForPromotion,
-            creatorTestParams.mintPrice
+            params.mintPrice
           );
           await creatorA.setMintRandomizerContract (randomizer.address);
           await randomizer.addDependency (creatorA.address);
-          await creatorA.setMintMerkleRoot (presaleMerklized.root);
+          await creatorA.setPresaleMerkleRoot (presaleMerklized.root);
         });
 
         it ('should not allow to mint more than promotionMint if some nfts already minted', async () => {
           await expect (creatorA.promotionMint (4)).to
             .emit (creatorA, 'Created')
-            .withArgs (admin.address, 4);
+            .withArgs (admin.address, 0, 2)
+            .withArgs (admin.address, 2, 2);
 
           await creatorA.setMintTime (
             currentBlockTime + 1,
@@ -1006,10 +991,10 @@ describe ('RhapsodyCreatorGenerative', () => {
 
           await creatorA
             .connect (minterA)
-            .publicMint (2, {value: parseEther (0.08 * 2)});
+            .publicMint (2, {value: parseEther (0.333 * 2)});
 
           await expect (creatorA.promotionMint (4)).to.be.revertedWith (
-            'RhapsodyCreator/invalid-promotion-supply'
+            'RhapsodyCreatorGenerative/invalid-promotion-supply'
           );
         });
 
@@ -1021,12 +1006,12 @@ describe ('RhapsodyCreatorGenerative', () => {
           );
           await creatorA
             .connect (minterA)
-            .publicMint (2, {value: parseEther (0.08 * 2)});
+            .publicMint (2, {value: parseEther (0.333 * 2)});
           await expect (creatorA.promotionMint (2)).to
             .emit (creatorA, 'Created')
-            .withArgs (admin.address, 2);
+            .withArgs (admin.address, 2, 2);
           await expect (creatorA.promotionMint (2)).to.be.revertedWith (
-            'RhapsodyCreator/invalid-promotion-supply'
+            'RhapsodyCreatorGenerative/invalid-promotion-supply'
           );
         });
       });

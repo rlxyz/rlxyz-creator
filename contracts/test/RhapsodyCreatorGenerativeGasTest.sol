@@ -3,7 +3,7 @@ pragma solidity ^0.8.0;
 
 import "../RhapsodyCreatorGenerative.sol";
 
-contract RhapsodyCreatorGenerativeTest is RhapsodyCreatorGenerative {
+contract RhapsodyCreatorGenerativeGasTest is RhapsodyCreatorGenerative {
     constructor(
         uint256 _collectionSize,
         uint256 _maxPublicBatchPerAddress,
@@ -26,5 +26,13 @@ contract RhapsodyCreatorGenerativeTest is RhapsodyCreatorGenerative {
 
     function _generateUniqueIdentifier(uint256 seed) internal view override returns (bytes32) {
         return keccak256(abi.encodePacked(seed));
+    }
+
+    function mintOne(address to) public {
+        _mintMany(to, 1);
+    }
+
+    function mintTwo(address to) public {
+        _mintMany(to, 2);
     }
 }

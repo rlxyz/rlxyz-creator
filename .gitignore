@@ -35,3 +35,4 @@ typechain/
 cache/
 artifacts/
 deployments/local*
+generator.log*

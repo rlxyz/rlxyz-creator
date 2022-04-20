@@ -1,20 +1,20 @@
 {
   "name": "RhapsodyCreatorGenerativeRinkeby",
   "deploy": {
-    "collectionSize": 1111,
+    "collectionSize": 10000,
     "maxPublicBatchPerAddress": 2,
-    "amountForPromotion": 50,
+    "amountForPromotion": 10000,
     "mintPrice": "50000000000000000"
   },
   "postDeploy": {
     "baseTokenURI": "http://7818-2001-8003-5da8-5000-4c39-b96-5330-1ed.ngrok.io/reflection/",
     "claimMerkleRoot": "",
     "presaleMerkleRoot": "",
-    "claimTime": 1646217000,
-    "presaleTime": 1646217001,
-    "publicTime": 1646217002
+    "claimTime": 1649323146,
+    "presaleTime": 1649323147,
+    "publicTime": 1649323148
   },
   "start": {
-    "amountForPromotion": 10
+    "amountForPromotion": 310
   }
 }

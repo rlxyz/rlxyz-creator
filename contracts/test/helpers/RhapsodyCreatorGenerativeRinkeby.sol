@@ -6,7 +6,7 @@ import "../../RhapsodyCreatorGenerative.sol";
 // @notice this RhapsodyCreatorRinkeby is used in testnets such as rinkeby
 contract RhapsodyCreatorGenerativeRinkeby is RhapsodyCreatorGenerative {
     /// @notice Semver Version
-    string public constant VERSION = "0.0.1";
+    string public constant VERSION = "0.1.7";
 
     constructor(
         uint256 _collectionSize,
@@ -24,7 +24,7 @@ contract RhapsodyCreatorGenerativeRinkeby is RhapsodyCreatorGenerative {
         )
     {}
 
-    function _generateRandomValue() internal view override returns (bytes32) {
-        return keccak256(abi.encodePacked((block.number)));
+    function _generateUniqueIdentifier(uint256 seed) internal view override returns (bytes32) {
+        return keccak256(abi.encodePacked(seed));
     }
 }
