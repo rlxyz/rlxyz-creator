@@ -1,5 +1,5 @@
 const {overrides, parseEther} = require ('./helpers/constant');
-
+const hre = require ('hardhat');
 const currentBlockTime = 123456789;
 const params = {
   collectionSize: 1111,

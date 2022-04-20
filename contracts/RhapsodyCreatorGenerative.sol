@@ -154,14 +154,6 @@ contract RhapsodyCreatorGenerative is ERC721A, ERC721AOwnersExplicit, Ownable, R
         emit Created(to, currentInvocations, invocations);
     }
 
-    function _generateRandomValue() internal view virtual returns (bytes32) {
-        return mintRandomizerContract.getRandomValue();
-    }
-
-    function _generateUniqueIdentifier(uint256 seed) internal view virtual returns (bytes32) {
-        return keccak256(abi.encodePacked(seed, block.number, blockhash(block.number.sub(1)), _generateRandomValue()));
-    }
-
     /// @notice Set the time for the mint
     /// @param _presaleTime time the presale starts
     /// @param _publicTime time the public sale starts
@@ -288,6 +280,8 @@ contract RhapsodyCreatorGenerative is ERC721A, ERC721AOwnersExplicit, Ownable, R
         _setOwnersExplicit(quantity);
     }
 
+    /// =========== Helpers ===========
+
     /// @notice internally returns the number of mints of an address
     function _mintOf(address _owner) internal view returns (uint256) {
         return _numberMinted(_owner);
@@ -302,5 +296,9 @@ contract RhapsodyCreatorGenerative is ERC721A, ERC721AOwnersExplicit, Ownable, R
     function tokenHash(uint256 _tokenId) public view returns (bytes32) {
         if (!_exists(_tokenId)) revert HashQueryForNonexistentToken();
         return _tokenHash[_tokenId];
+    }
+
+    function _generateUniqueIdentifier(uint256 seed) internal view virtual returns (bytes32) {
+        return keccak256(abi.encodePacked(seed, block.number, mintRandomizerContract.getRandomValue()));
     }
 }

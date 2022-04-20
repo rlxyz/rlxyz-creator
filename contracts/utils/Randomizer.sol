@@ -16,8 +16,8 @@ contract Randomizer is IRandomizer, Ownable {
         dependencies[_dependency] = false;
     }
 
-    function getRandomValue() external view onlyDependency returns (bytes32) {
-        return keccak256(abi.encodePacked(123 * block.timestamp));
+    function getRandomValue() external view onlyDependency returns (uint256) {
+        return uint256(blockhash(block.number - 1)) + 369963;
     }
 
     modifier onlyDependency() {
