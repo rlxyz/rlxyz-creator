@@ -4,9 +4,19 @@ const hre = require ('hardhat');
 const {overrides, parseEther} = require ('./helpers/constant');
 const {buildWhitelist, generateLeaf} = require ('../scripts/helpers/whitelist');
 const {keccak256} = require ('@ethersproject/keccak256');
+const {defaultAbiCoder} = require ('@ethersproject/abi');
 const currentBlockTime = 123456789;
 const name = 'Rhapsody Creator Test';
 const symbol = 'RCT';
+
+const keccak256Hashes = {
+  0: keccak256 (defaultAbiCoder.encode (['uint256'], [0])),
+  1: keccak256 (defaultAbiCoder.encode (['uint256'], [1])),
+  2: keccak256 (defaultAbiCoder.encode (['uint256'], [2])),
+  3: keccak256 (defaultAbiCoder.encode (['uint256'], [3])),
+  4: keccak256 (defaultAbiCoder.encode (['uint256'], [4])),
+  5: keccak256 (defaultAbiCoder.encode (['uint256'], [5])),
+};
 
 const params = {
   collectionSize: 1111,
@@ -261,45 +271,6 @@ describe ('RhapsodyCreatorGenerative', () => {
         'HashQueryForNonexistentToken'
       );
     });
-
-    // describe ('maxCollection', () => {
-    //   it ('should all be unique token hashes', async () => {
-    //     const RhapsodyCreator = await hre.ethers.getContractFactory (
-    //       'RhapsodyCreatorGenerativeTest',
-    //       deployer,
-    //       overrides
-    //     );
-    //     creatorA = await RhapsodyCreator.deploy (
-    //       1200,
-    //       1200,
-    //       0,
-    //       parseEther (0.01)
-    //     );
-    //     await creatorA.setMintTime (
-    //       currentBlockTime + 100,
-    //       currentBlockTime + 105,
-    //       currentBlockTime + 110
-    //     );
-    //     await creatorA.setMintRandomizerContract (randomizer.address);
-    //     randomizer.addDependency (creatorA.address);
-
-    //     let hashes = [];
-    //     for (let i = 0; i < 12; i++) {
-    //       await expect (
-    //         creatorA.connect (minterA).publicMint (100, {
-    //           value: parseEther (0.01 * 100),
-    //         })
-    //       )
-    //         .emit (creatorA, 'Created')
-    //         .withArgs (minterA.address, i * 100, 100);
-
-    //       for (let id = 0; id < 100; id++) {
-    //         hashes.push (await creatorA.tokenHash (id * i));
-    //       }
-    //     }
-    //     console.log (hashes);
-    //   });
-    // });
   });
 
   describe ('sale', () => {
@@ -338,7 +309,10 @@ describe ('RhapsodyCreatorGenerative', () => {
         let proof = claimMerklized.tree.getHexProof (leaf);
         await expect (minter (minterA, 2, proof)).to
           .emit (creatorA, 'Created')
-          .withArgs (minterA.address, 2, 2, [keccak256 (0), keccak256 (1)]);
+          .withArgs (minterA.address, 2, 2, [
+            keccak256Hashes[0],
+            keccak256Hashes[1],
+          ]);
       });
 
       it ('should not be able to mint if less than allocated invocation', async () => {
@@ -387,7 +361,7 @@ describe ('RhapsodyCreatorGenerative', () => {
 
         await expect (minter (minterC, 1, proof)).to
           .emit (creatorA, 'Created')
-          .withArgs (minterC.address, 0, 1);
+          .withArgs (minterC.address, 1, 1, [keccak256Hashes[0]]);
 
         await expect (minter (minterC, 1, proof)).to.to.be.revertedWith (
           'RhapsodyCreatorGenerative/invalid-invocation-upper-boundary'
@@ -398,7 +372,10 @@ describe ('RhapsodyCreatorGenerative', () => {
 
         await expect (minter (minterA, 2, proof)).to
           .emit (creatorA, 'Created')
-          .withArgs (minterA.address, 1, 2);
+          .withArgs (minterA.address, 3, 2, [
+            keccak256Hashes[1],
+            keccak256Hashes[2],
+          ]);
 
         await expect (minter (minterA, 1, proof)).to.to.be.revertedWith (
           'RhapsodyCreatorGenerative/invalid-invocation-upper-boundary'
@@ -411,7 +388,7 @@ describe ('RhapsodyCreatorGenerative', () => {
 
         await expect (minter (minterC, 1, proof)).to
           .emit (creatorA, 'Created')
-          .withArgs (minterC.address, 0, 1);
+          .withArgs (minterC.address, 1, 1, [keccak256Hashes[0]]);
 
         await creatorA
           .connect (minterC)
@@ -480,7 +457,10 @@ describe ('RhapsodyCreatorGenerative', () => {
         let proof = presaleMerklized.tree.getHexProof (leaf);
         await expect (presaleMinter (minterA, 2, 2, proof, 0.333 * 2)).to
           .emit (creatorA, 'Created')
-          .withArgs (minterA.address, 0, 2);
+          .withArgs (minterA.address, 2, 2, [
+            keccak256Hashes[0],
+            keccak256Hashes[1],
+          ]);
       });
 
       it ('should be able to mint if less than max invocation limit', async () => {
@@ -488,7 +468,7 @@ describe ('RhapsodyCreatorGenerative', () => {
         let proof = presaleMerklized.tree.getHexProof (leaf);
         await expect (presaleMinter (minterA, 1, 2, proof, 0.333)).to
           .emit (creatorA, 'Created')
-          .withArgs (minterA.address, 0, 1);
+          .withArgs (minterA.address, 1, 1, [keccak256Hashes[0]]);
       });
 
       it ('should fail if minting invocation is 0', async () => {
@@ -543,41 +523,40 @@ describe ('RhapsodyCreatorGenerative', () => {
         ).to.be.revertedWith ('RhapsodyCreatorGenerative/invalid-mint-value');
       });
 
-      it ('should only be able to mint once', async () => {
+      it ('should be able to mint more than once', async () => {
         let leaf = generateLeaf (minterA.address, 2);
         let proof = presaleMerklized.tree.getHexProof (leaf);
 
         await expect (presaleMinter (minterA, 1, 2, proof, 1 * 0.333)).to
           .emit (creatorA, 'Created')
-          .withArgs (minterA.address, 0, 1);
+          .withArgs (minterA.address, 1, 1, [keccak256Hashes[0]]);
 
-        await expect (
-          presaleMinter (minterA, 1, 2, proof, 0.333)
-        ).to.to.be.revertedWith (
-          'RhapsodyCreatorGenerative/invalid-double-mint'
-        );
+        await expect (presaleMinter (minterA, 1, 2, proof, 0.333)).to
+          .emit (creatorA, 'Created')
+          .withArgs (minterA.address, 2, 1, [keccak256Hashes[1]]);
 
         leaf = generateLeaf (minterB.address, 2);
         proof = presaleMerklized.tree.getHexProof (leaf);
 
         await expect (presaleMinter (minterB, 1, 2, proof, 1 * 0.333)).to
           .emit (creatorA, 'Created')
-          .withArgs (minterB.address, 1, 1);
+          .withArgs (minterB.address, 3, 1, [keccak256Hashes[2]]);
 
-        await expect (
-          presaleMinter (minterB, 2, 2, proof, 2 * 0.333)
-        ).to.be.revertedWith (
-          'RhapsodyCreatorGenerative/invalid-invocation-upper-boundary'
-        );
+        await expect (presaleMinter (minterB, 1, 2, proof, 1 * 0.333)).to
+          .emit (creatorA, 'Created')
+          .withArgs (minterB.address, 4, 1, [keccak256Hashes[3]]);
       });
 
       it ('should not be able to transfer NFTs out and mint again', async () => {
         let leaf = generateLeaf (minterA.address, 2);
         let proof = presaleMerklized.tree.getHexProof (leaf);
 
-        await expect (presaleMinter (minterA, 1, 2, proof, 0.333)).to
+        await expect (presaleMinter (minterA, 2, 2, proof, 0.333 * 2)).to
           .emit (creatorA, 'Created')
-          .withArgs (minterA.address, 0, 1);
+          .withArgs (minterA.address, 2, 2, [
+            keccak256Hashes[0],
+            keccak256Hashes[1],
+          ]);
 
         await creatorA
           .connect (minterA)
@@ -586,7 +565,7 @@ describe ('RhapsodyCreatorGenerative', () => {
         await expect (
           presaleMinter (minterA, 1, 2, proof, 0.333)
         ).to.to.be.revertedWith (
-          'RhapsodyCreatorGenerative/invalid-double-mint'
+          'RhapsodyCreatorGenerative/invalid-invocation-upper-boundary'
         );
       });
 
@@ -595,12 +574,8 @@ describe ('RhapsodyCreatorGenerative', () => {
           '0x1428975b69ccaa80e5613347ec07d7a0696894fc28b3655983d43f9eb00032a1',
           '0xf55f0dad9adfe0f2aa1946779b3ca83c165360edef49c6b72ddc0e2f070f7ff6',
         ];
-
-        let leaf = generateLeaf (minterB.address, 5);
-        let proof = presaleMerklized.tree.getHexProof (leaf);
-
         await expect (
-          presaleMinter (minterB, 1, 5, wrongProof, 1 * 0.333)
+          presaleMinter (minterB, 1, 2, wrongProof, 1 * 0.333)
         ).to.be.revertedWith (
           'RhapsodyCreatorGenerative/invalid-address-proof'
         );
@@ -622,19 +597,29 @@ describe ('RhapsodyCreatorGenerative', () => {
           let proof = presaleMerklizedA.tree.getHexProof (leaf);
           await expect (presaleMinter (minterA, 2, 4, proof, 2 * 0.333)).to
             .emit (creatorA, 'Created')
-            .withArgs (minterA.address, 0, 2);
+            .withArgs (minterA.address, 2, 2, [
+              keccak256Hashes[0],
+              keccak256Hashes[1],
+            ]);
 
           leaf = generateLeaf (minterB.address, 5);
           proof = presaleMerklizedA.tree.getHexProof (leaf);
           await expect (presaleMinter (minterB, 4, 5, proof, 4 * 0.333)).to
             .emit (creatorA, 'Created')
-            .withArgs (minterB.address, 2, 4);
+            .withArgs (minterB.address, 6, 4, [
+              keccak256Hashes[2],
+              keccak256Hashes[3],
+              keccak256Hashes[4],
+              keccak256Hashes[5],
+            ]);
 
           leaf = generateLeaf (minterC.address, 3);
           proof = presaleMerklizedA.tree.getHexProof (leaf);
           await expect (presaleMinter (minterC, 1, 3, proof, 1 * 0.333)).to
             .emit (creatorA, 'Created')
-            .withArgs (minterC.address, 6, 1);
+            .withArgs (minterC.address, 7, 1, [
+              keccak256 (defaultAbiCoder.encode (['uint256'], [6])),
+            ]);
         });
 
         it ('should only allow max allocated variable amount in merkle root', async () => {
@@ -642,13 +627,24 @@ describe ('RhapsodyCreatorGenerative', () => {
           let proof = presaleMerklizedA.tree.getHexProof (leaf);
           await expect (presaleMinter (minterA, 4, 4, proof, 4 * 0.333)).to
             .emit (creatorA, 'Created')
-            .withArgs (minterA.address, 0, 4);
+            .withArgs (minterA.address, 4, 4, [
+              keccak256Hashes[0],
+              keccak256Hashes[1],
+              keccak256Hashes[2],
+              keccak256Hashes[3],
+            ]);
 
           leaf = generateLeaf (minterB.address, 5);
           proof = presaleMerklizedA.tree.getHexProof (leaf);
           await expect (presaleMinter (minterB, 5, 5, proof, 5 * 0.333)).to
             .emit (creatorA, 'Created')
-            .withArgs (minterB.address, 4, 5);
+            .withArgs (minterB.address, 9, 5, [
+              keccak256Hashes[4],
+              keccak256Hashes[5],
+              keccak256 (defaultAbiCoder.encode (['uint256'], [6])),
+              keccak256 (defaultAbiCoder.encode (['uint256'], [7])),
+              keccak256 (defaultAbiCoder.encode (['uint256'], [8])),
+            ]);
         });
 
         it ('should fail if trying to mint more than max limit of an allocated address limit', async () => {
@@ -715,25 +711,34 @@ describe ('RhapsodyCreatorGenerative', () => {
       it ('should be able to mint nfts in public mint', async () => {
         await expect (publicMinter (minterA, 1, 0.333)).to
           .emit (creator, 'Created')
-          .withArgs (minterA.address, 0, 1);
+          .withArgs (minterA.address, 1, 1, [keccak256Hashes[0]]);
 
         await expect (publicMinter (minterA, 1, 0.333)).to
           .emit (creator, 'Created')
-          .withArgs (minterA.address, 1, 1);
+          .withArgs (minterA.address, 2, 1, [keccak256Hashes[1]]);
 
         await expect (publicMinter (minterB, 2, 2 * 0.333)).to
           .emit (creator, 'Created')
-          .withArgs (minterB.address, 2, 2);
+          .withArgs (minterB.address, 4, 2, [
+            keccak256Hashes[2],
+            keccak256Hashes[3],
+          ]);
 
         await expect (publicMinter (minterC, 2, 2 * 0.333)).to
           .emit (creator, 'Created')
-          .withArgs (minterC.address, 4, 2);
+          .withArgs (minterC.address, 6, 2, [
+            keccak256Hashes[4],
+            keccak256Hashes[5],
+          ]);
       });
 
       it ('should only be able to max batch amount of nfts', async () => {
         await expect (publicMinter (minterA, 2, 0.333 * 2)).to
           .emit (creator, 'Created')
-          .withArgs (minterA.address, 0, 2);
+          .withArgs (minterA.address, 2, 2, [
+            keccak256Hashes[0],
+            keccak256Hashes[1],
+          ]);
 
         await expect (publicMinter (minterB, 3, 3 * 0.333)).to.be.revertedWith (
           'RhapsodyCreatorGenerative/invalid-invocation-upper-boundary'
@@ -743,7 +748,7 @@ describe ('RhapsodyCreatorGenerative', () => {
       it ('should only be able to mint max batch amount of nfts even in two or more txs', async () => {
         await expect (publicMinter (minterA, 1, 0.333)).to
           .emit (creator, 'Created')
-          .withArgs (minterA.address, 0, 1);
+          .withArgs (minterA.address, 1, 1, [keccak256Hashes[0]]);
 
         await expect (publicMinter (minterA, 2, 0.333 * 2)).to.be.revertedWith (
           'RhapsodyCreatorGenerative/invalid-invocation-upper-boundary'
@@ -902,37 +907,46 @@ describe ('RhapsodyCreatorGenerative', () => {
       it ('should be able to batch mint according to maxBatchSize', async () => {
         await expect (creator.promotionMint (params.amountForPromotion)).to
           .emit (creator, 'Created')
-          .withArgs (admin.address, 0, 2)
-          .withArgs (admin.address, 2, 2)
-          .withArgs (admin.address, 4, 2)
-          .withArgs (admin.address, 6, 2)
-          .withArgs (admin.address, 8, 2)
-          .withArgs (admin.address, 10, 2)
-          .withArgs (admin.address, 12, 2)
-          .withArgs (admin.address, 14, 2)
-          .withArgs (admin.address, 16, 2)
-          .withArgs (admin.address, 18, 2);
+          .withArgs (admin.address, 2, 2, [
+            keccak256Hashes[0],
+            keccak256Hashes[1],
+          ])
+          .withArgs (admin.address, 4, 2, [
+            keccak256Hashes[2],
+            keccak256Hashes[3],
+          ])
+          .withArgs (admin.address, 18, 2, [
+            keccak256 (defaultAbiCoder.encode (['uint256'], [16])),
+            keccak256 (defaultAbiCoder.encode (['uint256'], [17])),
+          ]);
       });
 
       it ('should be able to batch mint according to maxBatchSize multiple times', async () => {
         await expect (creator.promotionMint (6)).to
           .emit (creator, 'Created')
-          .withArgs (admin.address, 0, 2)
-          .withArgs (admin.address, 2, 2)
-          .withArgs (admin.address, 4, 2);
+          .withArgs (admin.address, 2, 2, [
+            keccak256Hashes[0],
+            keccak256Hashes[1],
+          ])
+          .withArgs (admin.address, 4, 2, [
+            keccak256Hashes[2],
+            keccak256Hashes[3],
+          ])
+          .withArgs (admin.address, 6, 2, [
+            keccak256Hashes[4],
+            keccak256Hashes[5],
+          ]);
 
         await expect (creator.promotionMint (6)).to
           .emit (creator, 'Created')
-          .withArgs (admin.address, 6, 2)
-          .withArgs (admin.address, 8, 2)
-          .withArgs (admin.address, 10, 2);
-
-        await expect (creator.promotionMint (8)).to
-          .emit (creator, 'Created')
-          .withArgs (admin.address, 12, 2)
-          .withArgs (admin.address, 14, 2)
-          .withArgs (admin.address, 16, 2)
-          .withArgs (admin.address, 18, 2);
+          .withArgs (admin.address, 8, 2, [
+            keccak256 (defaultAbiCoder.encode (['uint256'], [6])),
+            keccak256 (defaultAbiCoder.encode (['uint256'], [7])),
+          ])
+          .withArgs (admin.address, 10, 2, [
+            keccak256 (defaultAbiCoder.encode (['uint256'], [8])),
+            keccak256 (defaultAbiCoder.encode (['uint256'], [9])),
+          ]);
       });
 
       it ('should only be able to mint max promotional nfts', async () => {
@@ -980,8 +994,14 @@ describe ('RhapsodyCreatorGenerative', () => {
         it ('should not allow to mint more than promotionMint if some nfts already minted', async () => {
           await expect (creatorA.promotionMint (4)).to
             .emit (creatorA, 'Created')
-            .withArgs (admin.address, 0, 2)
-            .withArgs (admin.address, 2, 2);
+            .withArgs (admin.address, 2, 2, [
+              keccak256Hashes[0],
+              keccak256Hashes[1],
+            ])
+            .withArgs (admin.address, 4, 2, [
+              keccak256Hashes[2],
+              keccak256Hashes[3],
+            ]);
 
           await creatorA.setMintTime (
             currentBlockTime + 1,
@@ -1009,12 +1029,62 @@ describe ('RhapsodyCreatorGenerative', () => {
             .publicMint (2, {value: parseEther (0.333 * 2)});
           await expect (creatorA.promotionMint (2)).to
             .emit (creatorA, 'Created')
-            .withArgs (admin.address, 2, 2);
+            .withArgs (admin.address, 4, 2, [
+              keccak256Hashes[2],
+              keccak256Hashes[3],
+            ]);
           await expect (creatorA.promotionMint (2)).to.be.revertedWith (
             'RhapsodyCreatorGenerative/invalid-promotion-supply'
           );
         });
       });
+    });
+  });
+
+  describe ('maxCollection', function () {
+    this.timeout (10000);
+    let creatorA;
+    let minter;
+    beforeEach (async () => {
+      const RhapsodyCreator = await hre.ethers.getContractFactory (
+        'RhapsodyCreatorGenerative',
+        deployer,
+        overrides
+      );
+      creatorA = await RhapsodyCreator.deploy (
+        'Random',
+        'R',
+        1200,
+        1200,
+        0,
+        parseEther (0.01)
+      );
+
+      await creatorA.setClaimMerkleRoot (claimMerklized.root);
+
+      await creatorA.setMintTime (
+        currentBlockTime + 100,
+        currentBlockTime + 105,
+        currentBlockTime + 110
+      );
+      await creatorA.setMintRandomizerContract (randomizer.address);
+      randomizer.addDependency (creatorA.address);
+    });
+
+    it ('should all be unique token hashes', async () => {
+      let hashes = {};
+      for (let i = 0; i < 12; i++) {
+        await creatorA.connect (minterA).publicMint (100, {
+          value: parseEther (0.01 * 100),
+        });
+        for (let id = 0; id < 100; id++) {
+          const hash = await creatorA.tokenHash (id * (i + 1));
+          if (hashes[hash] !== undefined) {
+            console.log ('found existing token hash');
+            throw new Error ('it failed');
+          }
+        }
+      }
     });
   });
 });

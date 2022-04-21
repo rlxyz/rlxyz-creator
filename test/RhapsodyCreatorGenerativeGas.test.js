@@ -5,7 +5,7 @@ const currentBlockTime = 123456789;
 const params = {
   collectionSize: 1111,
   maxPresaleBatchPerAddress: 5,
-  maxPublicBatchPerAddress: 100,
+  maxPublicBatchPerAddress: 1000,
   amountForPromotion: 100,
   mintPrice: parseEther (0.333),
 };
@@ -27,12 +27,6 @@ describe ('RhapsodyCreatorGenerativeGas', () => {
       params.mintPrice
     );
 
-    await this.creator.setMintTime (
-      currentBlockTime + 1,
-      currentBlockTime + 2,
-      currentBlockTime + 3
-    );
-
     this.deployer = deployer;
     this.addr1 = addr1;
   });
@@ -47,15 +41,14 @@ describe ('RhapsodyCreatorGenerativeGas', () => {
         // .withArgs (this.addr1.address, i, 1);
       }
     });
-
-    it ('should mint two', async () => {
-      for (let i = 0; i < 50; i++) {
-        // await expect (
-        this.creator.mintTwo (this.addr1.address);
-        // ).to
-        // .emit (this.creator, 'Created')
-        // .withArgs (this.addr1.address, i * 2, 2);
-      }
-    });
+    // it ('should mint two', async () => {
+    //   try {
+    //     for (let i = 0; i < 50; i++) {
+    //       this.creator.mintOne (this.addr1.address);
+    //     }
+    //   } catch (e) {
+    //     console.log ('dafuq');
+    //   }
+    // });
   });
 });

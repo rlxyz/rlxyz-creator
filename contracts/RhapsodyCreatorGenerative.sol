@@ -99,6 +99,7 @@ contract RhapsodyCreatorGenerative is ERC721A, ERC721AOwnersExplicit, Ownable, R
     /// @dev user must mint max invocations
     function claimMint(uint256 invocations, bytes32[] calldata proof)
         external
+        nonReentrant
         isMintLive(claimTime)
         isMintValid(invocations, invocations)
         isMintProofValid(invocations, msg.sender, proof, claimMerkleRoot)
@@ -117,12 +118,12 @@ contract RhapsodyCreatorGenerative is ERC721A, ERC721AOwnersExplicit, Ownable, R
     )
         external
         payable
+        nonReentrant
         isMintLive(presaleTime)
         isMintValid(invocations, maxInvocation)
         isMintPricingValid(invocations)
         isMintProofValid(maxInvocation, msg.sender, proof, presaleMerkleRoot)
     {
-        require(_mintOf(msg.sender) == 0, "RhapsodyCreatorGenerative/invalid-double-mint");
         _mintMany(msg.sender, invocations);
     }
 
@@ -132,6 +133,7 @@ contract RhapsodyCreatorGenerative is ERC721A, ERC721AOwnersExplicit, Ownable, R
     function publicMint(uint256 invocations)
         external
         payable
+        nonReentrant
         isMintLive(publicTime)
         isMintValid(invocations, maxPublicBatchPerAddress)
         isMintPricingValid(invocations)
@@ -145,7 +147,6 @@ contract RhapsodyCreatorGenerative is ERC721A, ERC721AOwnersExplicit, Ownable, R
     function _mintMany(address to, uint256 invocations) internal {
         _safeMint(to, invocations);
 
-        // after mint
         uint256 currentTotalSupply = totalSupply();
         uint256 currentInvocations = currentTotalSupply.sub(invocations);
         bytes32[] memory uniqueIdentifiers = new bytes32[](invocations);
@@ -170,8 +171,6 @@ contract RhapsodyCreatorGenerative is ERC721A, ERC721AOwnersExplicit, Ownable, R
         uint256 _presaleTime,
         uint256 _publicTime
     ) public onlyOwner {
-        // tbr: remove
-        require(_claimTime > _currentTime(), "RhapsodyCreatorGenerative/invalid-claim-time");
         require(_presaleTime > _claimTime, "RhapsodyCreatorGenerative/invalid-presale-time");
         require(_publicTime > _presaleTime, "RhapsodyCreatorGenerative/invalid-public-time");
         claimTime = _claimTime;
@@ -308,6 +307,6 @@ contract RhapsodyCreatorGenerative is ERC721A, ERC721AOwnersExplicit, Ownable, R
     }
 
     function _generateUniqueIdentifier(uint256 seed) internal view virtual returns (bytes32) {
-        return keccak256(abi.encodePacked(seed, block.number, mintRandomizerContract.getRandomValue()));
+        return keccak256(abi.encodePacked(seed, tx.origin, block.number - 1, mintRandomizerContract.getRandomValue()));
     }
 }

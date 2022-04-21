@@ -29,10 +29,10 @@ contract RhapsodyCreatorGenerativeGasTest is RhapsodyCreatorGenerative {
     }
 
     function mintOne(address to) public {
-        _mintMany(to, 1);
+        _mintMany(to, 2);
     }
 
     function mintTwo(address to) public {
-        _mintMany(to, 2);
+        _mintMany(to, 1);
     }
 }
