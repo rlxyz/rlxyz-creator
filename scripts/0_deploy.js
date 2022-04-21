@@ -39,9 +39,18 @@ const runner = async () => {
     skipIfAlreadyDeployed: false,
   });
 
-  let creatorAddress = creatorResult.address;
+  const randomizer = await deploy ('Randomizer', {
+    contract: 'Randomizer',
+    from: deployer,
+    skipIfAlreadyDeployed: false,
+  });
 
+  let creatorAddress = creatorResult.address;
+  let randomizerAddress = randomizer.address;
+
+  dim (`  - Randomizer:             `, randomizerAddress);
   dim (`  - ${deployContractName}:             `, creatorAddress);
+
   dim ('\n~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~');
   green ('Contract Deployments Complete!');
   dim ('~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n');

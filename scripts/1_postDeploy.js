@@ -17,7 +17,9 @@ const {
 const prepare = async () => {
   const {deployments, getNamedAccounts} = hardhat;
   const creator = await deployments.get (deployContractName);
+  const randomizer = await deployments.get ('Randomizer');
   return {
+    randomizer: randomizer.address,
     creator: creator.address,
     presaleMerkleRoot: postDeployParameters.presaleMerkleRoot,
     claimMerkleRoot: postDeployParameters.claimMerkleRoot,
@@ -31,6 +33,7 @@ const prepare = async () => {
 const runner = async () => {
   const {getChainId} = hardhat;
   const {
+    randomizer,
     creator,
     claimTime,
     claimMerkleRoot,
@@ -62,7 +65,14 @@ const runner = async () => {
     signer
   );
 
+  let randomizerResult = await hardhat.ethers.getContractAt (
+    'Randomizer',
+    randomizer,
+    signer
+  );
+
   dim (`creator: ${creatorResult.address}`);
+  dim (`randomizer: ${randomizerResult.address}`);
 
   // move ownership to admin
   // const tx = await transferOwnership (creatorResult, admin);
@@ -72,12 +82,14 @@ const runner = async () => {
   // run commands
   await setBaseURI (creatorResult, baseTokenURI);
   await setMintTime (creatorResult, claimTime, presaleTime, publicTime);
-  claimMerkleRoot
-    ? await setClaimMerkleRoot (creatorResult, claimMerkleRoot)
-    : null;
-  presaleMerkleRoot
-    ? await setPresaleMerkleRoot (creatorResult, presaleMerkleRoot)
-    : null;
+  await randomizerResult.addDependency (creatorResult.address);
+
+  // claimMerkleRoot
+  //   ? await setClaimMerkleRoot (creatorResult, claimMerkleRoot)
+  //   : null;
+  // presaleMerkleRoot
+  //   ? await setPresaleMerkleRoot (creatorResult, presaleMerkleRoot)
+  //   : null;
 
   dim (
     `Presale: ${new Date ((await creatorResult.presaleTime ()).toNumber ()).toString ()}`
