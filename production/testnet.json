@@ -1,20 +1,20 @@
 {
   "name": "RhapsodyCreatorGenerativeRinkeby",
   "deploy": {
-    "collectionSize": 10000,
+    "collectionSize": 1111,
     "maxPublicBatchPerAddress": 2,
-    "amountForPromotion": 10000,
-    "mintPrice": "50000000000000000"
+    "amountForPromotion": 40,
+    "mintPrice": "333000000000000000"
   },
   "postDeploy": {
-    "baseTokenURI": "http://7818-2001-8003-5da8-5000-4c39-b96-5330-1ed.ngrok.io/reflection/",
-    "claimMerkleRoot": "",
+    "baseTokenURI": "https://api.dreamlab.art/reflection/",
+    "claimMerkleRoot": "0x4789c6a4dee88f61cd09e30995bb5a1f1a1ccb393cf4647588acb5d46ea74b7b",
     "presaleMerkleRoot": "",
-    "claimTime": 1649323146,
-    "presaleTime": 1649323147,
-    "publicTime": 1649323148
+    "claimTime": 1650518442,
+    "presaleTime": 1650525282,
+    "publicTime": 1650525283
   },
   "start": {
-    "amountForPromotion": 310
+    "amountForPromotion": 40
   }
 }

@@ -98,7 +98,7 @@ async function run () {
     await contractAddress (deployContractName),
     deployContractName,
     // todo: fix; r.e right now its manually inserting the deploy constructors of \"production/testnet.json\"
-    '1111 2 50 50000000000000000'
+    '1111 2 40 333000000000000000'
   );
 
   success ('Done!');

@@ -3,7 +3,7 @@ const {expect} = require ('chai');
 const hre = require ('hardhat');
 const {overrides, parseEther} = require ('./helpers/constant');
 const {buildWhitelist, generateLeaf} = require ('../scripts/helpers/whitelist');
-
+const {keccak256} = require ('@ethersproject/keccak256');
 const currentBlockTime = 123456789;
 const name = 'Rhapsody Creator Test';
 const symbol = 'RCT';
@@ -338,7 +338,7 @@ describe ('RhapsodyCreatorGenerative', () => {
         let proof = claimMerklized.tree.getHexProof (leaf);
         await expect (minter (minterA, 2, proof)).to
           .emit (creatorA, 'Created')
-          .withArgs (minterA.address, 0, 2);
+          .withArgs (minterA.address, 2, 2, [keccak256 (0), keccak256 (1)]);
       });
 
       it ('should not be able to mint if less than allocated invocation', async () => {
