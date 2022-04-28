@@ -7,7 +7,7 @@ const {deployments} = require ('hardhat');
 const {
   name: deployContractName,
   deploy: deployParameters,
-} = require ('../production/testnet.json');
+} = require ('../production/mainnet.json');
 
 const info = msg => console.log (chalk.dim (msg));
 const success = msg => console.log (chalk.green (msg));
@@ -98,7 +98,7 @@ async function run () {
     await contractAddress (deployContractName),
     deployContractName,
     // todo: fix; r.e right now its manually inserting the deploy constructors of \"production/testnet.json\"
-    '1111 2 40 333000000000000000'
+    ''
   );
 
   success ('Done!');

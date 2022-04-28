@@ -12,7 +12,7 @@ const {yellow, green, dim, cyan} = require ('./helpers/logs');
 const {
   name: deployContractName,
   postDeploy: postDeployParameters,
-} = require ('../production/testnet.json');
+} = require ('../production/mainnet.json');
 
 const prepare = async () => {
   const {deployments, getNamedAccounts} = hardhat;
@@ -80,26 +80,30 @@ const runner = async () => {
   // creatorResult = creatorResult.connect (await setAdminAsSigner ());
 
   // run commands
-  await setBaseURI (creatorResult, baseTokenURI);
-  await setMintTime (creatorResult, claimTime, presaleTime, publicTime);
-  await randomizerResult.addDependency (creatorResult.address);
+  // await setBaseURI (creatorResult, baseTokenURI);
+  // await setMintTime (creatorResult, claimTime, presaleTime, publicTime);
 
   // claimMerkleRoot
   //   ? await setClaimMerkleRoot (creatorResult, claimMerkleRoot)
   //   : null;
+
   // presaleMerkleRoot
   //   ? await setPresaleMerkleRoot (creatorResult, presaleMerkleRoot)
   //   : null;
 
-  dim (
-    `Presale: ${new Date ((await creatorResult.presaleTime ()).toNumber ()).toString ()}`
-  );
+  // await randomizerResult.addDependency (creatorResult.address);
 
-  dim (
-    `Public: ${new Date ((await creatorResult.publicTime ()).toNumber ()).toString ()}`
-  );
+  await creatorResult.setMintRandomizerContract (randomizerResult.address);
 
-  dim (`baseURI: ${await creatorResult.baseURI ()}`);
+  // dim (
+  //   `Presale: ${new Date ((await creatorResult.presaleTime ()).toNumber ()).toString ()}`
+  // );
+
+  // dim (
+  //   `Public: ${new Date ((await creatorResult.publicTime ()).toNumber ()).toString ()}`
+  // );
+
+  // dim (`baseURI: ${await creatorResult.baseURI ()}`);
 
   dim ('\n~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~');
   green ('Contract Post Deployment Complete!');

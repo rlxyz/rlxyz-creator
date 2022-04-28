@@ -4,7 +4,7 @@ const hardhat = require ('hardhat');
 const {
   name: deployContractName,
   deploy: deployParameters,
-} = require ('../production/testnet.json');
+} = require ('../production/mainnet.json');
 
 const runner = async () => {
   const {getNamedAccounts, deployments, getChainId, ethers} = hardhat;
@@ -20,7 +20,6 @@ const runner = async () => {
   dim ('\n~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~');
   dim (`${deployContractName} Contracts - Start Script`);
   dim ('~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n');
-
   dim (
     `network: ${chainName (chainId)} (${isTestEnvironment ? 'local' : 'remote'})`
   );
@@ -28,12 +27,12 @@ const runner = async () => {
 
   cyan ('\nDeploying NFT...');
   const creatorResult = await deploy (deployContractName, {
-    args: [
-      deployParameters.collectionSize,
-      deployParameters.maxPublicBatchPerAddress,
-      deployParameters.amountForPromotion,
-      deployParameters.mintPrice,
-    ],
+    // args: [
+    //   deployParameters.collectionSize,
+    //   deployParameters.maxPublicBatchPerAddress,
+    //   deployParameters.amountForPromotion,
+    //   deployParameters.mintPrice,
+    // ],
     contract: deployContractName,
     from: deployer,
     skipIfAlreadyDeployed: false,

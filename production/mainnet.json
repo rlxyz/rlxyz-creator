@@ -3,13 +3,13 @@
   "deploy": {},
   "postDeploy": {
     "baseTokenURI": "https://api.dreamlab.art/reflection/",
-    "claimMerkleRoot": "0x15d0f0f45cee85bebb195c2eccc58385524adee1985d611aba1f43037bf32b01",
+    "claimMerkleRoot": "0xde48370e78ba98c563850831906f1b016331dd8f13a51a587f2d2a39e231b67c",
     "presaleMerkleRoot": "",
     "claimTime": 1650574800,
     "presaleTime": 1650661200,
     "publicTime": 1650672000
   },
   "start": {
-    "amountForPromotion": 40
+    "amountForPromotion": 2
   }
 }

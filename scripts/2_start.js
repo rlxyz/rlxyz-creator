@@ -7,7 +7,7 @@ const {setPromotionMint} = require ('./contracts/RhapsodyCreator');
 const {
   name: deployContractName,
   start: startParameters,
-} = require ('../production/testnet.json');
+} = require ('../production/mainnet.json');
 
 const runner = async () => {
   const {getChainId, ethers} = hardhat;
