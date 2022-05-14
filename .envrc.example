@@ -2,7 +2,7 @@
 export HDWALLET_MNEMONIC=''
 
 # Used to deploy to testnets
-export INFURA_API_KEY=''
+export INFURA_API_KEY=f66a092fe47549b6a91d6d9d9b9c3863
 
 # Used for verifying contracts on Etherscan
 export ETHERSCAN_API_KEY=''

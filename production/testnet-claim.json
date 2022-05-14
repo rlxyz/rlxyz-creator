@@ -1,0 +1,11 @@
+{
+  "name": "RhapsodyCreatorClaimRinkeby",
+  "deploy": {
+    "collectionSize": 1111
+  },
+  "postDeploy": {
+    "baseTokenURI": "https://api.dreamlab.art/reflection/",
+    "claimMerkleRoot": "0x15d0f0f45cee85bebb195c2eccc58385524adee1985d611aba1f43037bf32b01",
+    "claimTime": 1650574800
+  }
+}
