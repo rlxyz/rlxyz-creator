@@ -21,6 +21,7 @@
     "./test/testContractTokenHash.ts",
     "./test/contractBeforeEachSetup.ts",
     "./test/deployRandomizerContractFactory.ts",
-    "./test/Merklized.ts"
+    "./test/Merklized.ts",
+    "./test/core/generateKeccak256Hash.ts"
   ]
 }

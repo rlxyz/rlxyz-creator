@@ -16,6 +16,7 @@ import { testContractDeployment } from './core/testContractDeployment';
 import { testContractBaseURI } from './core/testContractBaseURI';
 import { testContractCore } from './core/testContractCore';
 import { testContractSale } from './core/testContractSale';
+import { testContractDev } from './core/testContractDev';
 
 export const params = {
   name: 'Rhapsody Creator Test',
@@ -89,229 +90,72 @@ describe('RhapsodyCreatorGenerative', () => {
   testContractTokenURI();
   testContractTokenHash();
   testContractSale(['claim', 'presale', 'public']);
+  testContractDev();
 
-  describe('sale', () => {
-    describe('publicMint', () => {
-      let publicMinter: any;
-      beforeEach(async () => {
-        await creator.setMintTime(currentBlockTime + 100, currentBlockTime + 105, currentBlockTime + 110);
-        publicMinter = async (minter: any, invocations: number, ether: number) =>
-          creator.connect(minter).publicMint(invocations, {
-            value: parseEther(ether),
-          });
-      });
-
-      it('should be able to mint nfts in public mint', async () => {
-        await expect(publicMinter(minterA, 1, 0.333))
-          .to.emit(creator, 'Created')
-          .withArgs(minterA.address, 1, 1, [keccak256Hashes[0]]);
-
-        await expect(publicMinter(minterA, 1, 0.333))
-          .to.emit(creator, 'Created')
-          .withArgs(minterA.address, 2, 1, [keccak256Hashes[1]]);
-
-        await expect(publicMinter(minterB, 2, 2 * 0.333))
-          .to.emit(creator, 'Created')
-          .withArgs(minterB.address, 4, 2, [keccak256Hashes[2], keccak256Hashes[3]]);
-
-        await expect(publicMinter(minterC, 2, 2 * 0.333))
-          .to.emit(creator, 'Created')
-          .withArgs(minterC.address, 6, 2, [keccak256Hashes[4], keccak256Hashes[5]]);
-      });
-
-      it('should only be able to max batch amount of nfts', async () => {
-        await expect(publicMinter(minterA, 2, 0.333 * 2))
-          .to.emit(creator, 'Created')
-          .withArgs(minterA.address, 2, 2, [keccak256Hashes[0], keccak256Hashes[1]]);
-
-        await expect(publicMinter(minterB, 3, 3 * 0.333)).to.be.revertedWith(
-          'RhapsodyCreatorGenerative/invalid-invocation-upper-boundary'
-        );
-      });
-
-      it('should only be able to mint max batch amount of nfts even in two or more txs', async () => {
-        await expect(publicMinter(minterA, 1, 0.333))
-          .to.emit(creator, 'Created')
-          .withArgs(minterA.address, 1, 1, [keccak256Hashes[0]]);
-
-        await expect(publicMinter(minterA, 2, 0.333 * 2)).to.be.revertedWith(
-          'RhapsodyCreatorGenerative/invalid-invocation-upper-boundary'
-        );
-      });
-
-      it('should fail if minting invocation is 0', async () => {
-        await expect(publicMinter(minterA, 0, 0.333)).to.be.revertedWith(
-          'RhapsodyCreatorGenerative/invalid-invocation-lower-boundary'
-        );
-      });
-    });
-
-    describe('setMintTime', () => {
-      it('should be able to set valid mint times', async () => {
-        await creator.setMintTime(currentBlockTime + 100, currentBlockTime + 105, currentBlockTime + 110);
-
-        expect(await creator.claimTime()).to.be.equal(currentBlockTime + 100);
-
-        expect(await creator.presaleTime()).to.be.equal(currentBlockTime + 105);
-
-        expect(await creator.publicTime()).to.be.equal(currentBlockTime + 110);
-      });
-
-      it('can change presale and public time retroactively', async () => {
-        await creator.setMintTime(currentBlockTime + 100, currentBlockTime + 105, currentBlockTime + 110);
-
-        // forward time
-        await creator.setMintTime(currentBlockTime + 105, currentBlockTime + 110, currentBlockTime + 115);
-
-        expect(await creator.claimTime()).to.be.equal(currentBlockTime + 105);
-
-        expect(await creator.presaleTime()).to.be.equal(currentBlockTime + 110);
-
-        expect(await creator.publicTime()).to.be.equal(currentBlockTime + 115);
-
-        // backward time
-        await creator.setMintTime(currentBlockTime + 100, currentBlockTime + 105, currentBlockTime + 110);
-
-        expect(await creator.claimTime()).to.be.equal(currentBlockTime + 100);
-        expect(await creator.presaleTime()).to.be.equal(currentBlockTime + 105);
-        expect(await creator.publicTime()).to.be.equal(currentBlockTime + 110);
-
-        // testing edge case
-        await creator.setMintTime(currentBlockTime + 1, currentBlockTime + 2, currentBlockTime + 3);
-        expect(await creator.claimTime()).to.be.equal(currentBlockTime + 1);
-        expect(await creator.presaleTime()).to.be.equal(currentBlockTime + 2);
-        expect(await creator.publicTime()).to.be.equal(currentBlockTime + 3);
-      });
-
-      it('public sale time cannot be less than presale time', async () => {
-        await expect(
-          creator.setMintTime(currentBlockTime + 100, currentBlockTime + 110, currentBlockTime + 105)
-        ).to.be.revertedWith('RhapsodyCreatorGenerative/invalid-public-time');
-
-        // edge cases
-        await expect(
-          creator.setMintTime(currentBlockTime + 1, currentBlockTime + 2, currentBlockTime + 1)
-        ).to.be.revertedWith('RhapsodyCreatorGenerative/invalid-public-time');
-
-        await expect(
-          creator.setMintTime(currentBlockTime + 1, currentBlockTime + 2, currentBlockTime + 0)
-        ).to.be.revertedWith('RhapsodyCreatorGenerative/invalid-public-time');
-      });
-
-      it('presale time cannot be less than the current block timestamp', async () => {
-        await expect(
-          creator.setMintTime(currentBlockTime + 1, currentBlockTime - 10, currentBlockTime + 10)
-        ).to.be.revertedWith('RhapsodyCreatorGenerative/invalid-presale-time');
-
-        await expect(
-          creator.setMintTime(currentBlockTime + 1, currentBlockTime - 1, currentBlockTime)
-        ).to.be.revertedWith('RhapsodyCreatorGenerative/invalid-presale-time');
-
-        await expect(
-          creator.setMintTime(currentBlockTime + 1, currentBlockTime - 2, currentBlockTime - 1)
-        ).to.be.revertedWith('RhapsodyCreatorGenerative/invalid-presale-time');
-      });
-    });
-  });
-
-  describe('dev', () => {
-    beforeEach(async () => {
+  describe('setMintTime', () => {
+    it('should be able to set valid mint times', async () => {
       await creator.setMintTime(currentBlockTime + 100, currentBlockTime + 105, currentBlockTime + 110);
+
+      expect(await creator.claimTime()).to.be.equal(currentBlockTime + 100);
+
+      expect(await creator.presaleTime()).to.be.equal(currentBlockTime + 105);
+
+      expect(await creator.publicTime()).to.be.equal(currentBlockTime + 110);
     });
 
-    describe('promotionMint', () => {
-      it('should be able to batch mint according to maxBatchSize', async () => {
-        await expect(creator.promotionMint(params.amountForPromotion))
-          .to.emit(creator, 'Created')
-          .withArgs(admin.address, 2, 2, [keccak256Hashes[0], keccak256Hashes[1]])
-          .withArgs(admin.address, 4, 2, [keccak256Hashes[2], keccak256Hashes[3]])
-          .withArgs(admin.address, 18, 2, [
-            keccak256(defaultAbiCoder.encode(['uint256'], [16])),
-            keccak256(defaultAbiCoder.encode(['uint256'], [17])),
-          ]);
-      });
+    it('can change presale and public time retroactively', async () => {
+      await creator.setMintTime(currentBlockTime + 100, currentBlockTime + 105, currentBlockTime + 110);
 
-      it('should be able to batch mint according to maxBatchSize multiple times', async () => {
-        await expect(creator.promotionMint(6))
-          .to.emit(creator, 'Created')
-          .withArgs(admin.address, 2, 2, [keccak256Hashes[0], keccak256Hashes[1]])
-          .withArgs(admin.address, 4, 2, [keccak256Hashes[2], keccak256Hashes[3]])
-          .withArgs(admin.address, 6, 2, [keccak256Hashes[4], keccak256Hashes[5]]);
+      // forward time
+      await creator.setMintTime(currentBlockTime + 105, currentBlockTime + 110, currentBlockTime + 115);
 
-        await expect(creator.promotionMint(6))
-          .to.emit(creator, 'Created')
-          .withArgs(admin.address, 8, 2, [
-            keccak256(defaultAbiCoder.encode(['uint256'], [6])),
-            keccak256(defaultAbiCoder.encode(['uint256'], [7])),
-          ])
-          .withArgs(admin.address, 10, 2, [
-            keccak256(defaultAbiCoder.encode(['uint256'], [8])),
-            keccak256(defaultAbiCoder.encode(['uint256'], [9])),
-          ]);
-      });
+      expect(await creator.claimTime()).to.be.equal(currentBlockTime + 105);
 
-      it('should only be able to mint max promotional nfts', async () => {
-        creator.promotionMint(20);
+      expect(await creator.presaleTime()).to.be.equal(currentBlockTime + 110);
 
-        await expect(creator.promotionMint(1)).to.be.revertedWith('RhapsodyCreatorGenerative/invalid-promotion-supply');
-      });
+      expect(await creator.publicTime()).to.be.equal(currentBlockTime + 115);
 
-      it('should fail if not minting according to maxBatchSize', async () => {
-        await expect(creator.promotionMint(1)).to.be.revertedWith('RhapsodyCreatorGenerative/invalid-batch-multiple');
-      });
+      // backward time
+      await creator.setMintTime(currentBlockTime + 100, currentBlockTime + 105, currentBlockTime + 110);
 
-      it('should only allow owner to mint', async () => {
-        await expect(creator.connect(minterA).promotionMint(20)).to.be.revertedWith('Ownable: caller is not the owner');
-      });
+      expect(await creator.claimTime()).to.be.equal(currentBlockTime + 100);
+      expect(await creator.presaleTime()).to.be.equal(currentBlockTime + 105);
+      expect(await creator.publicTime()).to.be.equal(currentBlockTime + 110);
 
-      describe('totalSupply restrictions', () => {
-        let creatorA: ethers.Contract;
-        beforeEach(async () => {
-          let collectionSize = 8;
-          let amountForPromotion = 4;
-          let maxPublicBatchPerAddress = 2;
-          const RhapsodyCreator = await hre.ethers.getContractFactory(
-            'RhapsodyCreatorGenerativeTest',
-            admin,
-            overrides
-          );
-          creatorA = await RhapsodyCreator.deploy(
-            collectionSize,
-            maxPublicBatchPerAddress,
-            amountForPromotion,
-            params.mintPrice
-          );
-          await creatorA.setMintRandomizerContract(randomizer.address);
-          await randomizer.addDependency(creatorA.address);
-          await creatorA.setPresaleMerkleRoot(presaleMerklized.root);
-        });
+      // testing edge case
+      await creator.setMintTime(currentBlockTime + 1, currentBlockTime + 2, currentBlockTime + 3);
+      expect(await creator.claimTime()).to.be.equal(currentBlockTime + 1);
+      expect(await creator.presaleTime()).to.be.equal(currentBlockTime + 2);
+      expect(await creator.publicTime()).to.be.equal(currentBlockTime + 3);
+    });
 
-        it('should not allow to mint more than promotionMint if some nfts already minted', async () => {
-          await expect(creatorA.promotionMint(4))
-            .to.emit(creatorA, 'Created')
-            .withArgs(admin.address, 2, 2, [keccak256Hashes[0], keccak256Hashes[1]])
-            .withArgs(admin.address, 4, 2, [keccak256Hashes[2], keccak256Hashes[3]]);
+    it('public sale time cannot be less than presale time', async () => {
+      await expect(
+        creator.setMintTime(currentBlockTime + 100, currentBlockTime + 110, currentBlockTime + 105)
+      ).to.be.revertedWith('RhapsodyCreatorGenerative/invalid-public-time');
 
-          await creatorA.setMintTime(currentBlockTime + 1, currentBlockTime + 2, currentBlockTime + 3);
+      // edge cases
+      await expect(
+        creator.setMintTime(currentBlockTime + 1, currentBlockTime + 2, currentBlockTime + 1)
+      ).to.be.revertedWith('RhapsodyCreatorGenerative/invalid-public-time');
 
-          await creatorA.connect(minterA).publicMint(2, { value: parseEther(0.333 * 2) });
+      await expect(
+        creator.setMintTime(currentBlockTime + 1, currentBlockTime + 2, currentBlockTime + 0)
+      ).to.be.revertedWith('RhapsodyCreatorGenerative/invalid-public-time');
+    });
 
-          await expect(creatorA.promotionMint(4)).to.be.revertedWith(
-            'RhapsodyCreatorGenerative/invalid-promotion-supply'
-          );
-        });
+    it('presale time cannot be less than the current block timestamp', async () => {
+      await expect(
+        creator.setMintTime(currentBlockTime + 1, currentBlockTime - 10, currentBlockTime + 10)
+      ).to.be.revertedWith('RhapsodyCreatorGenerative/invalid-presale-time');
 
-        it('should only allow correct allocation of promotion mint even if late', async () => {
-          await creatorA.setMintTime(currentBlockTime + 1, currentBlockTime + 2, currentBlockTime + 3);
-          await creatorA.connect(minterA).publicMint(2, { value: parseEther(0.333 * 2) });
-          await expect(creatorA.promotionMint(2))
-            .to.emit(creatorA, 'Created')
-            .withArgs(admin.address, 4, 2, [keccak256Hashes[2], keccak256Hashes[3]]);
-          await expect(creatorA.promotionMint(2)).to.be.revertedWith(
-            'RhapsodyCreatorGenerative/invalid-promotion-supply'
-          );
-        });
-      });
+      await expect(
+        creator.setMintTime(currentBlockTime + 1, currentBlockTime - 1, currentBlockTime)
+      ).to.be.revertedWith('RhapsodyCreatorGenerative/invalid-presale-time');
+
+      await expect(
+        creator.setMintTime(currentBlockTime + 1, currentBlockTime - 2, currentBlockTime - 1)
+      ).to.be.revertedWith('RhapsodyCreatorGenerative/invalid-presale-time');
     });
   });
 
