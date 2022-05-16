@@ -3,6 +3,8 @@ export declare type Merklized = {
   tree: any;
 };
 
+export declare type RhapsodyCreatorBeforeEach = (args: RhapsodyCreatorConstructor) => Promise<any>;
+
 export declare type RhapsodyCreatorConstructor = {
   collectionSize: number;
   maxPublicBatchPerAddress?: number;

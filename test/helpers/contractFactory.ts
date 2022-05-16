@@ -12,13 +12,14 @@ export const deployRhapsodyCreatorFactory = async (
   args: RhapsodyCreatorConstructor
 ) => {
   const [deployer] = await hre.ethers.getSigners();
-
+  let factory;
+  let creator;
   switch (name) {
     case 'basic':
       return await hre.ethers.getContractFactory('RhapsodyCreatorTest', deployer, overrides);
     case 'generative':
-      const factory = await hre.ethers.getContractFactory('RhapsodyCreatorGenerativeTest', deployer, overrides);
-      const creator = factory.deploy(
+      factory = await hre.ethers.getContractFactory('RhapsodyCreatorGenerativeTest', deployer, overrides);
+      creator = factory.deploy(
         args.collectionSize,
         args.maxPublicBatchPerAddress,
         args.amountForPromotion,
@@ -26,6 +27,8 @@ export const deployRhapsodyCreatorFactory = async (
       );
       return creator;
     case 'claim':
-      return await hre.ethers.getContractFactory('RhapsodyCreatorClaimTest', deployer, overrides);
+      factory = await hre.ethers.getContractFactory('RhapsodyCreatorClaimTest', deployer, overrides);
+      creator = factory.deploy(args.collectionSize);
+      return creator;
   }
 };

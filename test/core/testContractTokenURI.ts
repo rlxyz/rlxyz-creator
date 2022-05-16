@@ -3,11 +3,13 @@ const { parseEther } = require('../helpers/constant');
 import { ethers } from 'ethers';
 import { beforeEachSetupForGenerative } from '../helpers/contractBeforeEachSetup';
 import { params, currentBlockTime } from '../RhapsodyCreatorGenerative.test';
+import { RhapsodyCreatorBeforeEach } from './type';
 
 export const testContractTokenURI = () => {
   describe('tokenURI', () => {
     let minterA: any, minterB: any, minterC: any;
     let creator: ethers.Contract;
+    let baseURI: string;
 
     beforeEach(async () => {
       const { contracts, wallets } = await beforeEachSetupForGenerative(params);
@@ -15,10 +17,7 @@ export const testContractTokenURI = () => {
       minterA = wallets.minterA;
       minterB = wallets.minterB;
       minterC = wallets.minterC;
-    });
 
-    let baseURI: string;
-    beforeEach(async () => {
       baseURI = 'https://somebaseuri.com/';
       await creator.setBaseURI(baseURI);
       await creator.setMintTime(currentBlockTime + 1, currentBlockTime + 2, currentBlockTime + 3);

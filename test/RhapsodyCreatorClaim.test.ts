@@ -8,7 +8,7 @@ import { testContractBaseURI } from './core/testContractBaseURI';
 import { testContractCore } from './core/testContractCore';
 import { testContractSale } from './core/testContractSale';
 import { testContractDev } from './core/testContractDev';
-import { beforeEachSetupForGenerative } from './helpers/contractBeforeEachSetup';
+import { beforeEachSetupForClaim, beforeEachSetupForGenerative } from './helpers/contractBeforeEachSetup';
 
 export const params = {
   name: 'Rhapsody Creator Test',
@@ -20,15 +20,15 @@ export const params = {
   mintPrice: parseEther(0.333),
 };
 
-describe('RhapsodyCreatorGenerative', () => {
-  const _beforeEach = beforeEachSetupForGenerative;
+describe('RhapsodyCreatorClaim', () => {
+  const _beforeEach = beforeEachSetupForClaim;
 
   // test cases
-  // testContractCore(_beforeEach);
+  testContractCore(_beforeEach);
   // testContractDeployment(_beforeEach);
-  // testContractBaseURI(_beforeEach);
+  testContractBaseURI(_beforeEach);
   // testContractTokenURI();
   // testContractTokenHash(_beforeEach);
-  // testContractSale(_beforeEach, 'generative', ['claim', 'presale', 'public']);
+  testContractSale(_beforeEach, 'basic', ['claim']);
   // testContractDev(_beforeEach);
 });

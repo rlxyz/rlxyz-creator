@@ -1,14 +1,16 @@
 const { expect } = require('chai');
+const hre = require('hardhat');
 import { ethers } from 'ethers';
-import { beforeEachSetupForGenerative } from '../helpers/contractBeforeEachSetup';
+import { overrides } from '../helpers/constant';
 import { params } from '../RhapsodyCreatorGenerative.test';
+import { RhapsodyCreatorBeforeEach } from './type';
 
-export const testContractCore = () => {
+export const testContractCore = (_beforeEach: RhapsodyCreatorBeforeEach) => {
   describe('core', () => {
     let creator: ethers.Contract;
 
     beforeEach(async () => {
-      const { contracts } = await beforeEachSetupForGenerative(params);
+      const { contracts } = await _beforeEach(params);
       creator = contracts.creator;
     });
 

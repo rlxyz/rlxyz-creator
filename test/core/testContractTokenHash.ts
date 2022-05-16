@@ -1,16 +1,16 @@
 const { expect } = require('chai');
 const { parseEther } = require('../helpers/constant');
 import { ethers } from 'ethers';
-import { beforeEachSetupForGenerative } from '../helpers/contractBeforeEachSetup';
 import { params, currentBlockTime } from '../RhapsodyCreatorGenerative.test';
+import { RhapsodyCreatorBeforeEach } from './type';
 
-export const testContractTokenHash = () => {
+export const testContractTokenHash = (_beforeEach: RhapsodyCreatorBeforeEach) => {
   describe('tokenHash', () => {
     let minterA: any, minterB: any, minterC: any;
     let creator: ethers.Contract;
 
     beforeEach(async () => {
-      const { contracts, wallets } = await beforeEachSetupForGenerative(params);
+      const { contracts, wallets } = await _beforeEach(params);
       creator = contracts.creator;
       minterA = wallets.minterA;
       minterB = wallets.minterB;

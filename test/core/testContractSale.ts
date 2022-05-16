@@ -1,25 +1,28 @@
 const { expect } = require('chai');
 import { ethers } from 'ethers';
 import { defaultAbiCoder, keccak256 } from 'ethers/lib/utils';
-import { beforeEachSetupForGenerative } from '../helpers/contractBeforeEachSetup';
 import { currentBlockTime, params } from '../RhapsodyCreatorGenerative.test';
 import { keccak256Hashes } from '../helpers/generateKeccak256Hash';
-import { Merklized, RhapsodyCreatorSaleType, RhapsodyCreatorVariation } from './type';
+import { Merklized, RhapsodyCreatorBeforeEach, RhapsodyCreatorSaleType, RhapsodyCreatorVariation } from './type';
 const { generateLeaf, buildWhitelist } = require('../../scripts/helpers/whitelist');
 const { parseEther } = require('../helpers/constant');
 
-export const testContractSale = (variation: RhapsodyCreatorVariation, types: RhapsodyCreatorSaleType[]) => {
+export const testContractSale = (
+  _beforeEach: RhapsodyCreatorBeforeEach,
+  variation: RhapsodyCreatorVariation,
+  types: RhapsodyCreatorSaleType[]
+) => {
   describe('sale', () => {
     types.forEach((type) => {
       switch (type) {
         case 'claim':
-          _testContractClaim();
+          _testContractClaim(_beforeEach);
           break;
         case 'presale':
-          _testContractPresale();
+          _testContractPresale(_beforeEach);
           break;
         case 'public':
-          _testContractPublic();
+          _testContractPublic(_beforeEach);
           break;
       }
     });
@@ -28,19 +31,19 @@ export const testContractSale = (variation: RhapsodyCreatorVariation, types: Rha
   describe('extra', () => {
     switch (variation) {
       case 'generative':
-        _testContractGenerative();
+        _testContractGenerative(_beforeEach);
         break;
     }
   });
 };
 
-const _testContractGenerative = () => {
+const _testContractGenerative = (_beforeEach: RhapsodyCreatorBeforeEach) => {
   describe('setMintTime', () => {
     let creator: ethers.Contract;
 
     let minter: (minter: any, invocations: any, proof: any) => void;
     beforeEach(async () => {
-      const { contracts } = await beforeEachSetupForGenerative(params);
+      const { contracts } = await _beforeEach(params);
 
       creator = contracts.creator;
 
@@ -125,7 +128,7 @@ const _testContractGenerative = () => {
         mintPrice: parseEther(0.01),
       };
 
-      const { contracts, wallets } = await beforeEachSetupForGenerative(paramsB);
+      const { contracts, wallets } = await _beforeEach(paramsB);
 
       creator = contracts.creator;
       minterA = wallets.minterA;
@@ -151,7 +154,7 @@ const _testContractGenerative = () => {
   });
 };
 
-const _testContractClaim = () => {
+const _testContractClaim = (_beforeEach: RhapsodyCreatorBeforeEach) => {
   describe('claimMint', () => {
     let minterA: any, minterB: any, minterC: any;
 
@@ -162,7 +165,7 @@ const _testContractClaim = () => {
 
     let minter: (minter: any, invocations: any, proof: any) => void;
     beforeEach(async () => {
-      const { wallets, contracts, merkle } = await beforeEachSetupForGenerative(params);
+      const { wallets, contracts, merkle } = await _beforeEach(params);
 
       minterA = wallets.minterA;
       minterB = wallets.minterB;
@@ -270,7 +273,7 @@ const _testContractClaim = () => {
   });
 };
 
-const _testContractPresale = () => {
+const _testContractPresale = (_beforeEach: RhapsodyCreatorBeforeEach) => {
   describe('presaleMint', () => {
     let minterA: any, minterB: any, minterC: any;
 
@@ -283,7 +286,7 @@ const _testContractPresale = () => {
     let minter: (minter: any, invocations: any, maxInvocation: any, proof: any, ether: any) => void;
 
     beforeEach(async () => {
-      const { wallets, contracts, merkle } = await beforeEachSetupForGenerative(params);
+      const { wallets, contracts, merkle } = await _beforeEach(params);
 
       minterA = wallets.minterA;
       minterB = wallets.minterB;
@@ -486,7 +489,7 @@ const _testContractPresale = () => {
   });
 };
 
-const _testContractPublic = () => {
+const _testContractPublic = (_beforeEach: RhapsodyCreatorBeforeEach) => {
   describe('publicMint', () => {
     let minterA: any, minterB: any, minterC: any;
 
@@ -495,7 +498,7 @@ const _testContractPublic = () => {
     let minter: (minter: any, invocations: any, ether: any) => void;
 
     beforeEach(async () => {
-      const { wallets, contracts, merkle } = await beforeEachSetupForGenerative(params);
+      const { wallets, contracts, merkle } = await _beforeEach(params);
 
       minterA = wallets.minterA;
       minterB = wallets.minterB;

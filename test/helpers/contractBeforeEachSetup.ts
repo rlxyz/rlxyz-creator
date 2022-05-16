@@ -7,7 +7,7 @@ const CONSTANTS = {
   randomBlockTime: 123456789,
 };
 
-export const beforeEachSetupForGenerative = async (args: RhapsodyCreatorConstructor) => {
+export const beforeEachSetupForGenerative = async (args: RhapsodyCreatorConstructor): Promise<any> => {
   const [deployer, admin, minterA, minterB, minterC] = await hre.ethers.getSigners();
   const { randomBlockTime: currentBlockTime } = CONSTANTS;
 
@@ -46,6 +46,38 @@ export const beforeEachSetupForGenerative = async (args: RhapsodyCreatorConstruc
     },
     merkle: {
       presaleMerklized,
+      claimMerklized,
+    },
+  };
+};
+
+export const beforeEachSetupForClaim = async (args: RhapsodyCreatorConstructor): Promise<any> => {
+  const [deployer, admin, minterA, minterB, minterC] = await hre.ethers.getSigners();
+  const { randomBlockTime: currentBlockTime } = CONSTANTS;
+
+  const creator = await deployRhapsodyCreatorFactory('claim', args);
+
+  const claimMerklized = await buildWhitelist([
+    [minterA.address, 2],
+    [minterB.address, 2],
+    [minterC.address, 1],
+  ]);
+
+  await creator.setClaimMerkleRoot(claimMerklized.root);
+  await creator.setMintTime(currentBlockTime + 100);
+
+  return {
+    wallets: {
+      deployer,
+      admin,
+      minterA,
+      minterB,
+      minterC,
+    },
+    contracts: {
+      creator,
+    },
+    merkle: {
       claimMerklized,
     },
   };

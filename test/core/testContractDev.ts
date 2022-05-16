@@ -1,18 +1,17 @@
 const { expect } = require('chai');
 const { parseEther } = require('../helpers/constant');
 import { ethers } from 'ethers';
-import { defaultAbiCoder, keccak256 } from 'ethers/lib/utils';
-import { beforeEachSetupForGenerative } from '../helpers/contractBeforeEachSetup';
 import { generateKeccak256Hash, keccak256Hashes } from '../helpers/generateKeccak256Hash';
 import { params, currentBlockTime } from '../RhapsodyCreatorGenerative.test';
+import { RhapsodyCreatorBeforeEach } from './type';
 
-export const testContractDev = () => {
+export const testContractDev = (_beforeEach: RhapsodyCreatorBeforeEach) => {
   describe('dev', () => {
     let deployer: any, minterA: any;
     let creator: ethers.Contract;
 
     beforeEach(async () => {
-      const { contracts, wallets } = await beforeEachSetupForGenerative(params);
+      const { contracts, wallets } = await _beforeEach(params);
       creator = contracts.creator;
       deployer = wallets.deployer;
       minterA = wallets.minterA;
@@ -64,7 +63,7 @@ export const testContractDev = () => {
             mintPrice: params.mintPrice,
           };
 
-          const { contracts, wallets } = await beforeEachSetupForGenerative(paramsB);
+          const { contracts, wallets } = await _beforeEach(paramsB);
 
           creator = contracts.creator;
         });
