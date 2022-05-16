@@ -1,23 +1,23 @@
-const hardhat = require ('hardhat');
-const {setDeployerAsSigner, setAdminAsSigner} = require ('./helpers/signer');
-const {transferOwnership} = require ('./contracts/Ownable');
+const hardhat = require("hardhat");
+const { setDeployerAsSigner, setAdminAsSigner } = require("./helpers/signer");
+const { transferOwnership } = require("./contracts/Ownable");
 const {
   setBaseURI,
   setMintTime,
   setClaimMerkleRoot,
   setPresaleMerkleRoot,
-} = require ('./contracts/RhapsodyCreator');
-const {chainName} = require ('./helpers/chain');
-const {yellow, green, dim, cyan} = require ('./helpers/logs');
+} = require("./contracts/RhapsodyCreator");
+const { chainName } = require("./helpers/chain");
+const { yellow, green, dim, cyan } = require("./helpers/logs");
 const {
   name: deployContractName,
   postDeploy: postDeployParameters,
-} = require ('../production/mainnet.json');
+} = require("../production/mainnet.json");
 
 const prepare = async () => {
-  const {deployments, getNamedAccounts} = hardhat;
-  const creator = await deployments.get (deployContractName);
-  const randomizer = await deployments.get ('Randomizer');
+  const { deployments, getNamedAccounts } = hardhat;
+  const creator = await deployments.get(deployContractName);
+  const randomizer = await deployments.get("Randomizer");
   return {
     randomizer: randomizer.address,
     creator: creator.address,
@@ -31,7 +31,7 @@ const prepare = async () => {
 };
 
 const runner = async () => {
-  const {getChainId} = hardhat;
+  const { getChainId } = hardhat;
   const {
     randomizer,
     creator,
@@ -41,38 +41,38 @@ const runner = async () => {
     presaleTime,
     publicTime,
     baseTokenURI,
-  } = await prepare ();
-  const chainId = parseInt (await getChainId (), 10);
+  } = await prepare();
+  const chainId = parseInt(await getChainId(), 10);
   const isTestEnvironment = chainId === 31337 || chainId === 1337;
-  const {admin} = await getNamedAccounts ();
+  const { admin } = await getNamedAccounts();
 
-  dim ('\n~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~');
-  dim (`${deployContractName} Contracts - Start Script`);
-  dim ('~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n');
+  dim("\n~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+  dim(`${deployContractName} Contracts - Start Script`);
+  dim("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n");
 
-  dim (
-    `network: ${chainName (chainId)} (${isTestEnvironment ? 'local' : 'remote'})`
+  dim(
+    `network: ${chainName(chainId)} (${isTestEnvironment ? "local" : "remote"})`
   );
 
-  let signer = await setDeployerAsSigner ();
+  let signer = await setDeployerAsSigner();
 
-  dim (`deployer: ${signer._address}`);
-  dim (`admin: ${admin}`);
+  dim(`deployer: ${signer._address}`);
+  dim(`admin: ${admin}`);
 
-  let creatorResult = await hardhat.ethers.getContractAt (
+  let creatorResult = await hardhat.ethers.getContractAt(
     deployContractName,
     creator,
     signer
   );
 
-  let randomizerResult = await hardhat.ethers.getContractAt (
-    'Randomizer',
+  let randomizerResult = await hardhat.ethers.getContractAt(
+    "Randomizer",
     randomizer,
     signer
   );
 
-  dim (`creator: ${creatorResult.address}`);
-  dim (`randomizer: ${randomizerResult.address}`);
+  dim(`creator: ${creatorResult.address}`);
+  dim(`randomizer: ${randomizerResult.address}`);
 
   // move ownership to admin
   // const tx = await transferOwnership (creatorResult, admin);
@@ -93,7 +93,7 @@ const runner = async () => {
 
   // await randomizerResult.addDependency (creatorResult.address);
 
-  await creatorResult.setMintRandomizerContract (randomizerResult.address);
+  await creatorResult.setMintRandomizerContract(randomizerResult.address);
 
   // dim (
   //   `Presale: ${new Date ((await creatorResult.presaleTime ()).toNumber ()).toString ()}`
@@ -105,12 +105,14 @@ const runner = async () => {
 
   // dim (`baseURI: ${await creatorResult.baseURI ()}`);
 
-  dim ('\n~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~');
-  green ('Contract Post Deployment Complete!');
-  dim ('~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n');
+  dim("\n~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+  green("Contract Post Deployment Complete!");
+  dim("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n");
 };
 
-runner ().then (() => process.exit (0)).catch (error => {
-  console.error (error);
-  process.exit (1);
-});
+runner()
+  .then(() => process.exit(0))
+  .catch((error) => {
+    console.error(error);
+    process.exit(1);
+  });
