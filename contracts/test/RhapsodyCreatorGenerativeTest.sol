@@ -20,6 +20,10 @@ contract RhapsodyCreatorGenerativeTest is RhapsodyCreatorGenerative {
         )
     {}
 
+    function mintOne() public {
+        _mintMany(msg.sender, 1);
+    }
+
     function _currentTime() internal view override returns (uint256) {
         return 123456789;
     }

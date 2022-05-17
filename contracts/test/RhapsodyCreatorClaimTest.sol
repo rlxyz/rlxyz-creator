@@ -9,4 +9,8 @@ contract RhapsodyCreatorClaimTest is RhapsodyCreatorClaim {
     function _currentTime() internal view override returns (uint256) {
         return 123456789;
     }
+
+    function mintOne() public {
+        _mintMany(msg.sender, 1);
+    }
 }

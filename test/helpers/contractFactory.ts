@@ -16,7 +16,14 @@ export const deployRhapsodyCreatorFactory = async (
   let creator;
   switch (name) {
     case 'basic':
-      return await hre.ethers.getContractFactory('RhapsodyCreatorTest', deployer, overrides);
+      factory = await hre.ethers.getContractFactory('RhapsodyCreatorTest', deployer, overrides);
+      creator = factory.deploy(
+        args.collectionSize,
+        args.maxPublicBatchPerAddress,
+        args.amountForPromotion,
+        args.mintPrice
+      );
+      return creator;
     case 'generative':
       factory = await hre.ethers.getContractFactory('RhapsodyCreatorGenerativeTest', deployer, overrides);
       creator = factory.deploy(

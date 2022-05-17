@@ -27,8 +27,6 @@ describe('RhapsodyCreatorClaim', () => {
   testContractCore(_beforeEach);
   // testContractDeployment(_beforeEach);
   testContractBaseURI(_beforeEach);
-  // testContractTokenURI();
-  // testContractTokenHash(_beforeEach);
+  testContractTokenURI(_beforeEach);
   testContractSale(_beforeEach, 'basic', ['claim']);
-  // testContractDev(_beforeEach);
 });
