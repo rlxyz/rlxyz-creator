@@ -1,15 +1,15 @@
 {
-  "name": "Tiger",
-  "deploy": {
-    "presaleMerkleRoot": "0x22aad30a7fc8598365ace9e4ae39c919df7a58748ffe9a70a90ba145ad8e7cba"
-  },
+  "name": "REFLECTIONS",
+  "deploy": {},
   "postDeploy": {
-    "baseTokenURI": "https://ipfs.rhapsodylabs.xyz/ipfs/QmT4efa7zC1xN3arZzMVxoSU22gzoS7QQKY5sknzhWXLT6/",
-    "presaleTime": 1643266800,
-    "publicTime": 1643272200,
-    "newOwner": "0x8EF5192f893E76da5fD44137da557B81A00C4671"
+    "baseTokenURI": "https://api.dreamlab.art/reflection/",
+    "claimMerkleRoot": "0xde48370e78ba98c563850831906f1b016331dd8f13a51a587f2d2a39e231b67c",
+    "presaleMerkleRoot": "",
+    "claimTime": 1650574800,
+    "presaleTime": 1650661200,
+    "publicTime": 1650672000
   },
   "start": {
-    "amountForPromotion": 50
+    "amountForPromotion": 2
   }
 }

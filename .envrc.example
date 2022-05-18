@@ -2,7 +2,7 @@
 export HDWALLET_MNEMONIC=''
 
 # Used to deploy to testnets
-export INFURA_API_KEY=''
+export INFURA_API_KEY=f66a092fe47549b6a91d6d9d9b9c3863
 
 # Used for verifying contracts on Etherscan
 export ETHERSCAN_API_KEY=''
@@ -11,10 +11,10 @@ export ETHERSCAN_API_KEY=''
 export ALCHEMY_URL=''
 
 # Required for gas snapshot price calculations
-COINMARKETCAP_TOKEN=
+export COINMARKETCAP_TOKEN=
 
 # Enable the contract optimzer: recommended for mainnet
-OPTIMIZER_DISABLED=
+export OPTIMIZER_DISABLED=
 
 # MythX cmart contract tester
-MYTHX_KEY=
+expport MYTHX_KEY=

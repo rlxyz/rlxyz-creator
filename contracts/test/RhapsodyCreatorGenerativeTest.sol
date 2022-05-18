@@ -20,11 +20,15 @@ contract RhapsodyCreatorGenerativeTest is RhapsodyCreatorGenerative {
         )
     {}
 
+    function mintOne() public {
+        _mintMany(msg.sender, 1);
+    }
+
     function _currentTime() internal view override returns (uint256) {
         return 123456789;
     }
 
-    function _generateUniqueIdentifier(uint256 seed, bytes32 randomValue) internal view override returns (bytes32) {
+    function _generateUniqueIdentifier(uint256 seed) internal view override returns (bytes32) {
         return keccak256(abi.encodePacked(seed));
     }
 }

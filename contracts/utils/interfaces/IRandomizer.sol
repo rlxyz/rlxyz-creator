@@ -3,5 +3,5 @@
 pragma solidity ^0.8.0;
 
 interface IRandomizer {
-    function getRandomValue() external view returns (bytes32);
+    function getRandomValue() external view returns (uint256);
 }

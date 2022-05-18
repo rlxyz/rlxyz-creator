@@ -1,19 +1,19 @@
 const hardhat = require ('hardhat');
-const {setAdminAsSigner} = require ('./helpers/signer');
+const {setDeployerAsSigner} = require ('./helpers/signer');
 const debug = require ('debug') ('ptv3:postdeploy');
 const {chainName} = require ('./helpers/chain');
 const {green, dim, cyan} = require ('./helpers/logs');
+const {setPromotionMint} = require ('./contracts/RhapsodyCreator');
 const {
   name: deployContractName,
   start: startParameters,
-} = require ('../production/testnet.json');
+} = require ('../production/mainnet.json');
 
 const runner = async () => {
   const {getChainId, ethers} = hardhat;
   const creator = await deployments.get (deployContractName);
   const chainId = parseInt (await getChainId (), 10);
   const isTestEnvironment = chainId === 31337 || chainId === 1337;
-  const {admin} = await getNamedAccounts ();
 
   dim ('\n~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~');
   dim (`${deployContractName} Contracts - Start Script`);
@@ -23,9 +23,7 @@ const runner = async () => {
     `network: ${chainName (chainId)} (${isTestEnvironment ? 'local' : 'remote'})`
   );
 
-  let signer = await setAdminAsSigner ();
-
-  dim (`admin: ${admin}`);
+  let signer = await setDeployerAsSigner ();
 
   let creatorResult = await hardhat.ethers.getContractAt (
     deployContractName,
@@ -35,10 +33,7 @@ const runner = async () => {
 
   dim (`creator: ${creatorResult.address}`);
 
-  let tx = await creatorResult.promotionMint (
-    startParameters.amountForPromotion
-  );
-  tx.wait (1);
+  await setPromotionMint (creatorResult, startParameters.amountForPromotion);
 
   dim ('\n~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~');
   green ('Contract Post Deployment Complete!');
