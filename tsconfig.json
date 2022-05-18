@@ -13,6 +13,15 @@
     "./hardhat.config.ts",
     "./node_modules/hardhat-ethers/src/type-extensions.d.ts",
     "./node_modules/@nomiclabs/hardhat-waffle/src/type-extensions.d.ts",
-    "./node_modules/hardhat-etherscan/src/type-extensions.d.ts"
+    "./node_modules/hardhat-etherscan/src/type-extensions.d.ts",
+    "./test/testContractCore.ts",
+    "./test/testContractBaseURI.ts",
+    "./test/testContractDeployment.ts",
+    "./test/testContractTokenURI.ts",
+    "./test/testContractTokenHash.ts",
+    "./test/contractBeforeEachSetup.ts",
+    "./test/deployRandomizerContractFactory.ts",
+    "./test/Merklized.ts",
+    "./test/core/generateKeccak256Hash.ts"
   ]
 }
