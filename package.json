@@ -64,7 +64,7 @@
     "merkletreejs": "^0.2.27",
     "mocha": "^8.4.0",
     "mocha-chai-jest-snapshot": "^1.1.2",
-    "npm": "^8.3.1",
+    "npm": "^8.11.0",
     "prettier": "^2.4.1",
     "prettier-plugin-solidity": "^1.0.0-beta.18",
     "solhint": "^3.3.6",
