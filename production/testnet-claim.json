@@ -4,8 +4,8 @@
     "collectionSize": 1111
   },
   "postDeploy": {
-    "baseTokenURI": "https://api.dreamlab.art/reflection/",
-    "claimMerkleRoot": "0x15d0f0f45cee85bebb195c2eccc58385524adee1985d611aba1f43037bf32b01",
-    "claimTime": 1650574800
+    "baseTokenURI": "",
+    "claimMerkleRoot": "0xe6c728e767435c8194f8f02d8c3f29d01d40b871dd95438e83f65e5c6d23145e",
+    "claimTime": 1652855400
   }
 }

@@ -55,7 +55,7 @@ if (process.env.INFURA_API_KEY && process.env.HDWALLET_MNEMONIC) {
   };
 
   networks.mainnet = {
-    url: process.env.ALCHEMY_URL,
+    url: `https://mainnet.infura.io/v3/${process.env.INFURA_API_KEY}`,
     accounts: {
       mnemonic: process.env.HDWALLET_MNEMONIC,
     },

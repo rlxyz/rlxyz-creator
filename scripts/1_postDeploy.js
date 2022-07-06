@@ -80,11 +80,11 @@ const runner = async () => {
   // creatorResult = creatorResult.connect (await setAdminAsSigner ());
 
   // run commands
-  // await setBaseURI (creatorResult, baseTokenURI);
-  // await setMintTime (creatorResult, claimTime, presaleTime, publicTime);
+  // await creatorResult.setBaseURI(baseTokenURI);
+  await creatorResult.setMintTime(claimTime);
 
   // claimMerkleRoot
-  //   ? await setClaimMerkleRoot (creatorResult, claimMerkleRoot)
+  //   ? await setClaimMerkleRoot(creatorResult, claimMerkleRoot)
   //   : null;
 
   // presaleMerkleRoot
@@ -93,7 +93,7 @@ const runner = async () => {
 
   // await randomizerResult.addDependency (creatorResult.address);
 
-  await creatorResult.setMintRandomizerContract(randomizerResult.address);
+  // await creatorResult.setMintRandomizerContract(randomizerResult.address);
 
   // dim (
   //   `Presale: ${new Date ((await creatorResult.presaleTime ()).toNumber ()).toString ()}`

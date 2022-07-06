@@ -4,7 +4,7 @@ const hardhat = require("hardhat");
 const {
   name: deployContractName,
   deploy: deployParameters,
-} = require("../production/testnet-claim.json");
+} = require("../production/mainnet.json");
 
 const runner = async () => {
   const { getNamedAccounts, deployments, getChainId, ethers } = hardhat;
@@ -28,8 +28,10 @@ const runner = async () => {
   cyan("\nDeploying NFT...");
   const creatorResult = await deploy(deployContractName, {
     args: [
+      deployParameters.name,
+      deployParameters.symbol,
       deployParameters.collectionSize,
-      //   deployParameters.maxPublicBatchPerAddress,
+      deployParameters.maxPublicBatchPerAddress,
       //   deployParameters.amountForPromotion,
       //   deployParameters.mintPrice,
     ],

@@ -1,15 +1,13 @@
 {
-  "name": "REFLECTIONS",
-  "deploy": {},
-  "postDeploy": {
-    "baseTokenURI": "https://api.dreamlab.art/reflection/",
-    "claimMerkleRoot": "0xde48370e78ba98c563850831906f1b016331dd8f13a51a587f2d2a39e231b67c",
-    "presaleMerkleRoot": "",
-    "claimTime": 1650574800,
-    "presaleTime": 1650661200,
-    "publicTime": 1650672000
+  "name": "RhapsodyCreatorClaimOpen",
+  "deploy": {
+    "name": "New York State of Mind by PMC x Fake-Up",
+    "symbol": "PMC-FU-COLLAB",
+    "collectionSize": 300,
+    "maxPublicBatchPerAddress": 1
   },
-  "start": {
-    "amountForPromotion": 2
+  "postDeploy": {
+    "baseTokenURI": "https://ipfs.rhapsodylabs.xyz/ipfs/QmPfiJqPMAaae3A8mcBYkPrLhe6vxLDJcAJhJgZN4JXBvE/",
+    "claimTime": 4087026546
   }
 }
