@@ -31,7 +31,7 @@ const runner = async () => {
       deployParameters.name,
       deployParameters.symbol,
       deployParameters.collectionSize,
-      deployParameters.maxPublicBatchPerAddress,
+      // deployParameters.maxPublicBatchPerAddress,
       //   deployParameters.amountForPromotion,
       //   deployParameters.mintPrice,
     ],

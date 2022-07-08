@@ -1,13 +1,13 @@
 {
-  "name": "RhapsodyCreatorClaimOpen",
+  "name": "RhapsodyCreatorClaim",
   "deploy": {
-    "name": "New York State of Mind by PMC x Fake-Up",
-    "symbol": "PMC-FU-COLLAB",
-    "collectionSize": 300,
-    "maxPublicBatchPerAddress": 1
+    "name": "Gernady by PMC x Fake-Up",
+    "symbol": "PMC-GERNADY-COLLAB",
+    "collectionSize": 1000
   },
   "postDeploy": {
-    "baseTokenURI": "https://ipfs.rhapsodylabs.xyz/ipfs/QmPfiJqPMAaae3A8mcBYkPrLhe6vxLDJcAJhJgZN4JXBvE/",
-    "claimTime": 4087026546
+    "baseTokenURI": "https://ipfs.rhapsodylabs.xyz/ipfs/Qmc69GQjf2D8eoGKutMEi7LiTPhuAZ6GzrTAg6KguEzRWs/",
+    "claimTime": 1657252800,
+    "claimMerkleRoot": "0xcf0207c5144861d82b90237156be62d9968f19fe9bb8f44e9560eb8ee45c5376"
   }
 }

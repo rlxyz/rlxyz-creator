@@ -81,11 +81,10 @@ const runner = async () => {
 
   // run commands
   // await creatorResult.setBaseURI(baseTokenURI);
-  await creatorResult.setMintTime(claimTime);
-
-  // claimMerkleRoot
-  //   ? await setClaimMerkleRoot(creatorResult, claimMerkleRoot)
-  //   : null;
+  // await creatorResult.setMintTime(claimTime);
+  claimMerkleRoot
+    ? await setClaimMerkleRoot(creatorResult, claimMerkleRoot)
+    : null;
 
   // presaleMerkleRoot
   //   ? await setPresaleMerkleRoot (creatorResult, presaleMerkleRoot)
