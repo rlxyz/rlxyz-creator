@@ -80,11 +80,11 @@ const runner = async () => {
   // creatorResult = creatorResult.connect (await setAdminAsSigner ());
 
   // run commands
-  // await creatorResult.setBaseURI(baseTokenURI);
+  await creatorResult.setBaseURI(baseTokenURI);
   // await creatorResult.setMintTime(claimTime);
-  claimMerkleRoot
-    ? await setClaimMerkleRoot(creatorResult, claimMerkleRoot)
-    : null;
+  // claimMerkleRoot
+  // ? await setClaimMerkleRoot(creatorResult, claimMerkleRoot)
+  // : null;
 
   // presaleMerkleRoot
   //   ? await setPresaleMerkleRoot (creatorResult, presaleMerkleRoot)

@@ -6,8 +6,8 @@
     "collectionSize": 1000
   },
   "postDeploy": {
-    "baseTokenURI": "https://ipfs.rhapsodylabs.xyz/ipfs/Qmc69GQjf2D8eoGKutMEi7LiTPhuAZ6GzrTAg6KguEzRWs/",
+    "baseTokenURI": "https://ipfs.rhapsodylabs.xyz/ipfs/QmWLx6actZkpPYHhcEf4FsS1n22k4EQdbc7fL9XiZg9cG7/",
     "claimTime": 1657252800,
-    "claimMerkleRoot": "0xcf0207c5144861d82b90237156be62d9968f19fe9bb8f44e9560eb8ee45c5376"
+    "claimMerkleRoot": "0x6e19bb1f16b0bf97c683a05a720b46f55b48a83e7ba1aa42f1cc36673571cdeb"
   }
 }

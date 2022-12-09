@@ -1,6 +1,8 @@
 {
-  "name": "RhapsodyCreatorGenerativeRinkeby",
+  "name": "RhapsodyCreator",
   "deploy": {
+    "name": "Rhapsody",
+    "symbol": "RHY",
     "collectionSize": 1111,
     "maxPublicBatchPerAddress": 2,
     "amountForPromotion": 40,

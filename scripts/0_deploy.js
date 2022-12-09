@@ -4,7 +4,7 @@ const hardhat = require("hardhat");
 const {
   name: deployContractName,
   deploy: deployParameters,
-} = require("../production/mainnet.json");
+} = require("../production/testnet.json");
 
 const runner = async () => {
   const { getNamedAccounts, deployments, getChainId, ethers } = hardhat;
@@ -31,9 +31,9 @@ const runner = async () => {
       deployParameters.name,
       deployParameters.symbol,
       deployParameters.collectionSize,
-      // deployParameters.maxPublicBatchPerAddress,
-      //   deployParameters.amountForPromotion,
-      //   deployParameters.mintPrice,
+      deployParameters.maxPublicBatchPerAddress,
+      deployParameters.amountForPromotion,
+      deployParameters.mintPrice,
     ],
     contract: deployContractName,
     from: deployer,
