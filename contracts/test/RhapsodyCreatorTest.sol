@@ -13,10 +13,13 @@ contract RhapsodyCreatorTest is RhapsodyCreator {
         RhapsodyCreator(
             "Rhapsody Creator Test",
             "RCT",
+            "",
             _collectionSize,
             _maxPublicBatchPerAddress,
             _amountForPromotion,
-            _mintPrice
+            _mintPrice,
+            0,
+            1
         )
     {}
 

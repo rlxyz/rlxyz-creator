@@ -30,10 +30,13 @@ const runner = async () => {
     args: [
       deployParameters.name,
       deployParameters.symbol,
+      deployParameters.baseURI,
       deployParameters.collectionSize,
       deployParameters.maxPublicBatchPerAddress,
       deployParameters.amountForPromotion,
       deployParameters.mintPrice,
+      deployParameters.presaleTime,
+      deployParameters.publicTime,
     ],
     contract: deployContractName,
     from: deployer,
