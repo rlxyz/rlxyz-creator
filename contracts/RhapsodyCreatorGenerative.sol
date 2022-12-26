@@ -35,7 +35,7 @@ contract RhapsodyCreatorGenerative is ERC721A, ERC721AOwnersExplicit, Ownable, R
     uint256 public immutable mintPrice;
 
     /// @notice total number of tokens in the collection
-    uint256 internal immutable collectionSize;
+    uint256 public immutable collectionSize;
 
     // ============ Mutable storage ============
 
