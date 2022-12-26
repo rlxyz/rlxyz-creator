@@ -39,6 +39,9 @@ contract RhapsodyCreator is ERC721A, ERC721AOwnersExplicit, Ownable, ReentrancyG
     /// @notice ERC721-presale inclusion root
     bytes32 public presaleMerkleRoot;
 
+    /// @notice time the claim starts
+    uint256 public claimTime;
+
     /// @notice time the presale starts;
     uint256 public presaleTime;
 
@@ -64,6 +67,7 @@ contract RhapsodyCreator is ERC721A, ERC721AOwnersExplicit, Ownable, ReentrancyG
         uint256 _maxPublicBatchPerAddress,
         uint256 _amountForPromotion,
         uint256 _mintPrice,
+        uint256 _claimTime,
         uint256 _presaleTime,
         uint256 _publicTime
     ) ERC721A(_name, _symbol) {
@@ -77,7 +81,7 @@ contract RhapsodyCreator is ERC721A, ERC721AOwnersExplicit, Ownable, ReentrancyG
         mintPrice = _mintPrice;
 
         _setBaseURI(_baseURI);
-        _setMintTime(_presaleTime, _publicTime);
+        _setMintTime(_claimTime, _presaleTime, _publicTime);
     }
 
     /// =========== Sale ===========
@@ -119,19 +123,30 @@ contract RhapsodyCreator is ERC721A, ERC721AOwnersExplicit, Ownable, ReentrancyG
     /// @dev this function can serve as an "active" and "non-active" sale status
     /// @dev set the values to uint256(-1) for "non-active" sale status
     /// @dev also, pass contract ownership to address(0) to close sale forever
-    function setMintTime(uint256 _presaleTime, uint256 _publicTime) public onlyOwner {
-        _setMintTime(_presaleTime, _publicTime);
+    function setMintTime(
+        uint256 _claimTime,
+        uint256 _presaleTime,
+        uint256 _publicTime
+    ) public onlyOwner {
+        _setMintTime(_claimTime, _presaleTime, _publicTime);
     }
 
     /// @notice Set the internal time for the mint
+    /// @param _claimTime time the claim starts
     /// @param _presaleTime time the presale starts
     /// @param _publicTime time the public sale starts
     /// @dev this function can serve as an "active" and "non-active" sale status
     /// @dev set the values to uint256(-1) for "non-active" sale status
     /// @dev also, pass contract ownership to address(0) to close sale forever
-    function _setMintTime(uint256 _presaleTime, uint256 _publicTime) internal {
-        require(_presaleTime > _currentTime(), "RhapsodyCreator/invalid-presale-time");
+    function _setMintTime(
+        uint256 _claimTime,
+        uint256 _presaleTime,
+        uint256 _publicTime
+    ) internal {
+        require(_presaleTime > _claimTime, "RhapsodyCreator/invalid-presale-time");
         require(_publicTime > _presaleTime, "RhapsodyCreator/invalid-public-time");
+
+        claimTime = _claimTime;
         presaleTime = _presaleTime;
         publicTime = _publicTime;
     }

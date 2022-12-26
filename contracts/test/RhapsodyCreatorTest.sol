@@ -19,7 +19,8 @@ contract RhapsodyCreatorTest is RhapsodyCreator {
             _amountForPromotion,
             _mintPrice,
             0,
-            1
+            1,
+            2
         )
     {}
 

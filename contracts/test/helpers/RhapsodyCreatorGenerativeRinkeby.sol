@@ -17,10 +17,14 @@ contract RhapsodyCreatorGenerativeRinkeby is RhapsodyCreatorGenerative {
         RhapsodyCreatorGenerative(
             "Rhapsody Creator Generative Rinkeby",
             "RCT",
+            "",
             _collectionSize,
             _maxPublicBatchPerAddress,
             _amountForPromotion,
-            _mintPrice
+            _mintPrice,
+            0,
+            1,
+            2
         )
     {}
 

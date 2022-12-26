@@ -45,7 +45,7 @@ contract RhapsodyCreatorGenerative is ERC721A, ERC721AOwnersExplicit, Ownable, R
     /// @notice ERC721-claim inclusion root
     bytes32 public claimMerkleRoot;
 
-    /// @notice time the public starts
+    /// @notice time the claim starts
     uint256 public claimTime;
 
     /// @notice time the presale starts
@@ -76,10 +76,14 @@ contract RhapsodyCreatorGenerative is ERC721A, ERC721AOwnersExplicit, Ownable, R
     constructor(
         string memory _name,
         string memory _symbol,
+        string memory _baseURI,
         uint256 _collectionSize,
         uint256 _maxPublicBatchPerAddress,
         uint256 _amountForPromotion,
-        uint256 _mintPrice
+        uint256 _mintPrice,
+        uint256 _claimTime,
+        uint256 _presaleTime,
+        uint256 _publicTime
     ) ERC721A(_name, _symbol) {
         require(_collectionSize > 0, "RhapsodyCreatorGenerative/invalid-collection-size");
         require(_amountForPromotion <= _collectionSize, "RhapsodyCreatorGenerative/invalid-promotion-amount");
@@ -89,6 +93,9 @@ contract RhapsodyCreatorGenerative is ERC721A, ERC721AOwnersExplicit, Ownable, R
         maxPublicBatchPerAddress = _maxPublicBatchPerAddress;
         amountForPromotion = _amountForPromotion;
         mintPrice = _mintPrice;
+
+        _setBaseURI(_baseURI);
+        _setMintTime(_claimTime, _presaleTime, _publicTime);
     }
 
     /// =========== Sale ===========
@@ -171,8 +178,24 @@ contract RhapsodyCreatorGenerative is ERC721A, ERC721AOwnersExplicit, Ownable, R
         uint256 _presaleTime,
         uint256 _publicTime
     ) public onlyOwner {
-        require(_presaleTime > _claimTime, "RhapsodyCreatorGenerative/invalid-presale-time");
-        require(_publicTime > _presaleTime, "RhapsodyCreatorGenerative/invalid-public-time");
+        _setMintTime(_claimTime, _presaleTime, _publicTime);
+    }
+
+    /// @notice Set the internal time for the mint
+    /// @param _claimTime time the claim starts
+    /// @param _presaleTime time the presale starts
+    /// @param _publicTime time the public sale starts
+    /// @dev this function can serve as an "active" and "non-active" sale status
+    /// @dev set the values to uint256(-1) for "non-active" sale status
+    /// @dev also, pass contract ownership to address(0) to close sale forever
+    function _setMintTime(
+        uint256 _claimTime,
+        uint256 _presaleTime,
+        uint256 _publicTime
+    ) internal {
+        require(_presaleTime > _claimTime, "RhapsodyCreator/invalid-presale-time");
+        require(_publicTime > _presaleTime, "RhapsodyCreator/invalid-public-time");
+
         claimTime = _claimTime;
         presaleTime = _presaleTime;
         publicTime = _publicTime;
@@ -240,17 +263,17 @@ contract RhapsodyCreatorGenerative is ERC721A, ERC721AOwnersExplicit, Ownable, R
 
     /// @notice set the new baseURI to change the tokens metadata
     function setBaseURI(string calldata newBaseURI) external onlyOwner {
+        _setBaseURI(newBaseURI);
+    }
+
+    /// @notice set the internal baseURI to change the tokens metadata
+    function _setBaseURI(string memory newBaseURI) internal virtual {
         _baseTokenURI = newBaseURI;
     }
 
     /// @notice core metadata baseURI used for tokens metadata
-    function _baseURI() internal view virtual override returns (string memory) {
-        return _baseTokenURI;
-    }
-
-    /// @notice core metadata baseURI used for tokens metadata
     function baseURI() public view returns (string memory) {
-        return _baseURI();
+        return _baseTokenURI;
     }
 
     /// =========== Dev ===========
