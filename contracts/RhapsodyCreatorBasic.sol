@@ -10,7 +10,11 @@ import "@openzeppelin/contracts/utils/math/SafeMath.sol";
 import "erc721a/contracts/ERC721A.sol";
 import "erc721a/contracts/extensions/ERC721AOwnersExplicit.sol";
 
-contract RhapsodyCreator is ERC721A, ERC721AOwnersExplicit, Ownable, ReentrancyGuard {
+contract RhapsodyCreatorBasic is ERC721A, ERC721AOwnersExplicit, Ownable, ReentrancyGuard {
+    /// ============ Semantic Versioning ============
+    /// @dev Semantic versioning for this contract
+    string public constant version = "1.0.0";
+
     /// ============ Libraries ============
 
     /// @notice safe math for arithmetic operations
@@ -35,6 +39,9 @@ contract RhapsodyCreator is ERC721A, ERC721AOwnersExplicit, Ownable, ReentrancyG
     uint256 public immutable collectionSize;
 
     // ============ Mutable storage ============
+
+    /// @notice ERC721-presale inclusion root
+    bytes32 public claimMerkleRoot;
 
     /// @notice ERC721-presale inclusion root
     bytes32 public presaleMerkleRoot;
@@ -86,6 +93,20 @@ contract RhapsodyCreator is ERC721A, ERC721AOwnersExplicit, Ownable, ReentrancyG
 
     /// =========== Sale ===========
 
+    /// @notice Allows claim of tokens if address is part of merkle tree
+    /// @param invocations number of tokens to mint
+    /// @param proof merkle proof to prove address and token mint count are in tree
+    /// @dev user must mint max invocations
+    function claimMint(uint256 invocations, bytes32[] calldata proof)
+        external
+        nonReentrant
+        isMintLive(claimTime)
+        isMintValid(invocations, invocations)
+        isMintProofValid(invocations, msg.sender, proof, claimMerkleRoot)
+    {
+        _mintMany(msg.sender, invocations);
+    }
+
     /// @notice Allows presale minting of tokens if address is part of merkle tree
     /// @param invocations number of tokens to mint
     /// @param maxInvocation max number of invocations of the user
@@ -94,14 +115,16 @@ contract RhapsodyCreator is ERC721A, ERC721AOwnersExplicit, Ownable, ReentrancyG
         uint256 invocations,
         uint256 maxInvocation,
         bytes32[] calldata proof
-    ) external payable isMintValid(invocations, maxInvocation) isMintLive(presaleTime) {
-        require(_mintOf(msg.sender) == 0, "RhapsodyCreator/invalid-double-mint");
-        require(
-            MerkleProof.verify(proof, presaleMerkleRoot, keccak256(abi.encodePacked(msg.sender, maxInvocation))),
-            "RhapsodyCreator/invalid-address-proof"
-        );
-        _safeMint(msg.sender, invocations);
-        emit Created(msg.sender, invocations);
+    )
+        external
+        payable
+        nonReentrant
+        isMintLive(presaleTime)
+        isMintValid(invocations, maxInvocation)
+        isMintPricingValid(invocations)
+        isMintProofValid(maxInvocation, msg.sender, proof, presaleMerkleRoot)
+    {
+        _mintMany(msg.sender, invocations);
     }
 
     /// @notice Allows public minting of tokens
@@ -110,11 +133,20 @@ contract RhapsodyCreator is ERC721A, ERC721AOwnersExplicit, Ownable, ReentrancyG
     function publicMint(uint256 invocations)
         external
         payable
-        isMintValid(invocations, maxPublicBatchPerAddress)
+        nonReentrant
         isMintLive(publicTime)
+        isMintValid(invocations, maxPublicBatchPerAddress)
+        isMintPricingValid(invocations)
     {
-        _safeMint(msg.sender, invocations);
-        emit Created(msg.sender, invocations);
+        _mintMany(msg.sender, invocations);
+    }
+
+    /// @notice mint tokens in batches
+    /// @param to address to mint to
+    /// @param invocations number of tokens to mint
+    function _mintMany(address to, uint256 invocations) internal {
+        _safeMint(to, invocations);
+        emit Created(to, invocations);
     }
 
     /// @notice Set the time for the mint
@@ -153,20 +185,31 @@ contract RhapsodyCreator is ERC721A, ERC721AOwnersExplicit, Ownable, ReentrancyG
 
     /// @notice force override the merkle root used in presale mint
     /// @param _presaleMerkleRoot root of the merklelized whitelist
-    function setMintMerkleRoot(bytes32 _presaleMerkleRoot) public onlyOwner {
+    function setPresaleMerkleRoot(bytes32 _presaleMerkleRoot) public onlyOwner {
         presaleMerkleRoot = _presaleMerkleRoot;
+    }
+
+    /// @notice force override the merkle root used in presale mint
+    /// @param _claimMerkleRoot root of the merklelized claimlist
+    function setClaimMerkleRoot(bytes32 _claimMerkleRoot) public onlyOwner {
+        claimMerkleRoot = _claimMerkleRoot;
     }
 
     /// @notice ensures that minters need valid invocations + value to mint
     modifier isMintValid(uint256 invocations, uint256 maxInvocation) {
-        require(tx.origin == msg.sender, "RhapsodyCreator/invalid-mint-caller");
-        require(totalSupply().add(invocations) <= collectionSize, "RhapsodyCreator/invalid-total-supply");
-        require(msg.value == mintPrice.mul(invocations), "RhapsodyCreator/invalid-mint-value");
-        require(msg.value > 0 && invocations > 0, "RhapsodyCreator/invalid-invocation-lower-boundary");
+        require(tx.origin == msg.sender, "RhapsodyCreatorGenerative/invalid-mint-caller");
+        require(totalSupply().add(invocations) <= collectionSize, "RhapsodyCreatorGenerative/invalid-total-supply");
         require(
             _mintOf(msg.sender).add(invocations) <= maxInvocation,
-            "RhapsodyCreator/invalid-invocation-upper-boundary"
+            "RhapsodyCreatorGenerative/invalid-invocation-upper-boundary"
         );
+        require(invocations > 0, "RhapsodyCreatorGenerative/invalid-invocation-lower-boundary");
+        _;
+    }
+
+    modifier isMintPricingValid(uint256 invocations) {
+        require(msg.value == mintPrice.mul(invocations), "RhapsodyCreatorGenerative/invalid-mint-value");
+        require(msg.value > 0, "RhapsodyCreatorGenerative/invalid-invocation-lower-boundary");
         _;
     }
 
@@ -174,7 +217,20 @@ contract RhapsodyCreator is ERC721A, ERC721AOwnersExplicit, Ownable, ReentrancyG
     /// @dev only publicTime/presaleTime variable is used here; see publicMint/presaleMint function
     /// @dev time > 0 is optimization when the sale is not live; r.e  mint "not-active" mode
     modifier isMintLive(uint256 time) {
-        require(time > 0 && block.timestamp > time, "RhapsodyCreator/invalid-mint-time");
+        require(time > 0 && block.timestamp > time, "RhapsodyCreatorGenerative/invalid-mint-time");
+        _;
+    }
+
+    modifier isMintProofValid(
+        uint256 invocations,
+        address prover,
+        bytes32[] calldata proof,
+        bytes32 merkleRoot
+    ) {
+        require(
+            MerkleProof.verify(proof, merkleRoot, keccak256(abi.encodePacked(prover, invocations))),
+            "RhapsodyCreatorGenerative/invalid-address-proof"
+        );
         _;
     }
 

@@ -14,6 +14,10 @@ import "./utils/interfaces/IRandomizer.sol";
 error HashQueryForNonexistentToken();
 
 contract RhapsodyCreatorGenerative is ERC721A, ERC721AOwnersExplicit, Ownable, ReentrancyGuard {
+    /// ============ Semantic Versioning ============
+    /// @dev Semantic versioning for this contract
+    string public constant version = "1.0.0";
+
     /// ============ Libraries ============
 
     /// @notice safe math for arithmetic operations
