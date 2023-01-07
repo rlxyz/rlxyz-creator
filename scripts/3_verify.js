@@ -7,7 +7,7 @@ const { deployments } = require("hardhat");
 const {
   name: deployContractName,
   deploy: deployParameters,
-} = require("../production/mainnet.json");
+} = require("../production/testnet.json");
 
 const info = (msg) => console.log(chalk.dim(msg));
 const success = (msg) => console.log(chalk.green(msg));
@@ -98,7 +98,7 @@ async function run() {
     await contractAddress(deployContractName),
     deployContractName,
     // todo: fix; r.e right now its manually inserting the deploy constructors of \"production/testnet.json\"
-    "'PMC x Hellchemy Skeltermy Collab' PMC-HS-COLLAB 3000"
+    "Rhapsody RHY https://some-random.api/ 1111 2 40 333000000000000000 1650574800 1670819400 1670823000"
   );
 
   success("Done!");

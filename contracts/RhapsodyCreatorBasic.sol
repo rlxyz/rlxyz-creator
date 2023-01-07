@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
 
-pragma solidity ^0.8.0;
+pragma solidity 0.8.17;
 
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
@@ -13,7 +13,7 @@ import "erc721a/contracts/extensions/ERC721AOwnersExplicit.sol";
 contract RhapsodyCreatorBasic is ERC721A, ERC721AOwnersExplicit, Ownable, ReentrancyGuard {
     /// ============ Semantic Versioning ============
     /// @dev Semantic versioning for this contract
-    string public constant version = "1.0.0";
+    string public constant version = "1.0.1";
 
     /// ============ Libraries ============
 

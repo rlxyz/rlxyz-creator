@@ -75,7 +75,7 @@ const optimizerEnabled = !process.env.OPTIMIZER_DISABLED;
 
 const config = {
   solidity: {
-    version: '0.8.9',
+    version: '0.8.17',
     settings: {
       optimizer: {
         enabled: optimizerEnabled,

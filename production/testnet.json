@@ -1,5 +1,5 @@
 {
-  "name": "RhapsodyCreator",
+  "name": "RhapsodyCreatorBasic",
   "deploy": {
     "name": "Rhapsody",
     "symbol": "RHY",
@@ -8,6 +8,7 @@
     "maxPublicBatchPerAddress": 2,
     "amountForPromotion": 40,
     "mintPrice": "333000000000000000",
+    "claimTime": 1650574800,
     "presaleTime": 1670819400,
     "publicTime": 1670823000
   },
