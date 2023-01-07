@@ -288,6 +288,11 @@
     "@babel/helper-validator-identifier" "^7.16.7"
     to-fast-properties "^2.0.0"
 
+"@chainlink/contracts@^0.3.0":
+  version "0.3.1"
+  resolved "https://registry.yarnpkg.com/@chainlink/contracts/-/contracts-0.3.1.tgz#a1a2e1b179a6ce6a9b5b16992f6202918110ef5c"
+  integrity sha512-A8DRvmfNCwLS1iduPPj7wNAZJMe9/ZimMhoHhbbBiq+7Vq/HFjiNcdoQ5NinFdXD5aTsoNUGG5pAYKj7YMpm9A==
+
 "@colors/colors@1.5.0":
   version "1.5.0"
   resolved "https://registry.yarnpkg.com/@colors/colors/-/colors-1.5.0.tgz#bb504579c1cae923e6576a4f5da43d25f97bdbd9"
@@ -313,6 +318,16 @@
     colorspace "1.1.x"
     enabled "2.0.x"
     kuler "^2.0.0"
+
+"@divergencetech/ethier@^0.44.0":
+  version "0.44.0"
+  resolved "https://registry.yarnpkg.com/@divergencetech/ethier/-/ethier-0.44.0.tgz#d925775cb2c993034f184369f38854a8aadd0861"
+  integrity sha512-LldffWMvqMBP2d4fNF0PFXtnOsEv8YqnQ1xgL8fh6m//NuR6Pr8Waj36NRHTSXof/7kUo//17DqFr6rbl3JItw==
+  dependencies:
+    "@chainlink/contracts" "^0.3.0"
+    "@openzeppelin/contracts" "4.7.3"
+    "@openzeppelin/contracts-upgradeable" "4.7.3"
+    erc721a "4.2.2"
 
 "@ensdomains/ens@^0.4.4":
   version "0.4.5"
@@ -1660,7 +1675,12 @@
     node-gyp "^8.4.1"
     read-package-json-fast "^2.0.3"
 
-"@openzeppelin/contracts@^4.7.3":
+"@openzeppelin/contracts-upgradeable@4.7.3":
+  version "4.7.3"
+  resolved "https://registry.yarnpkg.com/@openzeppelin/contracts-upgradeable/-/contracts-upgradeable-4.7.3.tgz#f1d606e2827d409053f3e908ba4eb8adb1dd6995"
+  integrity sha512-+wuegAMaLcZnLCJIvrVUDzA9z/Wp93f0Dla/4jJvIhijRrPabjQbZe6fWiECLaJyfn5ci9fqf9vTw3xpQOad2A==
+
+"@openzeppelin/contracts@4.7.3", "@openzeppelin/contracts@^4.7.3":
   version "4.7.3"
   resolved "https://registry.yarnpkg.com/@openzeppelin/contracts/-/contracts-4.7.3.tgz#939534757a81f8d69cc854c7692805684ff3111e"
   integrity sha512-dGRS0agJzu8ybo44pCIf3xBaPQN/65AIXNgK8+4gzKd5kbvlqyxryUYVLJv7fK98Seyd2hDZzVEHSWAh0Bt1Yw==
@@ -4661,6 +4681,11 @@ env-paths@^2.2.0:
   version "2.2.1"
   resolved "https://registry.npmjs.org/env-paths/-/env-paths-2.2.1.tgz"
   integrity sha512-+h1lkLKhZMTYjog1VEpJNG7NZJWcuc2DDk/qsqSTRRCOXiLjeQ1d1/udrUGhqMxUgAlwKNZ0cf2uqan5GLuS2A==
+
+erc721a@4.2.2:
+  version "4.2.2"
+  resolved "https://registry.yarnpkg.com/erc721a/-/erc721a-4.2.2.tgz#7362e2854bb28e438c19619605128b9af7d05e01"
+  integrity sha512-u5kDOqn47qFCTjXtU8VUrNqToo6aZaiUxy4e9Rtmjq3sR1k+NEZf8Kh+H5VT65rDSglRn1nn4MrY7QVa1n3Eig==
 
 erc721a@^4.2.3:
   version "4.2.3"
