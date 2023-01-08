@@ -5,31 +5,9 @@ import "@openzeppelin/contracts/utils/math/SafeMath.sol";
 import "@divergencetech/ethier/contracts/erc721/ERC721ACommon.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
 import "./ERC721Core.sol";
+import "./../../sales/AuctionSeller.sol";
 
-abstract contract ERC721Auction is TimeHelper, ERC721Core {
-    /// ============ Libraries ============
-
-    /// @notice safe math for arithmetic operations
-    using SafeMath for uint256;
-
-    /// @notice counter for auction ids
-    using Counters for Counters.Counter;
-
-    /// ============ Struct ============
-    struct Auction {
-        uint256 startTime;
-        uint256 endTime;
-        uint256 price;
-        uint256 maxPerAddress;
-        bytes32 merkleRoot;
-    }
-
-    // ============ Mutables ============
-
-    mapping(uint256 => Auction) public auctions;
-
-    Counters.Counter private _auctionId;
-
+abstract contract ERC721Auction is TimeHelper, ERC721Core, AuctionSeller {
     // ============ Constructor ============
 
     constructor(
@@ -40,31 +18,13 @@ abstract contract ERC721Auction is TimeHelper, ERC721Core {
         uint256 _collectionMaxSupply
     ) ERC721Core(_name, _symbol, _royaltyReceiver, _royaltyBasisPoints, _collectionMaxSupply) {}
 
-    // ============ Public Functions ============
-
-    function createAuction(
-        uint256 startTime,
-        uint256 endTime,
-        uint256 price,
-        uint256 maxPerAddress,
-        bytes32 merkleRoot
-    ) external onlyOwner {
-        uint256 auctionId = _auctionId.current();
-        auctions[auctionId] = Auction(startTime, endTime, price, maxPerAddress, merkleRoot);
-        _auctionId.increment();
-    }
-
-    function getAuction(uint256 auctionId) public view returns (Auction memory) {
-        require(auctionId < _auctionId.current(), "ERC721Generative: auction does not exist");
-        return auctions[auctionId];
-    }
-
     /// =========== Sale ===========
 
     /// @notice Allow Purchase based on auction id
     /// @dev user must mint max invocations
     function purchase(uint256 auctionId, uint256 invocations) external payable nonReentrant {
         Auction memory auction = getAuction(auctionId);
+        require(auction.merkleRoot == bytes32(0), "ERC721Generative: auction is merkle root");
         _isAuctionTimeValid(auction.startTime, auction.endTime);
         _isAuctionMintValid(msg.sender, invocations);
         _isAuctionMaxPerAddressValid(msg.sender, invocations, auction.maxPerAddress);

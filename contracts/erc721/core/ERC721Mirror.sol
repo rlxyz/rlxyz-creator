@@ -15,30 +15,9 @@ import "@openzeppelin/contracts/utils/Counters.sol";
 import "./ERC721Core.sol";
 import "./../../utils/TimeHelper.sol";
 import "./../../sales/MirrorSellerBasic.sol";
+import "./../../sales/AuctionSeller.sol";
 
-abstract contract ERC721Mirror is TimeHelper, ERC721Core, MirrorSellerBasic {
-    /// ============ Libraries ============
-    /// @notice safe math for arithmetic operations
-    using SafeMath for uint256;
-
-    /// @notice counter for auction ids
-    using Counters for Counters.Counter;
-
-    /// ============ Struct ============
-    struct Auction {
-        uint256 startTime;
-        uint256 endTime;
-        uint256 price;
-        uint256 maxPerAddress;
-        bytes32 merkleRoot;
-    }
-
-    // ============ Mutables ============
-
-    mapping(uint256 => Auction) public auctions;
-
-    Counters.Counter private _auctionId;
-
+abstract contract ERC721Mirror is TimeHelper, ERC721Core, MirrorSellerBasic, AuctionSeller {
     /// ============= Constructor =============
 
     /// @notice Creates a new Creator contract
@@ -55,24 +34,6 @@ abstract contract ERC721Mirror is TimeHelper, ERC721Core, MirrorSellerBasic {
         ERC721Core(_name, _symbol, _receiver, _royaltyBasisPoints, _collectionMaxSupply)
         MirrorSellerBasic(_mirrorContract)
     {}
-
-    /// ============ Public Functions ============
-    function createAuction(
-        uint256 startTime,
-        uint256 endTime,
-        uint256 price,
-        uint256 maxPerAddress,
-        bytes32 merkleRoot
-    ) external onlyOwner {
-        uint256 auctionId = _auctionId.current();
-        auctions[auctionId] = Auction(startTime, endTime, price, maxPerAddress, merkleRoot);
-        _auctionId.increment();
-    }
-
-    function getAuction(uint256 auctionId) public view returns (Auction memory) {
-        require(auctionId < _auctionId.current(), "ERC721Generative: auction does not exist");
-        return auctions[auctionId];
-    }
 
     /// =========== Sale ===========
 
