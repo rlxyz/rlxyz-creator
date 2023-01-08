@@ -33,11 +33,6 @@ abstract contract ERC721Mirror is TimeHelper, ERC721Core, MirrorSellerBasic {
         bytes32 merkleRoot;
     }
 
-    // ============= Immutables ==============
-
-    /// @notice the total supply
-    uint256 public collectionMaxSupply;
-
     // ============ Mutables ============
 
     mapping(uint256 => Auction) public auctions;
@@ -56,10 +51,10 @@ abstract contract ERC721Mirror is TimeHelper, ERC721Core, MirrorSellerBasic {
         uint256 _collectionMaxSupply,
         // Extra
         address _mirrorContract
-    ) ERC721Core(_name, _symbol, _receiver, _royaltyBasisPoints) MirrorSellerBasic(_mirrorContract) {
-        require(_collectionMaxSupply > 0, "ERC721Generative: collectionMaxSupply must be greater than 0");
-        collectionMaxSupply = _collectionMaxSupply;
-    }
+    )
+        ERC721Core(_name, _symbol, _receiver, _royaltyBasisPoints, _collectionMaxSupply)
+        MirrorSellerBasic(_mirrorContract)
+    {}
 
     /// ============ Public Functions ============
     function createAuction(
@@ -92,55 +87,5 @@ abstract contract ERC721Mirror is TimeHelper, ERC721Core, MirrorSellerBasic {
         _isAuctionMaxPerAddressValid(msg.sender, tokenIds.length, auction.maxPerAddress);
         _mirrorMany(msg.sender, tokenIds);
         _mintMany(msg.sender, tokenIds.length);
-    }
-
-    /// ============ Internal Functions ============
-    function _mintMany(address to, uint256 invocations) internal virtual;
-
-    function _isAuctionMintValid(address to, uint256 invocations) internal view {
-        require(tx.origin == to, "RhapsodyCreatorGenerative/invalid-mint-caller");
-        require(
-            totalSupply().add(invocations) <= collectionMaxSupply,
-            "RhapsodyCreatorGenerative/invalid-total-supply"
-        );
-        require(invocations > 0, "RhapsodyCreatorGenerative/invalid-invocation-lower-boundary");
-    }
-
-    function _isAuctionMaxPerAddressValid(
-        address to,
-        uint256 invocations,
-        uint256 maxPerAddress
-    ) internal view {
-        require(invocations <= maxPerAddress, "RhapsodyCreatorGenerative/invalid-invocation-upper-boundary");
-        require(
-            _numberMinted(to).add(invocations) <= maxPerAddress,
-            "RhapsodyCreatorGenerative/invalid-address-invocation-upper-boundary"
-        );
-    }
-
-    function _isAuctionProofValid(
-        address prover,
-        uint256 invocations,
-        bytes32[] calldata proof,
-        bytes32 merkleRoot
-    ) internal pure {
-        require(
-            MerkleProof.verify(proof, merkleRoot, keccak256(abi.encodePacked(prover, invocations))),
-            "RhapsodyCreatorGenerative/invalid-address-proof"
-        );
-    }
-
-    // startTime must be more than 0 and less than current time; endTime not set, means forever...
-    function _isAuctionTimeValid(uint256 startTime, uint256 endTime) internal view {
-        require(startTime > 0 && startTime >= _currentTime(), "RhapsodyCreatorGenerative/invalid-start-time");
-        require(endTime <= _currentTime(), "RhapsodyCreatorGenerative/invalid-end-time");
-    }
-
-    function _isAuctionPriceValid(
-        uint256 value,
-        uint256 invocations,
-        uint256 mintPrice
-    ) internal pure {
-        require(value == mintPrice.mul(invocations), "RhapsodyCreatorGenerative/invalid-mint-value");
     }
 }
