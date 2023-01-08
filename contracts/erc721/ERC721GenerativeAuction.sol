@@ -1,19 +1,11 @@
-// SPDX-License-Identifier: MIT
-
 pragma solidity ^0.8.0;
 
-import "@openzeppelin/contracts/access/Ownable.sol";
-import "@divergencetech/ethier/contracts/erc721/BaseTokenURI.sol";
-import "@divergencetech/ethier/contracts/erc721/ERC721ACommon.sol";
-import "@openzeppelin/contracts/utils/math/SafeMath.sol";
-import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
-import "./../random/interfaces/IRNGProducer.sol";
+import "./core/ERC721Auction.sol";
 import "./../random/RNGConsumer.sol";
-import "./ERC721Core.sol";
 
 error HashQueryForNonexistentToken();
 
-contract ERC721GenerativeCommon is ERC721Core, RNGConsumer {
+abstract contract ERC721GenerativeAuction is ERC721Auction, RNGConsumer {
     /// ============ Libraries ============
 
     /// @notice safe math for arithmetic operations
@@ -22,18 +14,16 @@ contract ERC721GenerativeCommon is ERC721Core, RNGConsumer {
     /// @notice the mapping of token hashes
     mapping(uint256 => bytes32) private _tokenHash;
 
-    /// @notice Constructor
+    /// ============ Constructor ============
     constructor(
         string memory _name,
         string memory _symbol,
         address payable _royaltyReceiver,
         uint96 _royaltyBasisPoints,
-        uint256 _collectionMaxSupply,
-        address _randomizerContract
-    )
-        ERC721Core(_name, _symbol, _royaltyReceiver, _royaltyBasisPoints, _collectionMaxSupply)
-        RNGConsumer(_randomizerContract)
-    {}
+        uint256 _collectionMaxSupply
+    ) ERC721Auction(_name, _symbol, _royaltyReceiver, _royaltyBasisPoints, _collectionMaxSupply) {}
+
+    /// ============ Internal Functions ============
 
     /// @notice mint tokens in batches
     /// @param to address to mint to
