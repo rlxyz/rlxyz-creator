@@ -13,6 +13,7 @@ import "./utils/interfaces/IRandomizer.sol";
 
 error HashQueryForNonexistentToken();
 
+///! 1. Removed IRandomizer.sol
 contract RhapsodyCreatorGenerative is ERC721A, ERC721AOwnersExplicit, Ownable, ReentrancyGuard {
     /// ============ Semantic Versioning ============
     /// @dev Semantic versioning for this contract
@@ -64,11 +65,6 @@ contract RhapsodyCreatorGenerative is ERC721A, ERC721AOwnersExplicit, Ownable, R
     // ============ Private storage ============
 
     string private _baseTokenURI;
-
-    // ============= Dependencies ==============
-
-    /// @notice the randomizer contract
-    IRandomizer public mintRandomizerContract;
 
     /// ============= Constructor =============
 
@@ -244,11 +240,6 @@ contract RhapsodyCreatorGenerative is ERC721A, ERC721AOwnersExplicit, Ownable, R
         _;
     }
 
-    /// @notice used the set the mint randomizer for on-chain generative projects
-    function setMintRandomizerContract(address _mintRandomizerContract) external onlyOwner {
-        mintRandomizerContract = IRandomizer(_mintRandomizerContract);
-    }
-
     /// =========== Merkle Roots ===========
 
     /// @notice force override the merkle root used in presale mint
@@ -334,6 +325,6 @@ contract RhapsodyCreatorGenerative is ERC721A, ERC721AOwnersExplicit, Ownable, R
     }
 
     function _generateUniqueIdentifier(uint256 seed) internal view virtual returns (bytes32) {
-        return keccak256(abi.encodePacked(seed, tx.origin, block.number - 1, mintRandomizerContract.getRandomValue()));
+        return keccak256(abi.encodePacked(seed, tx.origin, block.number - 1));
     }
 }
