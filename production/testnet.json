@@ -1,9 +1,8 @@
 {
-  "name": "RhapsodyCreatorBasic",
+  "name": "RhapsodyCreatorGenerative",
   "deploy": {
     "name": "Rhapsody",
     "symbol": "RHY",
-    "baseURI": "https://some-random.api/",
     "collectionSize": 1111,
     "maxMintPerAddress": 2,
     "amountForPromotion": 40,

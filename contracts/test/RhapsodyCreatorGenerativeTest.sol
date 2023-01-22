@@ -13,7 +13,6 @@ contract RhapsodyCreatorGenerativeTest is RhapsodyCreatorGenerative {
         RhapsodyCreatorGenerative(
             "Rhapsody Creator Test",
             "RCT",
-            "",
             _collectionSize,
             _maxPublicBatchPerAddress,
             _amountForPromotion,

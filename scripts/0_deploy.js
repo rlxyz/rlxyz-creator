@@ -30,9 +30,8 @@ const runner = async () => {
     args: [
       deployParameters.name,
       deployParameters.symbol,
-      deployParameters.baseURI,
       deployParameters.collectionSize,
-      deployParameters.maxPublicBatchPerAddress,
+      deployParameters.maxMintPerAddress,
       deployParameters.amountForPromotion,
       deployParameters.mintPrice,
       deployParameters.claimTime,

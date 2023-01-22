@@ -76,7 +76,6 @@ contract RhapsodyCreatorGenerative is ERC721A, ERC721AOwnersExplicit, Ownable, R
     constructor(
         string memory _name,
         string memory _symbol,
-        string memory _baseURI,
         uint256 _collectionSize,
         uint256 _maxMintPerAddress,
         uint256 _amountForPromotion,
@@ -94,7 +93,6 @@ contract RhapsodyCreatorGenerative is ERC721A, ERC721AOwnersExplicit, Ownable, R
         amountForPromotion = _amountForPromotion;
         mintPrice = _mintPrice;
 
-        _setBaseURI(_baseURI);
         setClaimTime(_claimTime);
         setPresaleTime(_presaleTime);
         setPublicTime(_publicTime);
