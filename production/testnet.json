@@ -1,11 +1,11 @@
 {
-  "name": "RhapsodyCreatorGenerative",
+  "name": "RhapsodyCreatorBasic",
   "deploy": {
     "name": "Rhapsody",
     "symbol": "RHY",
     "baseURI": "https://some-random.api/",
     "collectionSize": 1111,
-    "maxPublicBatchPerAddress": 2,
+    "maxMintPerAddress": 2,
     "amountForPromotion": 40,
     "mintPrice": "333000000000000000",
     "claimTime": 1670819200,

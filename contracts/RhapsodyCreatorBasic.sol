@@ -30,7 +30,7 @@ contract RhapsodyCreatorBasic is ERC721A, ERC721AOwnersExplicit, Ownable, Reentr
     uint256 public immutable amountForPromotion;
 
     /// @notice max mintable tokens for each address in public
-    uint256 public immutable maxPublicBatchPerAddress;
+    uint256 public immutable maxMintPerAddress;
 
     /// @notice mint price of each nft; same for pre/public sale.
     uint256 public immutable mintPrice;
@@ -63,7 +63,7 @@ contract RhapsodyCreatorBasic is ERC721A, ERC721AOwnersExplicit, Ownable, Reentr
 
     /// @notice Creates a new Creator contract
     /// @param _collectionSize the total size of the collection
-    /// @param _maxPublicBatchPerAddress max mintable tokens in public sale
+    /// @param _maxMintPerAddress max mintable tokens in public sale
     /// @param _amountForPromotion promotional nfts count
     /// @param _mintPrice mint price of each nft
     constructor(
@@ -71,7 +71,7 @@ contract RhapsodyCreatorBasic is ERC721A, ERC721AOwnersExplicit, Ownable, Reentr
         string memory _symbol,
         string memory _baseURI,
         uint256 _collectionSize,
-        uint256 _maxPublicBatchPerAddress,
+        uint256 _maxMintPerAddress,
         uint256 _amountForPromotion,
         uint256 _mintPrice,
         uint256 _claimTime,
@@ -83,12 +83,14 @@ contract RhapsodyCreatorBasic is ERC721A, ERC721AOwnersExplicit, Ownable, Reentr
         require(_mintPrice > 0, "RhapsodyCreator/invalid-mint-price");
 
         collectionSize = _collectionSize;
-        maxPublicBatchPerAddress = _maxPublicBatchPerAddress;
+        maxMintPerAddress = _maxMintPerAddress;
         amountForPromotion = _amountForPromotion;
         mintPrice = _mintPrice;
 
         _setBaseURI(_baseURI);
-        _setMintTime(_claimTime, _presaleTime, _publicTime);
+        setClaimTime(_claimTime);
+        setPresaleTime(_presaleTime);
+        setPublicTime(_publicTime);
     }
 
     /// =========== Sale ===========
@@ -101,7 +103,7 @@ contract RhapsodyCreatorBasic is ERC721A, ERC721AOwnersExplicit, Ownable, Reentr
         external
         nonReentrant
         isMintLive(claimTime)
-        isMintValid(invocations, invocations)
+        isMintValid(invocations, maxMintPerAddress)
         isMintProofValid(invocations, msg.sender, proof, claimMerkleRoot)
     {
         _mintMany(msg.sender, invocations);
@@ -120,7 +122,7 @@ contract RhapsodyCreatorBasic is ERC721A, ERC721AOwnersExplicit, Ownable, Reentr
         payable
         nonReentrant
         isMintLive(presaleTime)
-        isMintValid(invocations, maxInvocation)
+        isMintValid(invocations, maxMintPerAddress)
         isMintPricingValid(invocations)
         isMintProofValid(maxInvocation, msg.sender, proof, presaleMerkleRoot)
     {
@@ -129,13 +131,13 @@ contract RhapsodyCreatorBasic is ERC721A, ERC721AOwnersExplicit, Ownable, Reentr
 
     /// @notice Allows public minting of tokens
     /// @param invocations number of tokens to mint
-    /// @dev user can only mint less than maxPublicBatchPerAddress of tokens
+    /// @dev user can only mint less than maxMintPerAddress of tokens
     function publicMint(uint256 invocations)
         external
         payable
         nonReentrant
         isMintLive(publicTime)
-        isMintValid(invocations, maxPublicBatchPerAddress)
+        isMintValid(invocations, maxMintPerAddress)
         isMintPricingValid(invocations)
     {
         _mintMany(msg.sender, invocations);
@@ -149,37 +151,30 @@ contract RhapsodyCreatorBasic is ERC721A, ERC721AOwnersExplicit, Ownable, Reentr
         emit Created(to, invocations);
     }
 
-    /// @notice Set the time for the mint
-    /// @param _presaleTime time the presale starts
-    /// @param _publicTime time the public sale starts
+    /// @notice Set the claim time for the mint
+    /// @param _claimTime time the presale starts
     /// @dev this function can serve as an "active" and "non-active" sale status
     /// @dev set the values to uint256(-1) for "non-active" sale status
     /// @dev also, pass contract ownership to address(0) to close sale forever
-    function setMintTime(
-        uint256 _claimTime,
-        uint256 _presaleTime,
-        uint256 _publicTime
-    ) public onlyOwner {
-        _setMintTime(_claimTime, _presaleTime, _publicTime);
+    function setClaimTime(uint256 _claimTime) public onlyOwner {
+        claimTime = _claimTime;
     }
 
-    /// @notice Set the internal time for the mint
-    /// @param _claimTime time the claim starts
+    /// @notice Set the presale time for the mint
     /// @param _presaleTime time the presale starts
-    /// @param _publicTime time the public sale starts
     /// @dev this function can serve as an "active" and "non-active" sale status
     /// @dev set the values to uint256(-1) for "non-active" sale status
     /// @dev also, pass contract ownership to address(0) to close sale forever
-    function _setMintTime(
-        uint256 _claimTime,
-        uint256 _presaleTime,
-        uint256 _publicTime
-    ) internal {
-        require(_presaleTime > _claimTime, "RhapsodyCreator/invalid-presale-time");
-        require(_publicTime > _presaleTime, "RhapsodyCreator/invalid-public-time");
-
-        claimTime = _claimTime;
+    function setPresaleTime(uint256 _presaleTime) public onlyOwner {
         presaleTime = _presaleTime;
+    }
+
+    /// @notice Set the public time for the mint
+    /// @param _publicTime time the presale starts
+    /// @dev this function can serve as an "active" and "non-active" sale status
+    /// @dev set the values to uint256(-1) for "non-active" sale status
+    /// @dev also, pass contract ownership to address(0) to close sale forever
+    function setPublicTime(uint256 _publicTime) public onlyOwner {
         publicTime = _publicTime;
     }
 
@@ -257,7 +252,7 @@ contract RhapsodyCreatorBasic is ERC721A, ERC721AOwnersExplicit, Ownable, Reentr
     /// @param invocations the number of invocations to batch mint
     function promotionMint(uint256 invocations) external onlyOwner {
         require(totalSupply().add(invocations) <= amountForPromotion, "RhapsodyCreator/invalid-promotion-supply");
-        uint256 maxBatchSize = maxPublicBatchPerAddress;
+        uint256 maxBatchSize = maxMintPerAddress;
         require(invocations.mod(maxBatchSize) == 0, "RhapsodyCreator/invalid-batch-multiple");
         uint256 blocks = invocations.div(maxBatchSize);
         for (uint256 i = 0; i < blocks; i++) {
