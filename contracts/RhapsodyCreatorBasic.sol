@@ -252,6 +252,11 @@ contract RhapsodyCreatorBasic is ERC721A, ERC721AOwnersExplicit, Ownable, Reentr
         return _baseTokenURI;
     }
 
+    /// @notice override the baseURI function to use the internal baseURI
+    function _baseURI() internal view override returns (string memory) {
+        return baseURI();
+    }
+
     /// =========== Dev ===========
 
     /// @notice used by owner to mint promotional nfts
