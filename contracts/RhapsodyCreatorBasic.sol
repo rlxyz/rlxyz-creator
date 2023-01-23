@@ -97,12 +97,16 @@ contract RhapsodyCreatorBasic is ERC721A, ERC721AOwnersExplicit, Ownable, Reentr
     /// @param invocations number of tokens to mint
     /// @param proof merkle proof to prove address and token mint count are in tree
     /// @dev user must mint max invocations
-    function claimMint(uint256 invocations, bytes32[] calldata proof)
+    function claimMint(
+        uint256 invocations,
+        uint256 maxInvocation,
+        bytes32[] calldata proof
+    )
         external
         nonReentrant
         isMintLive(claimTime)
-        isMintValid(invocations, maxMintPerAddress)
-        isMintProofValid(invocations, msg.sender, proof, claimMerkleRoot)
+        isMintValid(invocations, maxInvocation)
+        isMintProofValid(maxInvocation, msg.sender, proof, claimMerkleRoot)
     {
         _mintMany(msg.sender, invocations);
     }
@@ -120,7 +124,7 @@ contract RhapsodyCreatorBasic is ERC721A, ERC721AOwnersExplicit, Ownable, Reentr
         payable
         nonReentrant
         isMintLive(presaleTime)
-        isMintValid(invocations, maxMintPerAddress)
+        isMintValid(invocations, maxInvocation)
         isMintPricingValid(invocations)
         isMintProofValid(maxInvocation, msg.sender, proof, presaleMerkleRoot)
     {
@@ -194,6 +198,10 @@ contract RhapsodyCreatorBasic is ERC721A, ERC721AOwnersExplicit, Ownable, Reentr
         require(totalSupply().add(invocations) <= collectionSize, "RhapsodyCreatorGenerative/invalid-total-supply");
         require(
             _mintOf(msg.sender).add(invocations) <= maxInvocation,
+            "RhapsodyCreatorGenerative/invalid-invocation-upper-boundary"
+        );
+        require(
+            _mintOf(msg.sender).add(invocations) <= maxMintPerAddress,
             "RhapsodyCreatorGenerative/invalid-invocation-upper-boundary"
         );
         require(invocations > 0, "RhapsodyCreatorGenerative/invalid-invocation-lower-boundary");
