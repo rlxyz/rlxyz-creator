@@ -1,7 +1,10 @@
 const { expect } = require('chai');
 import { ethers } from 'ethers';
-import { generateLeaf } from '../../../scripts/helpers/whitelist';
+import { defaultAbiCoder, keccak256 } from 'ethers/lib/utils';
+import { buildWhitelist, generateLeaf } from '../../../scripts/helpers/whitelist';
+import { parseEther } from '../../helpers/constant';
 import { keccak256Hashes } from '../../helpers/generateKeccak256Hash';
+import { currentBlockTime } from '../../RhapsodyCreatorGenerative.test';
 import { Merklized, RhapsodyCreatorBeforeEach, RhapsodyCreatorConstructor } from '../type';
 
 export const _testContractClaimGenerative = (
@@ -12,7 +15,6 @@ export const _testContractClaimGenerative = (
     let minterA: any, minterB: any, minterC: any;
     let creator: ethers.Contract;
     let claimMerklized: Merklized;
-    let presaleMerklized: Merklized;
 
     let minter: (minter: any, invocations: any, maxInvocations: any, proof: any) => void;
     beforeEach(async () => {
@@ -23,7 +25,6 @@ export const _testContractClaimGenerative = (
       minterC = wallets.minterC;
       creator = contracts.creator;
       claimMerklized = merkle.claimMerklized;
-      presaleMerklized = merkle.presaleMerklized;
 
       minter = async (minter: any, invocations: number, maxInvocations: number, proof: any) =>
         creator.connect(minter).claimMint(invocations, maxInvocations, proof);
@@ -37,7 +38,7 @@ export const _testContractClaimGenerative = (
         .withArgs(minterA.address, 2, 2, [keccak256Hashes[0], keccak256Hashes[1]]);
     });
 
-    it('should be able to mint if less than allocated invocation', async () => {
+    it('should be able to mint if less than max invocation limit', async () => {
       let leaf = generateLeaf(minterA.address, 2);
       let proof = claimMerklized.tree.getHexProof(leaf);
       await expect(minter(minterA, 1, 2, proof))
@@ -59,6 +60,30 @@ export const _testContractClaimGenerative = (
       await expect(minter(minterA, params.maxMintPerAddress + 1, 2, proof)).to.be.revertedWith(
         'RhapsodyCreatorGenerative/invalid-invocation-upper-boundary'
       );
+    });
+
+    it('should be able to mint more than once', async () => {
+      let leaf = generateLeaf(minterA.address, 2);
+      let proof = claimMerklized.tree.getHexProof(leaf);
+
+      await expect(minter(minterA, 1, 2, proof))
+        .to.emit(creator, 'Created')
+        .withArgs(minterA.address, 1, 1, [keccak256Hashes[0]]);
+
+      await expect(minter(minterA, 1, 2, proof))
+        .to.emit(creator, 'Created')
+        .withArgs(minterA.address, 2, 1, [keccak256Hashes[1]]);
+
+      leaf = generateLeaf(minterB.address, 2);
+      proof = claimMerklized.tree.getHexProof(leaf);
+
+      await expect(minter(minterB, 1, 2, proof))
+        .to.emit(creator, 'Created')
+        .withArgs(minterB.address, 3, 1, [keccak256Hashes[2]]);
+
+      await expect(minter(minterB, 1, 2, proof))
+        .to.emit(creator, 'Created')
+        .withArgs(minterB.address, 4, 1, [keccak256Hashes[3]]);
     });
 
     it('should fail address proof if passed in invalid maxInvocations', async () => {
@@ -142,6 +167,99 @@ export const _testContractClaimGenerative = (
       await expect(minter(minterB, 2, 2, wrongProof)).to.be.revertedWith(
         'RhapsodyCreatorGenerative/invalid-address-proof'
       );
+    });
+
+    describe('variable whitelist', () => {
+      let claimMerklized: Merklized;
+      beforeEach(async () => {
+        const paramsB: RhapsodyCreatorConstructor = {
+          name: 'test',
+          symbol: 'test',
+          collectionSize: 1200,
+          amountForPromotion: 0,
+          maxMintPerAddress: 5,
+          mintPrice: parseEther(0.333),
+          claimTime: currentBlockTime + 100,
+          presaleTime: currentBlockTime + 105,
+          publicTime: currentBlockTime + 110,
+        };
+
+        const { contracts, wallets } = await _beforeEach(paramsB);
+
+        creator = contracts.creator;
+        minterA = wallets.minterA;
+        claimMerklized = await buildWhitelist([
+          [minterB.address, 5],
+          [minterA.address, 4],
+          [minterC.address, 3],
+        ]);
+
+        await creator.setClaimMerkleRoot(claimMerklized.root);
+      });
+
+      it('should be able to variable mint', async () => {
+        let leaf = generateLeaf(minterA.address, 4);
+        let proof = claimMerklized.tree.getHexProof(leaf);
+        await expect(minter(minterA, 2, 4, proof))
+          .to.emit(creator, 'Created')
+          .withArgs(minterA.address, 2, 2, [keccak256Hashes[0], keccak256Hashes[1]]);
+
+        leaf = generateLeaf(minterB.address, 5);
+        proof = claimMerklized.tree.getHexProof(leaf);
+        await expect(minter(minterB, 4, 5, proof))
+          .to.emit(creator, 'Created')
+          .withArgs(minterB.address, 6, 4, [
+            keccak256Hashes[2],
+            keccak256Hashes[3],
+            keccak256Hashes[4],
+            keccak256Hashes[5],
+          ]);
+
+        leaf = generateLeaf(minterC.address, 3);
+        proof = claimMerklized.tree.getHexProof(leaf);
+        await expect(minter(minterC, 1, 3, proof))
+          .to.emit(creator, 'Created')
+          .withArgs(minterC.address, 7, 1, [keccak256(defaultAbiCoder.encode(['uint256'], [6]))]);
+      });
+
+      it('should only allow max allocated variable amount in merkle root', async () => {
+        let leaf = generateLeaf(minterA.address, 4);
+        let proof = claimMerklized.tree.getHexProof(leaf);
+        await expect(minter(minterA, 4, 4, proof))
+          .to.emit(creator, 'Created')
+          .withArgs(minterA.address, 4, 4, [
+            keccak256Hashes[0],
+            keccak256Hashes[1],
+            keccak256Hashes[2],
+            keccak256Hashes[3],
+          ]);
+
+        leaf = generateLeaf(minterB.address, 5);
+        proof = claimMerklized.tree.getHexProof(leaf);
+        await expect(minter(minterB, 5, 5, proof))
+          .to.emit(creator, 'Created')
+          .withArgs(minterB.address, 9, 5, [
+            keccak256Hashes[4],
+            keccak256Hashes[5],
+            keccak256(defaultAbiCoder.encode(['uint256'], [6])),
+            keccak256(defaultAbiCoder.encode(['uint256'], [7])),
+            keccak256(defaultAbiCoder.encode(['uint256'], [8])),
+          ]);
+      });
+
+      it('should fail if trying to mint more than max limit of an allocated address limit', async () => {
+        let leaf = generateLeaf(minterA.address, 4);
+        let proof = claimMerklized.tree.getHexProof(leaf);
+        await expect(minter(minterA, 5, 4, proof)).to.be.revertedWith(
+          'RhapsodyCreatorGenerative/invalid-invocation-upper-boundary'
+        );
+
+        leaf = generateLeaf(minterC.address, 3);
+        proof = claimMerklized.tree.getHexProof(leaf);
+        await expect(minter(minterC, 4, 3, proof)).to.be.revertedWith(
+          'RhapsodyCreatorGenerative/invalid-invocation-upper-boundary'
+        );
+      });
     });
   });
 };
