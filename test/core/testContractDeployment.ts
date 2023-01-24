@@ -1,9 +1,8 @@
 const { expect } = require('chai');
 import { ethers } from 'ethers';
-import { params } from '../RhapsodyCreatorGenerative.test';
-import { RhapsodyCreatorBeforeEach } from './type';
+import { RhapsodyCreatorBeforeEach, RhapsodyCreatorConstructor } from './type';
 
-export const testContractDeployment = (_beforeEach: RhapsodyCreatorBeforeEach) => {
+export const testContractDeployment = (_beforeEach: RhapsodyCreatorBeforeEach, params: RhapsodyCreatorConstructor) => {
   describe('deployment', () => {
     let creator: ethers.Contract;
 
@@ -17,7 +16,7 @@ export const testContractDeployment = (_beforeEach: RhapsodyCreatorBeforeEach) =
     });
 
     it('should have set the correct max public mint per address', async () => {
-      expect(await creator.maxPublicBatchPerAddress()).to.equal(params.maxPublicBatchPerAddress);
+      expect(await creator.maxMintPerAddress()).to.equal(params.maxMintPerAddress);
     });
 
     it('should have a valid mint price', async () => {

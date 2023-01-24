@@ -1,7 +1,7 @@
 const hre = require('hardhat');
 const { buildWhitelist } = require('../../scripts/helpers/whitelist');
-import { deployRandomizerContractFactory, deployRhapsodyCreatorFactory } from './contractFactory';
 import { RhapsodyCreatorConstructor } from '../core/type';
+import { deployRandomizerContractFactory, deployRhapsodyCreatorFactory } from './contractFactory';
 
 const CONSTANTS = {
   randomBlockTime: 123456789,
@@ -29,8 +29,9 @@ export const beforeEachSetupForGenerative = async (args: RhapsodyCreatorConstruc
   await creator.setPresaleMerkleRoot(presaleMerklized.root);
   await creator.setClaimMerkleRoot(claimMerklized.root);
   await creator.setMintRandomizerContract(randomizer.address);
-  await creator.setMintTime(currentBlockTime + 100, currentBlockTime + 105, currentBlockTime + 110);
-  await randomizer.addDependency(creator.address);
+  await creator.setClaimTime(currentBlockTime + 100);
+  await creator.setPresaleTime(currentBlockTime + 200);
+  await creator.setPublicTime(currentBlockTime + 300);
 
   return {
     wallets: {

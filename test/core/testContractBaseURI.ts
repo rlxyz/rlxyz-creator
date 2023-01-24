@@ -1,9 +1,8 @@
 const { expect } = require('chai');
 import { ethers } from 'ethers';
-import { params } from '../RhapsodyCreatorGenerative.test';
-import { RhapsodyCreatorBeforeEach } from './type';
+import { RhapsodyCreatorBeforeEach, RhapsodyCreatorConstructor } from './type';
 
-export const testContractBaseURI = (_beforeEach: RhapsodyCreatorBeforeEach) => {
+export const testContractBaseURI = (_beforeEach: RhapsodyCreatorBeforeEach, params: RhapsodyCreatorConstructor) => {
   describe('baseURI', () => {
     let creator: ethers.Contract;
 

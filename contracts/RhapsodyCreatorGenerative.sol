@@ -66,6 +66,11 @@ contract RhapsodyCreatorGenerative is ERC721A, ERC721AOwnersExplicit, Ownable, R
 
     string private _baseTokenURI;
 
+    // ============= Dependencies ==============
+
+    /// @notice the randomizer contract
+    IRandomizer public mintRandomizerContract;
+
     /// ============= Constructor =============
 
     /// @notice Creates a new Creator contract
@@ -330,7 +335,14 @@ contract RhapsodyCreatorGenerative is ERC721A, ERC721AOwnersExplicit, Ownable, R
         return _tokenHash[_tokenId];
     }
 
+    /// ================== RNG ==================
+
     function _generateUniqueIdentifier(uint256 seed) internal view virtual returns (bytes32) {
-        return keccak256(abi.encodePacked(seed, tx.origin, block.number - 1));
+        return keccak256(abi.encodePacked(seed, tx.origin, block.number - 1, mintRandomizerContract.getRandomValue()));
+    }
+
+    /// @notice used the set the mint randomizer for on-chain generative projects
+    function setMintRandomizerContract(address _mintRandomizerContract) external onlyOwner {
+        mintRandomizerContract = IRandomizer(_mintRandomizerContract);
     }
 }

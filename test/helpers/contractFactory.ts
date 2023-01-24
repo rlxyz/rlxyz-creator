@@ -1,6 +1,6 @@
 const hre = require('hardhat');
 const { overrides } = require('../helpers/constant');
-import { RhapsodyCreatorVariation, RhapsodyCreatorConstructor } from '../core/type';
+import { RhapsodyCreatorConstructor, RhapsodyCreatorVariation } from '../core/type';
 
 export const deployRandomizerContractFactory = async () => {
   const [deployer] = await hre.ethers.getSigners();
@@ -17,21 +17,11 @@ export const deployRhapsodyCreatorFactory = async (
   switch (name) {
     case 'basic':
       factory = await hre.ethers.getContractFactory('RhapsodyCreatorTest', deployer, overrides);
-      creator = factory.deploy(
-        args.collectionSize,
-        args.maxPublicBatchPerAddress,
-        args.amountForPromotion,
-        args.mintPrice
-      );
+      creator = factory.deploy(args.collectionSize, args.maxMintPerAddress, args.amountForPromotion, args.mintPrice);
       return creator;
     case 'generative':
       factory = await hre.ethers.getContractFactory('RhapsodyCreatorGenerativeTest', deployer, overrides);
-      creator = factory.deploy(
-        args.collectionSize,
-        args.maxPublicBatchPerAddress,
-        args.amountForPromotion,
-        args.mintPrice
-      );
+      creator = factory.deploy(args.collectionSize, args.maxMintPerAddress, args.amountForPromotion, args.mintPrice);
       return creator;
     case 'claim':
       factory = await hre.ethers.getContractFactory('RhapsodyCreatorClaimTest', deployer, overrides);
