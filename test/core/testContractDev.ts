@@ -2,7 +2,7 @@ const { expect } = require('chai');
 const { parseEther } = require('../helpers/constant');
 import { ethers } from 'ethers';
 import { generateKeccak256Hash, keccak256Hashes } from '../helpers/generateKeccak256Hash';
-import { params, currentBlockTime } from '../RhapsodyCreatorGenerative.test';
+import { currentBlockTime, params } from '../RhapsodyCreatorGenerative.test';
 import { RhapsodyCreatorBeforeEach } from './type';
 
 export const testContractDev = (_beforeEach: RhapsodyCreatorBeforeEach) => {
