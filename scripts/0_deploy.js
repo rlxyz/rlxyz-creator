@@ -57,7 +57,7 @@ const runner = async () => {
   // });
 
   let creatorAddress = creatorResult.address;
-  // let randomizerAddress = randomizer.address;
+  // let randomizerAddress = randomizerResult.address;
 
   // dim(`  - Randomizer:             `, randomizerAddress);
   dim(`  - ${deployContractName}:             `, creatorAddress);
