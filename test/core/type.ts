@@ -8,6 +8,7 @@ export declare type RhapsodyCreatorBeforeEach = (args: RhapsodyCreatorConstructo
 export type RhapsodyCreatorConstructor = {
   name: string;
   symbol: string;
+  mintRandomizerContract: string;
   collectionSize: number;
   maxMintPerAddress: number;
   amountForPromotion: number;

@@ -81,6 +81,7 @@ contract RhapsodyCreatorGenerative is ERC721A, ERC721AOwnersExplicit, Ownable, R
     constructor(
         string memory _name,
         string memory _symbol,
+        address _randomizerContract,
         uint256 _collectionSize,
         uint256 _maxMintPerAddress,
         uint256 _amountForPromotion,
@@ -92,6 +93,7 @@ contract RhapsodyCreatorGenerative is ERC721A, ERC721AOwnersExplicit, Ownable, R
         require(_collectionSize > 0, "RhapsodyCreatorGenerative/invalid-collection-size");
         require(_amountForPromotion <= _collectionSize, "RhapsodyCreatorGenerative/invalid-promotion-amount");
         require(_mintPrice > 0, "RhapsodyCreatorGenerative/invalid-mint-price");
+        require(_randomizerContract != address(0), "RhapsodyCreatorGenerative/invalid-randomizer-address");
 
         collectionSize = _collectionSize;
         maxMintPerAddress = _maxMintPerAddress;
@@ -101,6 +103,8 @@ contract RhapsodyCreatorGenerative is ERC721A, ERC721AOwnersExplicit, Ownable, R
         setClaimTime(_claimTime);
         setPresaleTime(_presaleTime);
         setPublicTime(_publicTime);
+
+        mintRandomizerContract = IRandomizer(_randomizerContract);
     }
 
     /// =========== Sale ===========

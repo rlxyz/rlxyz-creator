@@ -10,9 +10,10 @@ import { RhapsodyCreatorConstructor } from './core/type';
 import { parseEther } from './helpers/constant';
 import { beforeEachSetupForGenerative } from './helpers/contractBeforeEachSetup';
 
-export const params: RhapsodyCreatorConstructor = {
+const params: RhapsodyCreatorConstructor = {
   name: 'Rhapsody Creator Test',
   symbol: 'RCT',
+  mintRandomizerContract: '0x', //! this is set in the _beforeEachSetupForGenerative
   collectionSize: 1111,
   maxMintPerAddress: 2,
   amountForPromotion: 20,
@@ -22,7 +23,7 @@ export const params: RhapsodyCreatorConstructor = {
   publicTime: currentBlockTime + 300,
 };
 
-describe('RhapsodyCreatorGenerative', () => {
+describe('RhapsodyCreatorGenerative', async () => {
   const _beforeEach = beforeEachSetupForGenerative;
   testContractCore(_beforeEach, params);
   testContractDeploymentArgs(_beforeEach, params);

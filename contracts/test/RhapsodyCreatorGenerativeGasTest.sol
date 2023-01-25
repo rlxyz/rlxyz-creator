@@ -5,6 +5,7 @@ import "../RhapsodyCreatorGenerative.sol";
 
 contract RhapsodyCreatorGenerativeGasTest is RhapsodyCreatorGenerative {
     constructor(
+        address _mintRandomizer,
         uint256 _collectionSize,
         uint256 _maxPublicBatchPerAddress,
         uint256 _amountForPromotion,
@@ -13,6 +14,7 @@ contract RhapsodyCreatorGenerativeGasTest is RhapsodyCreatorGenerative {
         RhapsodyCreatorGenerative(
             "Rhapsody Creator Test",
             "RCT",
+            _mintRandomizer,
             _collectionSize,
             _maxPublicBatchPerAddress,
             _amountForPromotion,

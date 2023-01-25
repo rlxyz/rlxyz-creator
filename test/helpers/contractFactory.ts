@@ -21,7 +21,13 @@ export const deployRhapsodyCreatorFactory = async (
       return creator;
     case 'generative':
       factory = await hre.ethers.getContractFactory('RhapsodyCreatorGenerativeTest', deployer, overrides);
-      creator = factory.deploy(args.collectionSize, args.maxMintPerAddress, args.amountForPromotion, args.mintPrice);
+      creator = factory.deploy(
+        args.mintRandomizerContract,
+        args.collectionSize,
+        args.maxMintPerAddress,
+        args.amountForPromotion,
+        args.mintPrice
+      );
       return creator;
     case 'claim':
       factory = await hre.ethers.getContractFactory('RhapsodyCreatorClaimTest', deployer, overrides);

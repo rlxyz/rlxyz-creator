@@ -12,7 +12,10 @@ export const beforeEachSetupForGenerative = async (args: RhapsodyCreatorConstruc
   const { randomBlockTime: currentBlockTime } = CONSTANTS;
 
   const randomizer = await deployRandomizerContractFactory();
-  const creator = await deployRhapsodyCreatorFactory('generative', args);
+  const creator = await deployRhapsodyCreatorFactory('generative', {
+    ...args,
+    mintRandomizerContract: randomizer.address,
+  });
 
   const presaleMerklized = await buildWhitelist([
     [minterA.address, 2],

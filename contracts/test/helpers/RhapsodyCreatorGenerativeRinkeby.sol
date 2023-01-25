@@ -6,6 +6,7 @@ import "../../RhapsodyCreatorGenerative.sol";
 // @notice this RhapsodyCreatorRinkeby is used in testnets such as rinkeby
 contract RhapsodyCreatorGenerativeRinkeby is RhapsodyCreatorGenerative {
     constructor(
+        address _mintRandomizer,
         uint256 _collectionSize,
         uint256 _maxPublicBatchPerAddress,
         uint256 _amountForPromotion,
@@ -14,6 +15,7 @@ contract RhapsodyCreatorGenerativeRinkeby is RhapsodyCreatorGenerative {
         RhapsodyCreatorGenerative(
             "Rhapsody Creator Generative Rinkeby",
             "RCT",
+            _mintRandomizer,
             _collectionSize,
             _maxPublicBatchPerAddress,
             _amountForPromotion,
