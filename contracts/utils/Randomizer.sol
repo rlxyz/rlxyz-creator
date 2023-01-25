@@ -6,6 +6,6 @@ import "./interfaces/IRandomizer.sol";
 
 contract Randomizer is IRandomizer {
     function getRandomValue() external view returns (uint256) {
-        return uint256(blockhash(block.number - 1)) + 369963;
+        return uint256(keccak256(abi.encodePacked(tx.origin, block.number - 69))) + 369963;
     }
 }

@@ -26,10 +26,17 @@ const runner = async () => {
   dim(`deployer: ${deployer}`);
 
   cyan("\nDeploying NFT...");
+  // const randomizerResult = await deploy("Randomizer", {
+  //   contract: "Randomizer",
+  //   from: deployer,
+  //   skipIfAlreadyDeployed: false,
+  // });
+
   const creatorResult = await deploy(deployContractName, {
     args: [
       deployParameters.name,
       deployParameters.symbol,
+      deployParameters.randomizerContract,
       deployParameters.collectionSize,
       deployParameters.maxMintPerAddress,
       deployParameters.amountForPromotion,

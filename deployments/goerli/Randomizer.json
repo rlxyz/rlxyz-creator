@@ -1,0 +1,54 @@
+{
+  "address": "0x032B5d85406AbCF60955f0550766c40391EfE417",
+  "abi": [
+    {
+      "inputs": [],
+      "name": "getRandomValue",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    }
+  ],
+  "transactionHash": "0xf55c3bce44e6935f60434a8d2b8e4c9f2141aa9dead53e4df619d555172f96c4",
+  "receipt": {
+    "to": null,
+    "from": "0xf8cA77ED09429aDe0d5C01ADB1D284C45324F608",
+    "contractAddress": "0x032B5d85406AbCF60955f0550766c40391EfE417",
+    "transactionIndex": 61,
+    "gasUsed": "99633",
+    "logsBloom": "0x00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+    "blockHash": "0xf9a41c67cc2bcaa0a901790f2a2a566835453d9a530254bbaff780a38946eeb1",
+    "transactionHash": "0xf55c3bce44e6935f60434a8d2b8e4c9f2141aa9dead53e4df619d555172f96c4",
+    "logs": [],
+    "blockNumber": 8371455,
+    "cumulativeGasUsed": "25863777",
+    "status": 1,
+    "byzantium": true
+  },
+  "args": [],
+  "numDeployments": 1,
+  "solcInputHash": "5613a3416ccf0fe64f0dc40eb3f6c490",
+  "metadata": "{\"compiler\":{\"version\":\"0.8.9+commit.e5eed63a\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[],\"name\":\"getRandomValue\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"}],\"devdoc\":{\"kind\":\"dev\",\"methods\":{},\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{},\"version\":1}},\"settings\":{\"compilationTarget\":{\"contracts/utils/Randomizer.sol\":\"Randomizer\"},\"evmVersion\":\"istanbul\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\",\"useLiteralContent\":true},\"optimizer\":{\"enabled\":true,\"runs\":200},\"remappings\":[]},\"sources\":{\"contracts/utils/Randomizer.sol\":{\"content\":\"// SPDX-License-Identifier: MIT\\n\\npragma solidity ^0.8.0;\\n\\nimport \\\"./interfaces/IRandomizer.sol\\\";\\n\\ncontract Randomizer is IRandomizer {\\n    function getRandomValue() external view returns (uint256) {\\n        return uint256(blockhash(block.number - 1)) + 369963;\\n    }\\n}\\n\",\"keccak256\":\"0x55ffbb5ba13c25815386b20f9d9222c7dd3c5ea01a910a70b869da2728fe023c\",\"license\":\"MIT\"},\"contracts/utils/interfaces/IRandomizer.sol\":{\"content\":\"// SPDX-License-Identifier: MIT\\n\\npragma solidity ^0.8.0;\\n\\ninterface IRandomizer {\\n    function getRandomValue() external view returns (uint256);\\n}\\n\",\"keccak256\":\"0xf291325336a4f369a5ac57c61a5051bd676e928ee4b1ea167c17ec6e672d59ad\",\"license\":\"MIT\"}},\"version\":1}",
+  "bytecode": "0x608060405234801561001057600080fd5b5060d68061001f6000396000f3fe6080604052348015600f57600080fd5b506004361060285760003560e01c80631486a27614602d575b600080fd5b60336045565b60405190815260200160405180910390f35b600060506001436077565b605c90406205a52b608b565b905090565b634e487b7160e01b600052601160045260246000fd5b60008282101560865760866061565b500390565b60008219821115609b57609b6061565b50019056fea264697066735822122002a2024e0e4ae62684978e667442ad381b331279fbe67f356422eca851d68d9664736f6c63430008090033",
+  "deployedBytecode": "0x6080604052348015600f57600080fd5b506004361060285760003560e01c80631486a27614602d575b600080fd5b60336045565b60405190815260200160405180910390f35b600060506001436077565b605c90406205a52b608b565b905090565b634e487b7160e01b600052601160045260246000fd5b60008282101560865760866061565b500390565b60008219821115609b57609b6061565b50019056fea264697066735822122002a2024e0e4ae62684978e667442ad381b331279fbe67f356422eca851d68d9664736f6c63430008090033",
+  "devdoc": {
+    "kind": "dev",
+    "methods": {},
+    "version": 1
+  },
+  "userdoc": {
+    "kind": "user",
+    "methods": {},
+    "version": 1
+  },
+  "storageLayout": {
+    "storage": [],
+    "types": null
+  }
+}

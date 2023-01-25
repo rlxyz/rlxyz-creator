@@ -3,6 +3,7 @@
   "deploy": {
     "name": "Rhapsody",
     "symbol": "RHY",
+    "randomizerContract": "0x9c338ecff28c62d8376216dddd6e8483e4fb2ef8",
     "collectionSize": 1111,
     "maxMintPerAddress": 2,
     "amountForPromotion": 40,
