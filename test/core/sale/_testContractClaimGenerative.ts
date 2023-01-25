@@ -57,8 +57,11 @@ export const _testContractClaimGenerative = (
     it('should fail if trying to minting more than maxMintPerAddress', async () => {
       let leaf = generateLeaf(minterA.address, 2);
       let proof = claimMerklized.tree.getHexProof(leaf);
-      await expect(minter(minterA, params.maxMintPerAddress + 1, 2, proof)).to.be.revertedWith(
-        'RhapsodyCreatorGenerative/invalid-invocation-upper-boundary'
+      await expect(minter(minterA, 2, 2, proof))
+        .to.emit(creator, 'Created')
+        .withArgs(minterA.address, 2, 2, [keccak256Hashes[0], keccak256Hashes[1]]);
+      await expect(minter(minterA, 1, 4, proof)).to.be.revertedWith(
+        'RhapsodyCreatorGenerative/invalid-invocation-upper-boundary-max-mint'
       );
     });
 

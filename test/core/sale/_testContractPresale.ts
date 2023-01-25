@@ -65,7 +65,10 @@ export const _testContractPresale = (_beforeEach: RhapsodyCreatorBeforeEach, par
     it('should fail if trying to minting more than maxMintPerAddress', async () => {
       let leaf = generateLeaf(minterA.address, 2);
       let proof = presaleMerklized.tree.getHexProof(leaf);
-      await expect(minter(minterA, 3, 2, proof, 3 * 0.333)).to.be.revertedWith(
+      await expect(minter(minterA, 2, 2, proof, 0.333 * 2))
+        .to.emit(creator, 'Created')
+        .withArgs(minterA.address, 2, 2, [keccak256Hashes[0], keccak256Hashes[1]]);
+      await expect(minter(minterA, 1, 4, proof, 3 * 0.333)).to.be.revertedWith(
         'RhapsodyCreatorGenerative/invalid-invocation-upper-boundary'
       );
     });

@@ -49,7 +49,7 @@ export const _testContractClaimBasic = (_beforeEach: RhapsodyCreatorBeforeEach) 
       );
     });
 
-    it('should fail if trying to minting more than maxPresaleBatchPerAddress', async () => {
+    it('should fail if trying to minting more than maxMintPerAddress', async () => {
       let leaf = generateLeaf(minterA.address, 2);
       let proof = claimMerklized.tree.getHexProof(leaf);
       await expect(minter(minterA, params.maxMintPerAddress + 1, proof)).to.be.revertedWith(

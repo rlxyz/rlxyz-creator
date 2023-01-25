@@ -213,7 +213,7 @@ contract RhapsodyCreatorGenerative is ERC721A, ERC721AOwnersExplicit, Ownable, R
         );
         require(
             _mintOf(msg.sender).add(invocations) <= maxMintPerAddress,
-            "RhapsodyCreatorGenerative/invalid-invocation-upper-boundary"
+            "RhapsodyCreatorGenerative/invalid-invocation-upper-boundary-max-mint"
         );
         require(invocations > 0, "RhapsodyCreatorGenerative/invalid-invocation-lower-boundary");
         _;

@@ -1,6 +1,8 @@
 export const currentBlockTime = 123456789;
 
-import { testContractSale } from './core/testContractSale';
+import { testContractBaseURI } from './core/testContractBaseURI';
+import { testContractCore } from './core/testContractCore';
+import { testContractDeploymentArgs } from './core/testContractDeploymentArgs';
 import { RhapsodyCreatorConstructor } from './core/type';
 import { parseEther } from './helpers/constant';
 import { beforeEachSetupForGenerative } from './helpers/contractBeforeEachSetup';
@@ -19,11 +21,11 @@ export const params: RhapsodyCreatorConstructor = {
 
 describe('RhapsodyCreatorGenerative', () => {
   const _beforeEach = beforeEachSetupForGenerative;
-  // testContractCore(_beforeEach, params);
-  // testContractDeployment(_beforeEach, params);
-  // testContractBaseURI(_beforeEach, params);
+  testContractCore(_beforeEach, params);
+  testContractDeploymentArgs(_beforeEach, params);
+  testContractBaseURI(_beforeEach, params);
   // testContractTokenURI(_beforeEach, params);
   // testContractTokenHash(_beforeEach, params);
-  testContractSale(_beforeEach, 'generative', ['claim', 'presale', 'public'], params);
+  // testContractSale(_beforeEach, 'generative', ['claim', 'presale', 'public'], params);
   // testContractDev(_beforeEach);
 });
