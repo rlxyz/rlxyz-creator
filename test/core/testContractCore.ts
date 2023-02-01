@@ -1,9 +1,9 @@
 const { expect } = require('chai');
 const hre = require('hardhat');
 import { ethers } from 'ethers';
-import { RhapsodyCreatorBeforeEach, RhapsodyCreatorConstructor } from './type';
+import { ElevateCreatorBeforeEach, ElevateCreatorConstructor } from './type';
 
-export const testContractCore = (_beforeEach: RhapsodyCreatorBeforeEach, params: RhapsodyCreatorConstructor) => {
+export const testContractCore = (_beforeEach: ElevateCreatorBeforeEach, params: ElevateCreatorConstructor) => {
   describe('core', () => {
     let creator: ethers.Contract;
 

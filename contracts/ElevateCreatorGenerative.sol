@@ -13,8 +13,7 @@ import "./utils/interfaces/IRandomizer.sol";
 
 error HashQueryForNonexistentToken();
 
-///! 1. Removed IRandomizer.sol
-contract RhapsodyCreatorGenerative is ERC721A, ERC721AOwnersExplicit, Ownable, ReentrancyGuard {
+contract ElevateCreatorGenerative is ERC721A, ERC721AOwnersExplicit, Ownable, ReentrancyGuard {
     /// ============ Semantic Versioning ============
     /// @dev Semantic versioning for this contract
     string public constant version = "1.0.0";
@@ -90,10 +89,10 @@ contract RhapsodyCreatorGenerative is ERC721A, ERC721AOwnersExplicit, Ownable, R
         uint256 _presaleTime,
         uint256 _publicTime
     ) ERC721A(_name, _symbol) {
-        require(_collectionSize > 0, "RhapsodyCreatorGenerative/invalid-collection-size");
-        require(_amountForPromotion <= _collectionSize, "RhapsodyCreatorGenerative/invalid-promotion-amount");
-        require(_mintPrice > 0, "RhapsodyCreatorGenerative/invalid-mint-price");
-        require(_randomizerContract != address(0), "RhapsodyCreatorGenerative/invalid-randomizer-address");
+        require(_collectionSize > 0, "ElevateCreatorGenerative/invalid-collection-size");
+        require(_amountForPromotion <= _collectionSize, "ElevateCreatorGenerative/invalid-promotion-amount");
+        require(_mintPrice > 0, "ElevateCreatorGenerative/invalid-mint-price");
+        require(_randomizerContract != address(0), "ElevateCreatorGenerative/invalid-randomizer-address");
 
         collectionSize = _collectionSize;
         maxMintPerAddress = _maxMintPerAddress;
@@ -209,23 +208,23 @@ contract RhapsodyCreatorGenerative is ERC721A, ERC721AOwnersExplicit, Ownable, R
 
     /// @notice ensures that minters need valid invocations + value to mint
     modifier isMintValid(uint256 invocations, uint256 maxInvocation) {
-        require(tx.origin == msg.sender, "RhapsodyCreatorGenerative/invalid-mint-caller");
-        require(totalSupply().add(invocations) <= collectionSize, "RhapsodyCreatorGenerative/invalid-total-supply");
+        require(tx.origin == msg.sender, "ElevateCreatorGenerative/invalid-mint-caller");
+        require(totalSupply().add(invocations) <= collectionSize, "ElevateCreatorGenerative/invalid-total-supply");
         require(
             _mintOf(msg.sender).add(invocations) <= maxInvocation,
-            "RhapsodyCreatorGenerative/invalid-invocation-upper-boundary"
+            "ElevateCreatorGenerative/invalid-invocation-upper-boundary"
         );
         require(
             _mintOf(msg.sender).add(invocations) <= maxMintPerAddress,
-            "RhapsodyCreatorGenerative/invalid-invocation-upper-boundary-max-mint"
+            "ElevateCreatorGenerative/invalid-invocation-upper-boundary-max-mint"
         );
-        require(invocations > 0, "RhapsodyCreatorGenerative/invalid-invocation-lower-boundary");
+        require(invocations > 0, "ElevateCreatorGenerative/invalid-invocation-lower-boundary");
         _;
     }
 
     modifier isMintPricingValid(uint256 invocations) {
-        require(msg.value == mintPrice.mul(invocations), "RhapsodyCreatorGenerative/invalid-mint-value");
-        require(msg.value > 0, "RhapsodyCreatorGenerative/invalid-invocation-lower-boundary");
+        require(msg.value == mintPrice.mul(invocations), "ElevateCreatorGenerative/invalid-mint-value");
+        require(msg.value > 0, "ElevateCreatorGenerative/invalid-invocation-lower-boundary");
         _;
     }
 
@@ -233,7 +232,7 @@ contract RhapsodyCreatorGenerative is ERC721A, ERC721AOwnersExplicit, Ownable, R
     /// @dev only publicTime/presaleTime variable is used here; see publicMint/presaleMint function
     /// @dev time > 0 is optimization when the sale is not live; r.e  mint "not-active" mode
     modifier isMintLive(uint256 time) {
-        require(time > 0 && block.timestamp > time, "RhapsodyCreatorGenerative/invalid-mint-time");
+        require(time > 0 && block.timestamp > time, "ElevateCreatorGenerative/invalid-mint-time");
         _;
     }
 
@@ -245,7 +244,7 @@ contract RhapsodyCreatorGenerative is ERC721A, ERC721AOwnersExplicit, Ownable, R
     ) {
         require(
             MerkleProof.verify(proof, merkleRoot, keccak256(abi.encodePacked(prover, invocations))),
-            "RhapsodyCreatorGenerative/invalid-address-proof"
+            "ElevateCreatorGenerative/invalid-address-proof"
         );
         _;
     }
@@ -293,10 +292,10 @@ contract RhapsodyCreatorGenerative is ERC721A, ERC721AOwnersExplicit, Ownable, R
     function promotionMint(uint256 invocations) external onlyOwner {
         require(
             totalSupply().add(invocations) <= amountForPromotion,
-            "RhapsodyCreatorGenerative/invalid-promotion-supply"
+            "ElevateCreatorGenerative/invalid-promotion-supply"
         );
         uint256 maxBatchSize = maxMintPerAddress;
-        require(invocations.mod(maxBatchSize) == 0, "RhapsodyCreatorGenerative/invalid-batch-multiple");
+        require(invocations.mod(maxBatchSize) == 0, "ElevateCreatorGenerative/invalid-batch-multiple");
         uint256 blocks = invocations.div(maxBatchSize);
         for (uint256 i = 0; i < blocks; i++) {
             _mintMany(msg.sender, maxBatchSize);
@@ -306,7 +305,7 @@ contract RhapsodyCreatorGenerative is ERC721A, ERC721AOwnersExplicit, Ownable, R
     /// @notice withdraws the ether in the contract to owner
     function withdrawMoney() external onlyOwner nonReentrant {
         (bool success, ) = msg.sender.call{ value: address(this).balance }("");
-        require(success, "RhapsodyCreatorGenerative/invalid-withdraw-money");
+        require(success, "ElevateCreatorGenerative/invalid-withdraw-money");
     }
 
     /// @notice returns the current block timestamp

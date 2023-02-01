@@ -2,10 +2,9 @@ const { expect } = require('chai');
 const { parseEther } = require('../helpers/constant');
 import { ethers } from 'ethers';
 import { generateKeccak256Hash, keccak256Hashes } from '../helpers/generateKeccak256Hash';
-import { currentBlockTime, params } from '../RhapsodyCreatorGenerative.test';
-import { RhapsodyCreatorBeforeEach } from './type';
+import { ElevateCreatorBeforeEach, ElevateCreatorConstructor } from './type';
 
-export const testContractDev = (_beforeEach: RhapsodyCreatorBeforeEach) => {
+export const testContractDev = (_beforeEach: ElevateCreatorBeforeEach, params: ElevateCreatorConstructor) => {
   describe('dev', () => {
     let deployer: any, minterA: any;
     let creator: ethers.Contract;
@@ -42,11 +41,11 @@ export const testContractDev = (_beforeEach: RhapsodyCreatorBeforeEach) => {
       it('should only be able to mint max promotional nfts', async () => {
         creator.promotionMint(20);
 
-        await expect(creator.promotionMint(1)).to.be.revertedWith('RhapsodyCreatorGenerative/invalid-promotion-supply');
+        await expect(creator.promotionMint(1)).to.be.revertedWith('ElevateCreatorGenerative/invalid-promotion-supply');
       });
 
       it('should fail if not minting according to maxBatchSize', async () => {
-        await expect(creator.promotionMint(1)).to.be.revertedWith('RhapsodyCreatorGenerative/invalid-batch-multiple');
+        await expect(creator.promotionMint(1)).to.be.revertedWith('ElevateCreatorGenerative/invalid-batch-multiple');
       });
 
       it('should only allow owner to mint', async () => {
@@ -56,11 +55,17 @@ export const testContractDev = (_beforeEach: RhapsodyCreatorBeforeEach) => {
       describe('totalSupply restrictions', () => {
         let creator: ethers.Contract;
         beforeEach(async () => {
-          const paramsB = {
+          const paramsB: ElevateCreatorConstructor = {
             collectionSize: 8,
             amountForPromotion: 4,
-            maxPublicBatchPerAddress: 2,
+            maxMintPerAddress: 2,
             mintPrice: params.mintPrice,
+            name: '',
+            symbol: '',
+            mintRandomizerContract: '',
+            claimTime: 0,
+            presaleTime: 0,
+            publicTime: 0,
           };
 
           const { contracts, wallets } = await _beforeEach(paramsB);
@@ -74,23 +79,23 @@ export const testContractDev = (_beforeEach: RhapsodyCreatorBeforeEach) => {
             .withArgs(deployer.address, 2, 2, [keccak256Hashes[0], keccak256Hashes[1]])
             .withArgs(deployer.address, 4, 2, [keccak256Hashes[2], keccak256Hashes[3]]);
 
-          await creator.setMintTime(currentBlockTime + 1, currentBlockTime + 2, currentBlockTime + 3);
+          await creator.setPublicTime(12345678);
 
           await creator.connect(minterA).publicMint(2, { value: parseEther(0.333 * 2) });
 
           await expect(creator.promotionMint(4)).to.be.revertedWith(
-            'RhapsodyCreatorGenerative/invalid-promotion-supply'
+            'ElevateCreatorGenerative/invalid-promotion-supply'
           );
         });
 
         it('should only allow correct allocation of promotion mint even if late', async () => {
-          await creator.setMintTime(currentBlockTime + 1, currentBlockTime + 2, currentBlockTime + 3);
+          await creator.setPublicTime(12345678);
           await creator.connect(minterA).publicMint(2, { value: parseEther(0.333 * 2) });
           await expect(creator.promotionMint(2))
             .to.emit(creator, 'Created')
             .withArgs(deployer.address, 4, 2, [keccak256Hashes[2], keccak256Hashes[3]]);
           await expect(creator.promotionMint(2)).to.be.revertedWith(
-            'RhapsodyCreatorGenerative/invalid-promotion-supply'
+            'ElevateCreatorGenerative/invalid-promotion-supply'
           );
         });
       });

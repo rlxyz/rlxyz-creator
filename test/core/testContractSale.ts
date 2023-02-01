@@ -4,17 +4,17 @@ import { _testContractGenerative } from './sale/_testContractGenerative';
 import { _testContractPresale } from './sale/_testContractPresale';
 import { _testContractPublic } from './sale/_testContractPublic';
 import {
-  RhapsodyCreatorBeforeEach,
-  RhapsodyCreatorConstructor,
-  RhapsodyCreatorSaleType,
-  RhapsodyCreatorVariation,
+  ElevatCreatorSaleType,
+  ElevateCreatorBeforeEach,
+  ElevateCreatorConstructor,
+  ElevateCreatorVariation,
 } from './type';
 
 export const testContractSale = (
-  _beforeEach: RhapsodyCreatorBeforeEach,
-  variation: RhapsodyCreatorVariation,
-  types: RhapsodyCreatorSaleType[],
-  params: RhapsodyCreatorConstructor
+  _beforeEach: ElevateCreatorBeforeEach,
+  variation: ElevateCreatorVariation,
+  types: ElevatCreatorSaleType[],
+  params: ElevateCreatorConstructor
 ) => {
   describe('sale', () => {
     types.forEach((type) => {

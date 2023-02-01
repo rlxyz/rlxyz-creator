@@ -1,9 +1,9 @@
 const { expect } = require('chai');
 const { parseEther } = require('../helpers/constant');
 import { ethers } from 'ethers';
-import { RhapsodyCreatorBeforeEach, RhapsodyCreatorConstructor } from './type';
+import { ElevateCreatorBeforeEach, ElevateCreatorConstructor } from './type';
 
-export const testContractTokenURI = (_beforeEach: RhapsodyCreatorBeforeEach, params: RhapsodyCreatorConstructor) => {
+export const testContractTokenURI = (_beforeEach: ElevateCreatorBeforeEach, params: ElevateCreatorConstructor) => {
   describe('tokenURI', () => {
     let minterA: any, minterB: any, minterC: any;
     let creator: ethers.Contract;

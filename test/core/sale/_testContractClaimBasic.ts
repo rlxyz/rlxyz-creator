@@ -1,10 +1,10 @@
 const { expect } = require('chai');
 import { ethers } from 'ethers';
 import { generateLeaf } from '../../../scripts/helpers/whitelist';
-import { params } from '../../RhapsodyCreatorGenerative.test';
-import { Merklized, RhapsodyCreatorBeforeEach } from '../type';
+import { params } from '../../ElevateCreatorGenerative.test';
+import { ElevateCreatorBeforeEach, Merklized } from '../type';
 
-export const _testContractClaimBasic = (_beforeEach: RhapsodyCreatorBeforeEach) => {
+export const _testContractClaimBasic = (_beforeEach: ElevateCreatorBeforeEach) => {
   describe('claimMint', () => {
     let minterA: any, minterB: any, minterC: any;
 
@@ -36,16 +36,14 @@ export const _testContractClaimBasic = (_beforeEach: RhapsodyCreatorBeforeEach) 
         '0x1428975b69ccaa80e5613347ec07d7a0696894fc28b3655983d43f9eb00032a1',
         '0xf55f0dad9adfe0f2aa1946779b3ca83c165360edef49c6b72ddc0e2f070f7ff6',
       ];
-      await expect(minter(minterA, 1, wrongProof)).to.be.revertedWith(
-        'RhapsodyCreatorGenerative/invalid-address-proof'
-      );
+      await expect(minter(minterA, 1, wrongProof)).to.be.revertedWith('ElevateCreatorGenerative/invalid-address-proof');
     });
 
     it('should fail if minting invocation is 0', async () => {
       let leaf = generateLeaf(minterA.address, 2);
       let proof = claimMerklized.tree.getHexProof(leaf);
       await expect(minter(minterA, 0, proof)).to.be.revertedWith(
-        'RhapsodyCreatorGenerative/invalid-invocation-lower-boundary'
+        'ElevateCreatorGenerative/invalid-invocation-lower-boundary'
       );
     });
 
@@ -53,18 +51,18 @@ export const _testContractClaimBasic = (_beforeEach: RhapsodyCreatorBeforeEach) 
       let leaf = generateLeaf(minterA.address, 2);
       let proof = claimMerklized.tree.getHexProof(leaf);
       await expect(minter(minterA, params.maxMintPerAddress + 1, proof)).to.be.revertedWith(
-        'RhapsodyCreatorGenerative/invalid-address-proof'
+        'ElevateCreatorGenerative/invalid-address-proof'
       );
     });
 
     it('should fail address proof if passed in invalid maxInvocations', async () => {
       let leaf = generateLeaf(minterA.address, 3);
       let proof = claimMerklized.tree.getHexProof(leaf);
-      await expect(minter(minterA, 2, proof)).to.be.revertedWith('RhapsodyCreatorGenerative/invalid-address-proof');
+      await expect(minter(minterA, 2, proof)).to.be.revertedWith('ElevateCreatorGenerative/invalid-address-proof');
 
       leaf = generateLeaf(minterC.address, 5);
       proof = claimMerklized.tree.getHexProof(leaf);
-      await expect(minter(minterC, 1, proof)).to.be.revertedWith('RhapsodyCreatorGenerative/invalid-address-proof');
+      await expect(minter(minterC, 1, proof)).to.be.revertedWith('ElevateCreatorGenerative/invalid-address-proof');
     });
 
     it('should only be able to mint once', async () => {
@@ -74,7 +72,7 @@ export const _testContractClaimBasic = (_beforeEach: RhapsodyCreatorBeforeEach) 
       await expect(minter(minterC, 1, proof)).to.emit(creator, 'Created').withArgs(minterC.address, 1);
 
       await expect(minter(minterC, 1, proof)).to.to.be.revertedWith(
-        'RhapsodyCreatorGenerative/invalid-invocation-upper-boundary'
+        'ElevateCreatorGenerative/invalid-invocation-upper-boundary'
       );
 
       leaf = generateLeaf(minterA.address, 2);
@@ -83,7 +81,7 @@ export const _testContractClaimBasic = (_beforeEach: RhapsodyCreatorBeforeEach) 
       await expect(minter(minterA, 2, proof)).to.emit(creator, 'Created').withArgs(minterA.address, 2);
 
       await expect(minter(minterA, 1, proof)).to.to.be.revertedWith(
-        'RhapsodyCreatorGenerative/invalid-invocation-upper-boundary'
+        'ElevateCreatorGenerative/invalid-invocation-upper-boundary'
       );
     });
 
@@ -96,7 +94,7 @@ export const _testContractClaimBasic = (_beforeEach: RhapsodyCreatorBeforeEach) 
       await creator.connect(minterC).transferFrom(minterC.address, minterB.address, 0);
 
       await expect(minter(minterC, 1, proof)).to.to.be.revertedWith(
-        'RhapsodyCreatorGenerative/invalid-invocation-upper-boundary'
+        'ElevateCreatorGenerative/invalid-invocation-upper-boundary'
       );
     });
 
@@ -106,9 +104,7 @@ export const _testContractClaimBasic = (_beforeEach: RhapsodyCreatorBeforeEach) 
         '0xf55f0dad9adfe0f2aa1946779b3ca83c165360edef49c6b72ddc0e2f070f7ff6',
       ];
 
-      await expect(minter(minterB, 2, wrongProof)).to.be.revertedWith(
-        'RhapsodyCreatorGenerative/invalid-address-proof'
-      );
+      await expect(minter(minterB, 2, wrongProof)).to.be.revertedWith('ElevateCreatorGenerative/invalid-address-proof');
     });
   });
 };

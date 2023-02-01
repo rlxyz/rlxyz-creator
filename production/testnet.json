@@ -1,9 +1,9 @@
 {
-  "name": "RhapsodyCreatorGenerative",
+  "name": "ElevateCreatorGenerative",
   "deploy": {
-    "name": "Rhapsody",
-    "symbol": "RHY",
-    "randomizerContract": "0x9c338ecff28c62d8376216dddd6e8483e4fb2ef8",
+    "name": "Elevate",
+    "symbol": "EA",
+    "randomizerContract": "0x03e77f58eaaa3aac4e62acd6425b348cfcc10002",
     "collectionSize": 1111,
     "maxMintPerAddress": 2,
     "amountForPromotion": 40,

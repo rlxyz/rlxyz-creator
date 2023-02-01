@@ -2,9 +2,9 @@ const { expect } = require('chai');
 import { ethers } from 'ethers';
 import { parseEther } from '../../helpers/constant';
 import { keccak256Hashes } from '../../helpers/generateKeccak256Hash';
-import { RhapsodyCreatorBeforeEach, RhapsodyCreatorConstructor } from '../type';
+import { ElevateCreatorBeforeEach, ElevateCreatorConstructor } from '../type';
 
-export const _testContractPublic = (_beforeEach: RhapsodyCreatorBeforeEach, params: RhapsodyCreatorConstructor) => {
+export const _testContractPublic = (_beforeEach: ElevateCreatorBeforeEach, params: ElevateCreatorConstructor) => {
   describe('publicMint', () => {
     let minterA: any, minterB: any, minterC: any;
 
@@ -51,7 +51,7 @@ export const _testContractPublic = (_beforeEach: RhapsodyCreatorBeforeEach, para
         .withArgs(minterA.address, 2, 2, [keccak256Hashes[0], keccak256Hashes[1]]);
 
       await expect(minter(minterB, 3, 3 * 0.333)).to.be.revertedWith(
-        'RhapsodyCreatorGenerative/invalid-invocation-upper-boundary'
+        'ElevateCreatorGenerative/invalid-invocation-upper-boundary'
       );
     });
 
@@ -61,13 +61,13 @@ export const _testContractPublic = (_beforeEach: RhapsodyCreatorBeforeEach, para
         .withArgs(minterA.address, 1, 1, [keccak256Hashes[0]]);
 
       await expect(minter(minterA, 2, 0.333 * 2)).to.be.revertedWith(
-        'RhapsodyCreatorGenerative/invalid-invocation-upper-boundary'
+        'ElevateCreatorGenerative/invalid-invocation-upper-boundary'
       );
     });
 
     it('should fail if minting invocation is 0', async () => {
       await expect(minter(minterA, 0, 0.333)).to.be.revertedWith(
-        'RhapsodyCreatorGenerative/invalid-invocation-lower-boundary'
+        'ElevateCreatorGenerative/invalid-invocation-lower-boundary'
       );
     });
   });

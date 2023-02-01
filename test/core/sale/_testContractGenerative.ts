@@ -1,10 +1,10 @@
 const { expect } = require('chai');
 import { ethers } from 'ethers';
+import { currentBlockTime } from '../../ElevateCreatorGenerative.test';
 import { parseEther } from '../../helpers/constant';
-import { currentBlockTime } from '../../RhapsodyCreatorGenerative.test';
-import { RhapsodyCreatorBeforeEach, RhapsodyCreatorConstructor } from '../type';
+import { ElevateCreatorBeforeEach, ElevateCreatorConstructor } from '../type';
 
-export const _testContractGenerative = (_beforeEach: RhapsodyCreatorBeforeEach, params: RhapsodyCreatorConstructor) => {
+export const _testContractGenerative = (_beforeEach: ElevateCreatorBeforeEach, params: ElevateCreatorConstructor) => {
   describe('setMintTime', () => {
     let creator: ethers.Contract;
 
@@ -62,16 +62,16 @@ export const _testContractGenerative = (_beforeEach: RhapsodyCreatorBeforeEach, 
     // it('public sale time cannot be less than presale time', async () => {
     //   await expect(
     //     creator.setMintTime(currentBlockTime + 100, currentBlockTime + 110, currentBlockTime + 105)
-    //   ).to.be.revertedWith('RhapsodyCreatorGenerative/invalid-public-time');
+    //   ).to.be.revertedWith('ElevateCreatorGenerative/invalid-public-time');
 
     //   // edge cases
     //   await expect(
     //     creator.setMintTime(currentBlockTime + 1, currentBlockTime + 2, currentBlockTime + 1)
-    //   ).to.be.revertedWith('RhapsodyCreatorGenerative/invalid-public-time');
+    //   ).to.be.revertedWith('ElevateCreatorGenerative/invalid-public-time');
 
     //   await expect(
     //     creator.setMintTime(currentBlockTime + 1, currentBlockTime + 2, currentBlockTime + 0)
-    //   ).to.be.revertedWith('RhapsodyCreatorGenerative/invalid-public-time');
+    //   ).to.be.revertedWith('ElevateCreatorGenerative/invalid-public-time');
     // });
 
     //! in latest version; 1.0.0, the first mint can be anytime..., so this test is not needed; why? because
@@ -79,15 +79,15 @@ export const _testContractGenerative = (_beforeEach: RhapsodyCreatorBeforeEach, 
     // it('presale time cannot be less than the current block timestamp', async () => {
     //   await expect(
     //     creator.setMintTime(currentBlockTime + 1, currentBlockTime - 10, currentBlockTime + 10)
-    //   ).to.be.revertedWith('RhapsodyCreatorGenerative/invalid-presale-time');
+    //   ).to.be.revertedWith('ElevateCreatorGenerative/invalid-presale-time');
 
     //   await expect(
     //     creator.setMintTime(currentBlockTime + 1, currentBlockTime - 1, currentBlockTime)
-    //   ).to.be.revertedWith('RhapsodyCreatorGenerative/invalid-presale-time');
+    //   ).to.be.revertedWith('ElevateCreatorGenerative/invalid-presale-time');
 
     //   await expect(
     //     creator.setMintTime(currentBlockTime + 1, currentBlockTime - 2, currentBlockTime - 1)
-    //   ).to.be.revertedWith('RhapsodyCreatorGenerative/invalid-presale-time');
+    //   ).to.be.revertedWith('ElevateCreatorGenerative/invalid-presale-time');
     // });
   });
 
@@ -96,7 +96,7 @@ export const _testContractGenerative = (_beforeEach: RhapsodyCreatorBeforeEach, 
     let minterA: any;
     let creator: ethers.Contract;
     beforeEach(async () => {
-      const paramsB: RhapsodyCreatorConstructor = {
+      const paramsB: ElevateCreatorConstructor = {
         name: 'test',
         symbol: 'test',
         collectionSize: 1200,

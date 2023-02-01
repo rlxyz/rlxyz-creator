@@ -1,18 +1,18 @@
 const hre = require('hardhat');
 const { buildWhitelist } = require('../../scripts/helpers/whitelist');
-import { RhapsodyCreatorConstructor } from '../core/type';
-import { deployRandomizerContractFactory, deployRhapsodyCreatorFactory } from './contractFactory';
+import { ElevateCreatorConstructor } from '../core/type';
+import { deployCreatorFactory, deployRandomizerContractFactory } from './contractFactory';
 
 const CONSTANTS = {
   randomBlockTime: 123456789,
 };
 
-export const beforeEachSetupForGenerative = async (args: RhapsodyCreatorConstructor): Promise<any> => {
+export const beforeEachSetupForGenerative = async (args: ElevateCreatorConstructor): Promise<any> => {
   const [deployer, admin, minterA, minterB, minterC] = await hre.ethers.getSigners();
   const { randomBlockTime: currentBlockTime } = CONSTANTS;
 
   const randomizer = await deployRandomizerContractFactory();
-  const creator = await deployRhapsodyCreatorFactory('generative', {
+  const creator = await deployCreatorFactory('generative', {
     ...args,
     mintRandomizerContract: randomizer.address,
   });
@@ -55,11 +55,11 @@ export const beforeEachSetupForGenerative = async (args: RhapsodyCreatorConstruc
   };
 };
 
-export const beforeEachSetupForClaim = async (args: RhapsodyCreatorConstructor): Promise<any> => {
+export const beforeEachSetupForClaim = async (args: ElevateCreatorConstructor): Promise<any> => {
   const [deployer, admin, minterA, minterB, minterC] = await hre.ethers.getSigners();
   const { randomBlockTime: currentBlockTime } = CONSTANTS;
 
-  const creator = await deployRhapsodyCreatorFactory('claim', args);
+  const creator = await deployCreatorFactory('claim', args);
 
   const claimMerklized = await buildWhitelist([
     [minterA.address, 2],

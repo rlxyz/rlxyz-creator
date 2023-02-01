@@ -4,11 +4,11 @@ import { testContractBaseURI } from './core/testContractBaseURI';
 import { testContractCore } from './core/testContractCore';
 import { testContractSale } from './core/testContractSale';
 import { testContractTokenURI } from './core/testContractTokenURI';
-import { RhapsodyCreatorConstructor } from './core/type';
+import { ElevateCreatorConstructor } from './core/type';
 import { parseEther } from './helpers/constant';
 import { beforeEachSetupForClaim } from './helpers/contractBeforeEachSetup';
 
-export const params: RhapsodyCreatorConstructor = {
+export const params: ElevateCreatorConstructor = {
   name: 'Rhapsody Creator Test',
   symbol: 'RCT',
   collectionSize: 1111,

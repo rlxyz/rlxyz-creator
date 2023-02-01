@@ -1,10 +1,10 @@
 const { expect } = require('chai');
 import { ethers } from 'ethers';
-import { RhapsodyCreatorBeforeEach, RhapsodyCreatorConstructor } from './type';
+import { ElevateCreatorBeforeEach, ElevateCreatorConstructor } from './type';
 
 export const testContractDeploymentArgs = (
-  _beforeEach: RhapsodyCreatorBeforeEach,
-  params: RhapsodyCreatorConstructor
+  _beforeEach: ElevateCreatorBeforeEach,
+  params: ElevateCreatorConstructor
 ) => {
   describe('deployment', () => {
     let creator: ethers.Contract;

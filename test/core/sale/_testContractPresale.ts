@@ -2,12 +2,12 @@ const { expect } = require('chai');
 import { ethers } from 'ethers';
 import { defaultAbiCoder, keccak256 } from 'ethers/lib/utils';
 import { buildWhitelist, generateLeaf } from '../../../scripts/helpers/whitelist';
+import { currentBlockTime } from '../../ElevateCreatorGenerative.test';
 import { parseEther } from '../../helpers/constant';
 import { keccak256Hashes } from '../../helpers/generateKeccak256Hash';
-import { currentBlockTime } from '../../RhapsodyCreatorGenerative.test';
-import { Merklized, RhapsodyCreatorBeforeEach, RhapsodyCreatorConstructor } from '../type';
+import { ElevateCreatorBeforeEach, ElevateCreatorConstructor, Merklized } from '../type';
 
-export const _testContractPresale = (_beforeEach: RhapsodyCreatorBeforeEach, params: RhapsodyCreatorConstructor) => {
+export const _testContractPresale = (_beforeEach: ElevateCreatorBeforeEach, params: ElevateCreatorConstructor) => {
   describe('presaleMint', () => {
     let minterA: any, minterB: any, minterC: any;
 
@@ -58,7 +58,7 @@ export const _testContractPresale = (_beforeEach: RhapsodyCreatorBeforeEach, par
       let leaf = generateLeaf(minterA.address, 2);
       let proof = presaleMerklized.tree.getHexProof(leaf);
       await expect(minter(minterA, 0, 2, proof, 0)).to.be.revertedWith(
-        'RhapsodyCreatorGenerative/invalid-invocation-lower-boundary'
+        'ElevateCreatorGenerative/invalid-invocation-lower-boundary'
       );
     });
 
@@ -69,7 +69,7 @@ export const _testContractPresale = (_beforeEach: RhapsodyCreatorBeforeEach, par
         .to.emit(creator, 'Created')
         .withArgs(minterA.address, 2, 2, [keccak256Hashes[0], keccak256Hashes[1]]);
       await expect(minter(minterA, 1, 4, proof, 3 * 0.333)).to.be.revertedWith(
-        'RhapsodyCreatorGenerative/invalid-invocation-upper-boundary'
+        'ElevateCreatorGenerative/invalid-invocation-upper-boundary'
       );
     });
 
@@ -77,26 +77,24 @@ export const _testContractPresale = (_beforeEach: RhapsodyCreatorBeforeEach, par
       let leaf = generateLeaf(minterA.address, 5);
       let proof = presaleMerklized.tree.getHexProof(leaf);
       await expect(minter(minterA, 1, 5, proof, 0.333)).to.be.revertedWith(
-        'RhapsodyCreatorGenerative/invalid-address-proof'
+        'ElevateCreatorGenerative/invalid-address-proof'
       );
 
       leaf = generateLeaf(minterB.address, 5);
       proof = presaleMerklized.tree.getHexProof(leaf);
       await expect(minter(minterB, 2, 2, proof, 0.333 * 2)).to.be.revertedWith(
-        'RhapsodyCreatorGenerative/invalid-address-proof'
+        'ElevateCreatorGenerative/invalid-address-proof'
       );
     });
 
     it('should fail if too much or too little eth supplied', async () => {
       let leaf = generateLeaf(minterA.address, 5);
       let proof = presaleMerklized.tree.getHexProof(leaf);
-      await expect(minter(minterA, 1, 5, proof, 1.5)).to.be.revertedWith(
-        'RhapsodyCreatorGenerative/invalid-mint-value'
-      );
+      await expect(minter(minterA, 1, 5, proof, 1.5)).to.be.revertedWith('ElevateCreatorGenerative/invalid-mint-value');
 
       leaf = generateLeaf(minterB.address, 5);
       proof = presaleMerklized.tree.getHexProof(leaf);
-      await expect(minter(minterB, 2, 2, proof, 0)).to.be.revertedWith('RhapsodyCreatorGenerative/invalid-mint-value');
+      await expect(minter(minterB, 2, 2, proof, 0)).to.be.revertedWith('ElevateCreatorGenerative/invalid-mint-value');
     });
 
     it('should be able to mint more than once', async () => {
@@ -134,7 +132,7 @@ export const _testContractPresale = (_beforeEach: RhapsodyCreatorBeforeEach, par
       await creator.connect(minterA).transferFrom(minterA.address, minterB.address, 0);
 
       await expect(minter(minterA, 1, 2, proof, 0.333)).to.to.be.revertedWith(
-        'RhapsodyCreatorGenerative/invalid-invocation-upper-boundary'
+        'ElevateCreatorGenerative/invalid-invocation-upper-boundary'
       );
     });
 
@@ -144,14 +142,14 @@ export const _testContractPresale = (_beforeEach: RhapsodyCreatorBeforeEach, par
         '0xf55f0dad9adfe0f2aa1946779b3ca83c165360edef49c6b72ddc0e2f070f7ff6',
       ];
       await expect(minter(minterB, 1, 2, wrongProof, 1 * 0.333)).to.be.revertedWith(
-        'RhapsodyCreatorGenerative/invalid-address-proof'
+        'ElevateCreatorGenerative/invalid-address-proof'
       );
     });
 
     describe('variable whitelist', () => {
       let presaleMerklizedA: Merklized;
       beforeEach(async () => {
-        const paramsB: RhapsodyCreatorConstructor = {
+        const paramsB: ElevateCreatorConstructor = {
           name: 'test',
           symbol: 'test',
           collectionSize: 1200,
@@ -230,13 +228,13 @@ export const _testContractPresale = (_beforeEach: RhapsodyCreatorBeforeEach, par
         let leaf = generateLeaf(minterA.address, 4);
         let proof = presaleMerklizedA.tree.getHexProof(leaf);
         await expect(minter(minterA, 5, 4, proof, 5 * 0.333)).to.be.revertedWith(
-          'RhapsodyCreatorGenerative/invalid-invocation-upper-boundary'
+          'ElevateCreatorGenerative/invalid-invocation-upper-boundary'
         );
 
         leaf = generateLeaf(minterC.address, 3);
         proof = presaleMerklizedA.tree.getHexProof(leaf);
         await expect(minter(minterC, 4, 3, proof, 4 * 0.333)).to.be.revertedWith(
-          'RhapsodyCreatorGenerative/invalid-invocation-upper-boundary'
+          'ElevateCreatorGenerative/invalid-invocation-upper-boundary'
         );
       });
     });
