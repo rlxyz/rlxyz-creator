@@ -38,6 +38,12 @@ export const testContractMintPrice = (_beforeEach: ElevateCreatorBeforeEach, par
         .withArgs(minterA.address, 1, 1, [keccak256Hashes[0]]);
     });
 
+    it('should only allow owner to change the mintPrice', async () => {
+      await expect(creator.connect(minterA).setMintPrice(parseEther('0.1'))).to.be.revertedWith(
+        'Ownable: caller is not the owner'
+      );
+    });
+
     // it('should return valid token uri if minting many at once', async () => {});
   });
 };
