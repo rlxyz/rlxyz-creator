@@ -3,7 +3,7 @@
   "deploy": {
     "name": "Elevate",
     "symbol": "EA",
-    "randomizerContract": "0x03e77f58eaaa3aac4e62acd6425b348cfcc10002",
+    "randomizerContract": "0x41a1F0aEBfCD87E7a6B546F44d5D092d69102F75",
     "collectionSize": 1111,
     "maxMintPerAddress": 2,
     "amountForPromotion": 40,
