@@ -1,29 +1,21 @@
 #!/usr/bin/env node
-const chalk = require("chalk");
-const util = require("util");
-const exec = util.promisify(require("child_process").exec);
-const hardhat = require("hardhat");
-const { deployments } = require("hardhat");
-const {
-  name: deployContractName,
-  deploy: deployParameters,
-} = require("../production/mainnet.json");
+import chalk from 'chalk';
+import hardhat from 'hardhat';
+import util from 'util';
+import { name as deployContractName } from '../production/mainnet.json';
+const exec = util.promisify(require('child_process').exec);
 
-const info = (msg) => console.log(chalk.dim(msg));
-const success = (msg) => console.log(chalk.green(msg));
-const error = (msg) => console.error(chalk.red(msg));
+const info = (msg: string) => console.log(chalk.dim(msg));
+const success = (msg: string) => console.log(chalk.green(msg));
+const error = (msg: string) => console.error(chalk.red(msg));
 
-const getContract = async (name) => {
+const getContract = async (name: string) => {
   const { deployments } = hardhat;
   const signers = await hardhat.ethers.getSigners();
-  return hardhat.ethers.getContractAt(
-    name,
-    (await deployments.get(name)).address,
-    signers[0]
-  );
+  return hardhat.ethers.getContractAt(name, (await deployments.get(name)).address, signers[0]);
 };
 
-const verifyAddress = async (address, contractName, options = "") => {
+const verifyAddress = async (address: string, contractName: string, options = '') => {
   try {
     const cmd = `hardhat --show-stack-traces ${getHardhatConfigFile()} verify --network ${
       hardhat.network.name
@@ -42,13 +34,13 @@ const verifyAddress = async (address, contractName, options = "") => {
   }
 };
 
-const verifyAddressManually = async (address, contractName, args = "") => {
+const verifyAddressManually = async (address: string, contractName: string, args = '') => {
   const artifact = await hardhat.artifacts.readArtifact(contractName);
   const contractFlag = `--contract ${artifact.sourceName}:${contractName} ${args}`;
   await verifyAddress(address, contractName, contractFlag);
 };
 
-const contractAddress = async (contractName) => {
+const contractAddress = async (contractName: string) => {
   const contract = await getContract(contractName);
   return contract.address;
 };
@@ -60,19 +52,17 @@ function isBinance() {
 
 function isPolygon() {
   const network = hardhat.network.name;
-  return (
-    /polygon/.test(network) || /matic/.test(network) || /mumbai/.test(network)
-  );
+  return /polygon/.test(network) || /matic/.test(network) || /mumbai/.test(network);
 }
 
 function getHardhatConfigFile() {
   let config;
   if (isBinance()) {
-    config = "--config hardhat.config.bsc.js";
+    config = '--config hardhat.config.bsc.js';
   } else if (isPolygon()) {
-    config = "--config hardhat.config.polygon.js";
+    config = '--config hardhat.config.polygon.js';
   } else {
-    config = "";
+    config = '';
   }
   return config;
 }
@@ -86,11 +76,15 @@ async function run() {
   // using hardhat native etherscan verify -- this supports mainnet, rinkeby, kovan etc.
   const cmd = `hardhat --network ${network} etherscan-verify --solc-input --api-key ${hardhat.config.etherscan.apiKey}`;
   info(cmd);
-  const { stdout, stderr } = await exec(cmd);
-  console.log(chalk.yellow(stdout));
-  console.log(chalk.red(stderr));
 
-  info(`Done top-level contracts`);
+  try {
+    const { stdout, stderr } = await exec(cmd);
+    console.log(chalk.yellow(stdout));
+    console.log(chalk.red(stderr));
+    info(`Done top-level contracts`);
+  } catch (e) {
+    console.error(e);
+  }
 
   info(`Verifying ${deployContractName} contract...`);
 
@@ -101,7 +95,7 @@ async function run() {
     "'PMC x Hellchemy Skeltermy Collab' PMC-HS-COLLAB 3000"
   );
 
-  success("Done!");
+  success('Done!');
 }
 
 run();

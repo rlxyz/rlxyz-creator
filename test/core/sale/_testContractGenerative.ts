@@ -106,6 +106,7 @@ export const _testContractGenerative = (_beforeEach: ElevateCreatorBeforeEach, p
         claimTime: currentBlockTime + 100,
         presaleTime: currentBlockTime + 105,
         publicTime: currentBlockTime + 110,
+        mintRandomizerContract: '',
       };
 
       const { contracts, wallets } = await _beforeEach(paramsB);

@@ -1,6 +1,13 @@
 export const currentBlockTime = 123456789;
 
+import { testContractBaseURI } from './core/testContractBaseURI';
+import { testContractCore } from './core/testContractCore';
+import { testContractDeploymentArgs } from './core/testContractDeploymentArgs';
 import { testContractDev } from './core/testContractDev';
+import { testContractMintPrice } from './core/testContractMintPrice';
+import { testContractSale } from './core/testContractSale';
+import { testContractTokenHash } from './core/testContractTokenHash';
+import { testContractTokenURI } from './core/testContractTokenURI';
 import { ElevateCreatorConstructor } from './core/type';
 import { parseEther } from './helpers/constant';
 import { beforeEachSetupForGenerative } from './helpers/contractBeforeEachSetup';
@@ -20,11 +27,12 @@ const params: ElevateCreatorConstructor = {
 
 describe('ElevateCreatorGenerative', async () => {
   const _beforeEach = beforeEachSetupForGenerative;
-  // testContractCore(_beforeEach, params);
-  // testContractDeploymentArgs(_beforeEach, params);
-  // testContractBaseURI(_beforeEach, params);
-  // testContractTokenURI(_beforeEach, params);
-  // testContractTokenHash(_beforeEach, params);
-  // testContractSale(_beforeEach, 'generative', ['claim', 'presale', 'public'], params);
+  testContractCore(_beforeEach, params);
+  testContractDeploymentArgs(_beforeEach, params);
+  testContractBaseURI(_beforeEach, params);
+  testContractTokenURI(_beforeEach, params);
+  testContractTokenHash(_beforeEach, params);
+  testContractSale(_beforeEach, 'generative', ['claim', 'presale', 'public'], params);
   testContractDev(_beforeEach, params);
+  testContractMintPrice(_beforeEach, params);
 });

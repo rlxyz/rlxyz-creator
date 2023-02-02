@@ -15,8 +15,12 @@ error HashQueryForNonexistentToken();
 
 contract ElevateCreatorGenerative is ERC721A, ERC721AOwnersExplicit, Ownable, ReentrancyGuard {
     /// ============ Semantic Versioning ============
+
     /// @dev Semantic versioning for this contract
     string public constant version = "1.0.0";
+
+    /// @dev Semantic versioning for the compiler used to compile the art of this contract
+    string public constant compilerVersion = "1.0.0";
 
     /// ============ Libraries ============
 
@@ -35,13 +39,13 @@ contract ElevateCreatorGenerative is ERC721A, ERC721AOwnersExplicit, Ownable, Re
     /// @notice max mintable tokens for each address in public
     uint256 public immutable maxMintPerAddress;
 
-    /// @notice mint price of each nft; same for pre/public sale.
-    uint256 public immutable mintPrice;
-
     /// @notice total number of tokens in the collection
     uint256 public immutable collectionSize;
 
     // ============ Mutable storage ============
+
+    /// @notice mint price of each nft; same for pre/public sale.
+    uint256 public mintPrice;
 
     /// @notice ERC721-presale inclusion root
     bytes32 public presaleMerkleRoot;
@@ -97,8 +101,8 @@ contract ElevateCreatorGenerative is ERC721A, ERC721AOwnersExplicit, Ownable, Re
         collectionSize = _collectionSize;
         maxMintPerAddress = _maxMintPerAddress;
         amountForPromotion = _amountForPromotion;
-        mintPrice = _mintPrice;
 
+        setMintPrice(_mintPrice);
         setClaimTime(_claimTime);
         setPresaleTime(_presaleTime);
         setPublicTime(_publicTime);
@@ -261,6 +265,13 @@ contract ElevateCreatorGenerative is ERC721A, ERC721AOwnersExplicit, Ownable, Re
     /// @param _claimMerkleRoot root of the merklelized claimlist
     function setClaimMerkleRoot(bytes32 _claimMerkleRoot) public onlyOwner {
         claimMerkleRoot = _claimMerkleRoot;
+    }
+
+    /// =========== Minting ===========
+
+    /// @notice set mint price
+    function setMintPrice(uint256 _mintPrice) public onlyOwner {
+        mintPrice = _mintPrice;
     }
 
     /// =========== Metadata ===========
