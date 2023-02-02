@@ -3,14 +3,20 @@ export declare type Merklized = {
   tree: any;
 };
 
-export declare type RhapsodyCreatorBeforeEach = (args: RhapsodyCreatorConstructor) => Promise<any>;
+export declare type ElevateCreatorBeforeEach = (args: ElevateCreatorConstructor) => Promise<any>;
 
-export declare type RhapsodyCreatorConstructor = {
+export type ElevateCreatorConstructor = {
+  name: string;
+  symbol: string;
+  mintRandomizerContract: string;
   collectionSize: number;
-  maxPublicBatchPerAddress?: number;
-  amountForPromotion?: number;
-  mintPrice?: number;
+  maxMintPerAddress: number;
+  amountForPromotion: number;
+  mintPrice: string;
+  claimTime: number;
+  presaleTime: number;
+  publicTime: number;
 };
 
-export declare type RhapsodyCreatorVariation = 'generative' | 'claim' | 'basic';
-export declare type RhapsodyCreatorSaleType = 'claim' | 'presale' | 'public';
+export declare type ElevateCreatorVariation = 'generative' | 'claim' | 'basic';
+export declare type ElevateCreatorSaleType = 'claim' | 'presale' | 'public';

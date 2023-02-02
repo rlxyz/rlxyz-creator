@@ -26,14 +26,24 @@ const runner = async () => {
   dim(`deployer: ${deployer}`);
 
   cyan("\nDeploying NFT...");
+  // const randomizerResult = await deploy("Randomizer", {
+  //   contract: "Randomizer",
+  //   from: deployer,
+  //   skipIfAlreadyDeployed: false,
+  // });
+
   const creatorResult = await deploy(deployContractName, {
     args: [
       deployParameters.name,
       deployParameters.symbol,
+      deployParameters.randomizerContract,
       deployParameters.collectionSize,
-      deployParameters.maxPublicBatchPerAddress,
+      deployParameters.maxMintPerAddress,
       deployParameters.amountForPromotion,
       deployParameters.mintPrice,
+      deployParameters.claimTime,
+      deployParameters.presaleTime,
+      deployParameters.publicTime,
     ],
     contract: deployContractName,
     from: deployer,
@@ -47,7 +57,7 @@ const runner = async () => {
   // });
 
   let creatorAddress = creatorResult.address;
-  // let randomizerAddress = randomizer.address;
+  // let randomizerAddress = randomizerResult.address;
 
   // dim(`  - Randomizer:             `, randomizerAddress);
   dim(`  - ${deployContractName}:             `, creatorAddress);

@@ -1,20 +1,24 @@
 {
-  "name": "RhapsodyCreator",
+  "name": "ElevateCreatorGenerative",
   "deploy": {
-    "name": "Rhapsody",
-    "symbol": "RHY",
+    "name": "Elevate",
+    "symbol": "EA",
+    "randomizerContract": "0x41a1F0aEBfCD87E7a6B546F44d5D092d69102F75",
     "collectionSize": 1111,
-    "maxPublicBatchPerAddress": 2,
+    "maxMintPerAddress": 2,
     "amountForPromotion": 40,
-    "mintPrice": "333000000000000000"
+    "mintPrice": "333000000000000000",
+    "claimTime": 1670819200,
+    "presaleTime": 1670819400,
+    "publicTime": 1670823000
   },
   "postDeploy": {
     "baseTokenURI": "https://api.dreamlab.art/reflection/",
     "claimMerkleRoot": "0x15d0f0f45cee85bebb195c2eccc58385524adee1985d611aba1f43037bf32b01",
     "presaleMerkleRoot": "",
     "claimTime": 1650574800,
-    "presaleTime": 1650661200,
-    "publicTime": 1650672000
+    "presaleTime": 1670819400,
+    "publicTime": 1670823000
   },
   "start": {
     "amountForPromotion": 40

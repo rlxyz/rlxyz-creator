@@ -1,11 +1,9 @@
 const { expect } = require('chai');
 const { parseEther } = require('../helpers/constant');
 import { ethers } from 'ethers';
-import { beforeEachSetupForGenerative } from '../helpers/contractBeforeEachSetup';
-import { params, currentBlockTime } from '../RhapsodyCreatorGenerative.test';
-import { RhapsodyCreatorBeforeEach } from './type';
+import { ElevateCreatorBeforeEach, ElevateCreatorConstructor } from './type';
 
-export const testContractTokenURI = (_beforeEach: RhapsodyCreatorBeforeEach) => {
+export const testContractTokenURI = (_beforeEach: ElevateCreatorBeforeEach, params: ElevateCreatorConstructor) => {
   describe('tokenURI', () => {
     let minterA: any, minterB: any, minterC: any;
     let creator: ethers.Contract;
@@ -25,16 +23,12 @@ export const testContractTokenURI = (_beforeEach: RhapsodyCreatorBeforeEach) => 
     it('should return valid token uri if minting singles', async () => {
       await creator.connect(minterA).mintOne();
       expect(await creator.tokenURI(0)).to.equal(baseURI + '0');
-
       await creator.connect(minterA).mintOne();
       expect(await creator.tokenURI(1)).to.equal(baseURI + '1');
-
       await creator.connect(minterB).mintOne();
       expect(await creator.tokenURI(2)).to.equal(baseURI + '2');
-
       await creator.connect(minterC).mintOne();
       expect(await creator.tokenURI(3)).to.equal(baseURI + '3');
-
       await expect(creator.tokenURI(4)).to.be.revertedWith('URIQueryForNonexistentToken');
     });
 

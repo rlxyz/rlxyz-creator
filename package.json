@@ -34,7 +34,7 @@
     "deploy": "hardhat run \"scripts/0_deploy.js\" --network",
     "deploy:post": "hardhat run \"scripts/1_postDeploy.js\" --network",
     "deploy:start": "hardhat run \"scripts/2_start.js\" --network",
-    "deploy:verify": "hardhat run \"scripts/3_verify.js\" --network",
+    "deploy:verify": "hardhat run \"scripts/3_verify.ts\" --network",
     "clean": "rm -rf abis artifacts build .build-openzeppelin cache coverage coverage.json test-results.xml .cache-openzeppelin deployments/localhost deployments/localhost_*; mkdir abis",
     "format": "prettier --write 'contracts/**/*.sol'"
   },

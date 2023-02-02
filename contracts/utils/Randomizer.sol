@@ -2,26 +2,14 @@
 
 pragma solidity ^0.8.0;
 
-import "@openzeppelin/contracts/access/Ownable.sol";
 import "./interfaces/IRandomizer.sol";
 
-contract Randomizer is IRandomizer, Ownable {
-    mapping(address => bool) public dependencies;
+contract Randomizer is IRandomizer {
+    /// ============ Semantic Versioning ============
+    /// @dev Semantic versioning for this contract
+    string public constant version = "1.0.0";
 
-    function addDependency(address _dependency) public onlyOwner {
-        dependencies[_dependency] = true;
-    }
-
-    function removeDependency(address _dependency) public onlyOwner {
-        dependencies[_dependency] = false;
-    }
-
-    function getRandomValue() external view onlyDependency returns (uint256) {
-        return uint256(blockhash(block.number - 1)) + 369963;
-    }
-
-    modifier onlyDependency() {
-        require(dependencies[msg.sender], "Caller is not in dependency list");
-        _;
+    function getRandomValue() external view returns (uint256) {
+        return uint256(keccak256(abi.encodePacked(tx.origin, block.number - 69))) + 369963;
     }
 }
